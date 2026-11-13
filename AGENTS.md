@@ -132,3 +132,17 @@ At the end of each coding task, report:
 This file is the shared source of guidance. Some assistants automatically read `AGENTS.md`; others do not. **Claude Code users should explicitly load this file into context or point their project's `CLAUDE.md` to it.** ChatGPT, Cursor, Copilot, and other assistants should likewise be instructed to read it. Tool-specific instructions must not contradict this file or the team-approved contract.
 
 **Priority:** working, scientifically honest, integrated prototype > ambitious but disconnected AI-generated features.
+
+## 12. Browser-only GitHub workflow (team preference)
+
+**Use GitHub's website for all Git operations. Do not instruct teammates to use a terminal, Git CLI, or local Git commands unless they explicitly request them.** Browser-based AI development can use GitHub's file editor and, where available, github.dev or browser-based coding agents. Check the actual environment's capabilities; github.dev is an editor, not a full execution environment.
+
+1. Open the repository on github.com and use the branch selector to create a `feature/<task>` branch from `main`.
+2. Open the target file and click the pencil icon to edit; use **Add file → Create new file** for new files. For multi-file edits, use github.dev (press `.` while viewing the repo) or a supported web-based coding agent.
+3. Choose **Commit changes** and enter a focused message, e.g. `feat(ui): add crew health cards`. Ensure the destination branch is your feature branch, not `main`.
+4. Open **Pull requests → New pull request**, set base to `main` and compare to the feature branch, review the diff, and request a teammate's review.
+5. Merge through the GitHub web UI only after contract compatibility and available checks are reviewed.
+6. To bring new `main` changes into a feature branch, use the PR page's **Update branch** control when GitHub offers it. If unavailable or conflicts appear, coordinate through the GitHub conflict editor when supported; otherwise ask for help rather than overwriting code.
+7. Review commits from the repository's **Commits** history, or a PR's **Commits** and **Files changed** tabs. To correct a recent file edit, make a new commit; do not rewrite shared history.
+
+**Browser limitation:** Editing and committing on github.com does not run Python tests. AI agents must not report tests as passed without a real execution environment. If browser-based execution/CI is configured, report its actual results; otherwise mark tests **not run** and request integration verification.
