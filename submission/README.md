@@ -33,7 +33,7 @@ Long-duration crews need a clear way to notice health changes, review them again
 - A NASA OSDR chart with measured serum glucose, creatinine, sodium, potassium, and calcium values, separated by anonymized crew code and sample timepoint.
 - A source-supplied lab reference interval shown as context in the chart; no diagnosis or astronaut-specific operational threshold is inferred.
 - Browser-local storage for user-entered demo check-ins and a clear-data control.
-- The team repository also contains a separate WESAD-trained experimental wearable model. It is not connected to this browser prototype; its laboratory-only limits and known pulse-detection issue are documented in the model card.
+- **WESAD research sandbox:** a separate panel runs the team's actual WESAD-trained logistic coefficients on a synthetic 60-second feature summary. It is not connected to the daily check-in, live sensors, NASA data, or spacecraft telemetry. Its uncalibrated score is not a clinical probability or astronaut stress state; laboratory-only limits and the known pulse-detection issue are documented in the model card.
 
 ## NASA data and scientific limits
 
@@ -51,7 +51,7 @@ User-entered demo values stay in the current browser's local storage. The bundle
 
 1. Download or clone the repository.
 2. Open `submission/astral-prototype/index.html` in a modern browser.
-3. Use **Daily check-in** for the synthetic scenario or **Biology evidence** to explore the NASA source values.
+3. Use **Daily check-in** for the synthetic scenario, **WESAD research model** for the synthetic feature-vector demonstration, or **Biology evidence** to explore NASA source values.
 
 ## Project materials
 
