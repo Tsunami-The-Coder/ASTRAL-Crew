@@ -1,0 +1,3 @@
+# 30-second ASTRAL Crew demo narration
+
+“On a long mission, a single measurement may not tell an astronaut whether anything has changed for them. ASTRAL brings a daily check-in together with a personal trend and the NASA five-hazard framework. In this synthetic example, heart rate, sleep, and HRV differ from the recent pattern. The interface names the signals, asks the astronaut to verify them, and points to the approved mission procedure. The Biology view links NASA's Inspiration4 OSDR study while explaining its limits. ASTRAL is an offline, non-diagnostic prototype: it does not connect to live sensors or control the spacecraft.”
