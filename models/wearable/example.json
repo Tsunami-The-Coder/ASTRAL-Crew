@@ -1,0 +1,147 @@
+{
+  "note": "Synthetic integration example; proposed interface; AI-assisted.",
+  "clock": "2026-11-14T14:30:00Z",
+  "input": {
+    "crew_id": "AST-01",
+    "timestamp": "2026-11-14T14:30:00Z",
+    "window_start": "2026-11-14T14:29:00Z",
+    "data_origin": "synthetic",
+    "feature_pipeline": "wrist-bvp-eda-acc-60s-v1",
+    "biometrics": {
+      "heart_rate_bpm": 70.0,
+      "hrv_rmssd_ms": 50.0,
+      "eda_microsiemens": 2.0,
+      "motion_level": 0.1
+    },
+    "context": {
+      "sleep_hours": 5.5,
+      "self_report_stress_0_10": 4
+    }
+  },
+  "result": {
+    "schema_version": "wearable-proposal-v1",
+    "source": "wearable",
+    "crew_id": "AST-01",
+    "timestamp": "2026-11-14T14:30:00Z",
+    "window_start": "2026-11-14T14:29:00Z",
+    "data_origin": "synthetic",
+    "inference_origin": "simulated_inference",
+    "feature_pipeline": "wrist-bvp-eda-acc-60s-v1",
+    "status": "available",
+    "stress_score": 0.268941,
+    "confidence": null,
+    "score_semantics": "synthetic_demo_score",
+    "model_version": "synthetic-fixture-v1",
+    "quality": {
+      "status": "usable_summary",
+      "issues": []
+    },
+    "observations": [
+      {
+        "metric": "heart_rate_bpm",
+        "value": 70.0,
+        "baseline_median": 70.0,
+        "delta": 0.0
+      },
+      {
+        "metric": "hrv_rmssd_ms",
+        "value": 50.0,
+        "baseline_median": 50.0,
+        "delta": 0.0
+      },
+      {
+        "metric": "eda_microsiemens",
+        "value": 2.0,
+        "baseline_median": 2.0,
+        "delta": 0.0
+      },
+      {
+        "metric": "motion_level",
+        "value": 0.1,
+        "baseline_median": 0.1,
+        "delta": 0.0
+      }
+    ],
+    "baseline": {
+      "status": "available",
+      "window_count": 5,
+      "end": "2026-11-14T14:24:00Z",
+      "data_origin": "synthetic",
+      "feature_pipeline": "wrist-bvp-eda-acc-60s-v1",
+      "window_seconds": 60.0
+    },
+    "context": {
+      "sleep_hours": 5.5,
+      "self_report_stress_0_10": 4
+    },
+    "limitations": [
+      "Research prototype; not a diagnosis or medical device.",
+      "Physiological activation does not identify its cause.",
+      "No astronaut validation; NASA resources do not validate this algorithm.",
+      "These wrist features cannot measure radiation dose, bone loss, immune changes or cabin air quality.",
+      "Spaceflight physiology may differ from WESAD; no spaceflight correction has been validated.",
+      "The v1 pulse detector can count secondary waveform peaks; extracted pulse rate and RMSSD need reference validation.",
+      "Summary checks cannot detect all raw-signal artifacts.",
+      "Sleep/self-report are context only; not inputs to the WESAD model.",
+      "Confidence is null: clinical certainty and probability calibration were not established."
+    ],
+    "evidence_ids": [
+      "NASA-STRESS-1160",
+      "NASA-ARCHER",
+      "NASA-STANDARD-MEASURES",
+      "NASA-HAZARDS",
+      "NASA-RISKS",
+      "CSA-RADIATION"
+    ],
+    "ai_assisted": true,
+    "explanation": [
+      "This is a research stress indicator, not a diagnosis or proof of its cause.",
+      "RMSSD here is derived from optical pulse intervals, not ECG heartbeats.",
+      "Heart/pulse rate differs from the selected personal reference by +0.00 beats/min.",
+      "Pulse-interval RMSSD proxy differs from the selected personal reference by +0.00 ms.",
+      "Skin conductance differs from the selected personal reference by +0.00 microsiemens.",
+      "Sleep and self-report are displayed as context; they did not alter the model score.",
+      "Review signal quality and the observation trend; this prototype cannot establish medical fitness.",
+      "These wrist measurements cannot determine radiation exposure, bone loss, immune changes or cabin air quality.",
+      "Spaceflight can change physiology; this Earth-trained model has no validated spaceflight correction."
+    ],
+    "evidence": [
+      {
+        "id": "NASA-STRESS-1160",
+        "title": "Individualized Stress Detection System",
+        "url": "https://humanresearchroadmap.nasa.gov/Tasks/task.aspx?i=1160",
+        "use": "Rationale for considering heart rate, HRV and sleep-wake patterns together."
+      },
+      {
+        "id": "NASA-ARCHER",
+        "title": "Artemis Research for Crew Health and Readiness",
+        "url": "https://www.nasa.gov/reference/archer/",
+        "use": "Rationale for activity, sleep and self-report context."
+      },
+      {
+        "id": "NASA-STANDARD-MEASURES",
+        "title": "Spaceflight Standard Measures",
+        "url": "https://www.nasa.gov/reference/standard-measures/",
+        "use": "Rationale for repeated standardized observations over time."
+      },
+      {
+        "id": "NASA-HAZARDS",
+        "title": "Five Hazards of Human Spaceflight",
+        "url": "https://www.nasa.gov/hrp/hazards/",
+        "use": "Scope and transfer limits; the hazards are not five wrist-derived diagnoses."
+      },
+      {
+        "id": "NASA-RISKS",
+        "title": "Risks of Human Spaceflight",
+        "url": "https://www.nasa.gov/hrp/risks/",
+        "use": "Cardiovascular adaptation and sleep risks motivate cautious longitudinal interpretation."
+      },
+      {
+        "id": "CSA-RADIATION",
+        "title": "Monitoring radiation for astronaut health",
+        "url": "https://www.asc-csa.gc.ca/eng/news/articles/2026/2026-02-26-monitoring-radiation-astronaut-health.asp",
+        "use": "Dedicated radiation instrumentation; our wrist physiology is not dosimetry."
+      }
+    ]
+  }
+}
