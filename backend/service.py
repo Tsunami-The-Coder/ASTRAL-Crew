@@ -3,6 +3,8 @@
 import argparse
 import json
 from pathlib import Path
+from datetime import datetime, timezone
+from math import isfinite
 
 from backend.mission_log import MissionLog
 from backend.medical import MedicalStore, resource_catalog
@@ -17,7 +19,11 @@ class MissionService:
     This internal view does not establish that readings are fresh or safe.
     """
 
-    def __init__(self, database_path=DEFAULT_DATABASE):
+    def __init__(self, database_path=DEFAULT_DATABASE, *, clock=None, max_age_seconds=300):
+        if type(max_age_seconds) not in (int, float) or not isfinite(max_age_seconds) or max_age_seconds <= 0:
+            raise ValueError('max_age_seconds must be finite and positive')
+        self.clock = clock if clock is not None else lambda: datetime.now(timezone.utc)
+        self.max_age_seconds = max_age_seconds
         self.store = SnapshotStore(database_path)
         self.log = MissionLog(database_path)
         self.medical = MedicalStore(database_path)
@@ -32,24 +38,38 @@ class MissionService:
         latest_analysis = logged[0] if logged else None
         matches = (snapshot is not None and latest_analysis is not None
                    and latest_analysis['snapshot_id'] == snapshot['id'])
+        freshness = {'status': 'unavailable', 'age_seconds': None,
+                     'max_age_seconds': self.max_age_seconds}
+        if snapshot is not None:
+            now = self.clock()
+            if not isinstance(now, datetime) or now.tzinfo is None or now.utcoffset() is None:
+                raise ValueError('clock must return a timezone-aware datetime')
+            timestamp = datetime.fromisoformat(SnapshotStore._utc_timestamp(snapshot['timestamp']))
+            age = (now - timestamp).total_seconds()
+            freshness.update(age_seconds=age, status=(
+                'future' if age < 0 else 'stale' if age > self.max_age_seconds else 'fresh'))
+        usable = matches and freshness['status'] == 'fresh'
         return {
-            'view_version': 'internal-demo-v1',
+            'view_version': 'internal-demo-v2',
+            'freshness': freshness,
+            'historical_analysis': latest_analysis if matches and not usable else None,
             'data_origin': 'synthetic',
             'snapshot': snapshot,
-            'current_analysis': latest_analysis if matches else None,
-            'analysis_status': ('available' if matches else
+            'current_analysis': latest_analysis if usable else None,
+            'analysis_status': ('available' if usable else
+                                'historical_telemetry' if matches else
                                 'not_run_for_latest_snapshot' if snapshot else 'no_telemetry'),
             'limitations': [
                 'Internal demo view; UI/model contract approval is pending.',
-                'Current means matching snapshot ID, not a freshness or safety guarantee.',
+                'Freshness uses snapshot time only; per-signal freshness remains unverified.',
                 'Missing model outputs remain null; no diagnosis is provided.',
             ],
         }
 
-    def history(self, *, limit=100, start=None, end=None):
-        return self.store.history(limit=limit, start=start, end=end)
+    def history(self, *, limit=100, start=None, end=None, run_id=None):
+        return self.store.history(limit=limit, start=start, end=end, run_id=run_id)
 
-    def crew_history(self, crew_id, *, limit=100, start=None, end=None):
+    def crew_history(self, crew_id, *, limit=100, start=None, end=None, run_id=None):
         """Project a mission history window onto one crew ID.
 
         Limit selects mission snapshots BEFORE filtering. Samples where that
@@ -59,7 +79,7 @@ class MissionService:
         if not isinstance(crew_id, str) or not crew_id.strip():
             raise ValueError('crew_id must be a nonempty string')
         result = []
-        for row in self.history(limit=limit, start=start, end=end):
+        for row in self.history(limit=limit, start=start, end=end, run_id=run_id):
             crew = row['payload'].get('crew')
             if not isinstance(crew, list):
                 raise ValueError('stored snapshot has no valid crew list')

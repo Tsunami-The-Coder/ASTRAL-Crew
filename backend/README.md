@@ -392,3 +392,46 @@ leak. This is not a complete cabin-safety assessment: stable readings outside a
 safe operating range are not detected by delta-only rules. Freshness/time-window
 policy, complete composition validation, and scientific review remain pending.
 See SCENARIOS.md for curve assumptions and partial-pressure limitations.
+
+
+## Step 15: run selection and snapshot freshness
+
+This section supersedes the earlier separate-database workaround for newly
+created CLI runs and the earlier matching-ID-only service behavior.
+
+Each `python3 -m backend.simulator` invocation now assigns a UUID run_id to its
+snapshots and prints it. This is a run identifier, not a crew identifier. The pure
+seeded generator remains deterministic; it does not generate random IDs. No old
+snapshots are rewritten and no SQL migration is needed: run_id lives in JSON.
+
+`SnapshotStore.history(..., run_id='...')`, service history, and crew_history filter
+by run before applying the limit. The cross-analysis CLI defaults to the latest
+snapshot's run or accepts `--run-id`. Thus repeated overlapping runs can coexist
+without cross-analysis mixing their measurements. Legacy snapshots without IDs
+still require the old timestamp-minus-elapsed anchor check. IDs do not prove that
+inputs are genuinely synchronized; upstream adapters will need stronger validation.
+The pure analyzer rejects different explicit runs and reversed/equal elapsed
+comparison times when those fields are present. It remains an internal API.
+
+`MissionService(..., clock=..., max_age_seconds=300)` accepts an injectable aware
+clock and a positive freshness interval. **300 seconds is a demo setting**, not
+an approved clinical/flight policy. overview() now reports freshness status:
+`fresh`, `stale`, `future`, or `unavailable`, with age_seconds and configured limit.
+The boundary is inclusive: age 300 is fresh, age 301 stale. Future times are not
+accepted as fresh. Historical readings remain visible, but a matching report is
+moved from current_analysis to historical_analysis if telemetry is stale/future;
+analysis_status is then historical_telemetry. No snapshots are modified/deleted.
+This internal service view is version internal-demo-v2. No shared API changed.
+
+Freshness is based only on the enclosing snapshot timestamp. Per-sensor sample
+windows, maximum cross-modal skew, hardware clock policy, model versions and score
+semantics still need team agreement. Replay timestamps cannot establish genuine
+live monitoring, and no fresh result guarantees safety. Read/analysis CLIs can
+still analyze historical scenarios intentionally; only the overview distinguishes
+historical from current presentation.
+
+Run all checks:
+
+```sh
+python3 -m unittest discover -s backend -p 'test_*.py' -q
+```

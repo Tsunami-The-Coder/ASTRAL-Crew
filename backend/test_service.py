@@ -1,5 +1,6 @@
 import tempfile
 import unittest
+from datetime import datetime, timezone
 from pathlib import Path
 
 from backend.crew import demo_profiles
@@ -13,7 +14,7 @@ class ServiceTests(unittest.TestCase):
         folder = tempfile.TemporaryDirectory()
         self.addCleanup(folder.cleanup)
         self.path = Path(folder.name) / 'mission.sqlite3'
-        self.service = MissionService(self.path)
+        self.service = MissionService(self.path, clock=lambda: datetime(2026,11,14,12,11,tzinfo=timezone.utc))
         self.service.initialize()
 
     def test_empty_without_invented_readings(self):
@@ -36,7 +37,7 @@ class ServiceTests(unittest.TestCase):
     def test_matching_analysis_review_and_reopen(self):
         identifier = self.populate()
         self.service.record_review(identifier, reviewer='Demo reviewer',decision='follow_up',note='Verify inputs.')
-        reopened = MissionService(self.path)
+        reopened = MissionService(self.path, clock=self.service.clock)
         view = reopened.overview()
         self.assertEqual(view['analysis_status'], 'available')
         self.assertEqual(view['current_analysis']['id'],identifier)

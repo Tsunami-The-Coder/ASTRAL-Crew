@@ -136,6 +136,21 @@ def analyze_snapshot(snapshot, profiles, *, previous=None, config=RuleConfig()):
         raise ValueError("snapshot must contain a crew list")
     if not snapshot["crew"] or snapshot.get("data_origin") != "synthetic":
         raise ValueError("this internal analyzer requires nonempty synthetic fixtures")
+    if previous is not None:
+        if not isinstance(previous, dict):
+            raise ValueError("previous snapshot must be an object")
+        current_run, previous_run = snapshot.get('run_id'), previous.get('run_id')
+        if current_run is not None or previous_run is not None:
+            if (not isinstance(current_run, str) or not current_run.strip()
+                    or current_run != previous_run):
+                raise ValueError("comparison snapshots must belong to the same explicit run")
+        current_elapsed, previous_elapsed = snapshot.get('elapsed_seconds'), previous.get('elapsed_seconds')
+        if current_elapsed is not None or previous_elapsed is not None:
+            for value in (current_elapsed, previous_elapsed):
+                if type(value) not in (int, float) or not isfinite(value) or value < 0:
+                    raise ValueError("comparison elapsed times must be finite and nonnegative")
+            if previous_elapsed >= current_elapsed:
+                raise ValueError("comparison snapshot must be strictly earlier")
     references = {}
     for profile in profiles:
         if not isinstance(profile, dict) or not isinstance(profile.get("baseline"), dict):
@@ -222,13 +237,17 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--database", type=Path, default=DEFAULT_DATABASE)
     parser.add_argument("--limit", type=int, default=12)
+    parser.add_argument("--run-id", help="Select an explicit synthetic run; defaults to latest snapshot run")
     parser.add_argument("--save", action="store_true", help="Append the report to the local mission log")
     args = parser.parse_args()
     if not args.database.is_file():
         parser.error("Database missing; generate a scenario first.")
     store = SnapshotStore(args.database)
     try:
-        rows = store.history(limit=args.limit)
+        latest = store.latest()
+        run_id = args.run_id if args.run_id is not None else (
+            latest['payload'].get('run_id') if latest else None)
+        rows = store.history(limit=args.limit, run_id=run_id)
         if not rows:
             parser.error("No snapshots available.")
         # Each generator run has a unique timestamp minus elapsed_seconds anchor.

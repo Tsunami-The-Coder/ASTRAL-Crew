@@ -135,7 +135,7 @@ class SnapshotStore:
             ).fetchone()
         return self._decode(row) if row is not None else None
 
-    def history(self, *, limit=100, start=None, end=None):
+    def history(self, *, limit=100, start=None, end=None, run_id=None):
         """Return newest matching N records in chronological order.
 
         UTC start/end are inclusive. Equal timestamps use insertion ID order.
@@ -149,6 +149,11 @@ class SnapshotStore:
         if start is not None and end is not None and start > end:
             raise ValueError("start must be no later than end")
         clauses, parameters = [], []
+        if run_id is not None:
+            if not isinstance(run_id, str) or not run_id.strip():
+                raise ValueError("run_id must be a nonempty string or None")
+            clauses.append("json_extract(payload_json, '$.run_id') = ?")
+            parameters.append(run_id)
         if start is not None:
             clauses.append("timestamp >= ?")
             parameters.append(start)

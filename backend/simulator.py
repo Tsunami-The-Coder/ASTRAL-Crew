@@ -6,6 +6,7 @@ import random
 from dataclasses import asdict
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from uuid import uuid4
 
 from backend.storage import DEFAULT_DATABASE, SnapshotStore
 from backend.crew import demo_profiles
@@ -187,9 +188,12 @@ def main():
     store.register_synthetic_profiles(demo_profiles(arguments.crew_count))
     # Historical timestamps keep the final sample at now, never in the future.
     start = datetime.now(timezone.utc) - timedelta(minutes=len(samples) - 1)
+    run_id = str(uuid4())
     for sample in samples:
+        sample["run_id"] = run_id
         timestamp = (start + timedelta(seconds=sample["elapsed_seconds"])).isoformat()
         store.save_synthetic(timestamp, sample)
+    print(f"Synthetic run ID: {run_id}")
     print(f"Appended {len(samples)} SYNTHETIC {arguments.scenario} snapshots to {store.path}")
     print(json.dumps(store.latest(), indent=2))
 
