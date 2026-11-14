@@ -25,4 +25,4 @@ Use this as the team’s working list. The official Team Project page is the sou
 
 ## Eleni’s role to describe
 
-Research and provenance: verified NASA OSDR OSD-575 as the actual numeric dataset used in the Biology Evidence view; documented the sample timing, file transformation, citation, license, and limitations; checked WESAD, SUSAS, and Artemis audio suitability. Do not claim that the NASA serum samples train or validate the daily trend rule.
+Research and provenance: verified NASA OSDR OSD-575 as the actual numeric dataset used in the Biology Evidence view; documented the sample timing, file transformation, citation, license, and limitations; verified the WESAD terms and its use in a separate, non-integrated team wearable research component; reviewed SUSAS and Artemis audio suitability. Do not present WESAD laboratory results as astronaut validation or claim that NASA serum samples train or validate the daily trend rule.

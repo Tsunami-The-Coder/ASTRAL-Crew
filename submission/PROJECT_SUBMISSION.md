@@ -32,6 +32,7 @@ ASTRAL joins the team's Digital Health Twin concept with a practical self-check 
 - An interactive NASA dataset chart showing five analytes from 28 serum samples, grouped by crew code and collection timepoint.
 - Browser-local storage with a clear-data control; the static NASA data chart also works offline.
 - An English source map, data provenance note, seven-slide demo, and short demo narration.
+- The team repository also contains a separate experimental WESAD-trained wearable component. It is not connected to this browser demo; its model card records laboratory-only evaluation and a known pulse-detection limitation.
 
 ## NASA data integration and interpretation
 

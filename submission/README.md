@@ -33,6 +33,7 @@ Long-duration crews need a clear way to notice health changes, review them again
 - A NASA OSDR chart with measured serum glucose, creatinine, sodium, potassium, and calcium values, separated by anonymized crew code and sample timepoint.
 - A source-supplied lab reference interval shown as context in the chart; no diagnosis or astronaut-specific operational threshold is inferred.
 - Browser-local storage for user-entered demo check-ins and a clear-data control.
+- The team repository also contains a separate WESAD-trained experimental wearable model. It is not connected to this browser prototype; its laboratory-only limits and known pulse-detection issue are documented in the model card.
 
 ## NASA data and scientific limits
 
