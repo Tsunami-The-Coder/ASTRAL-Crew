@@ -2,7 +2,7 @@
 
 These fixtures are engineering test inputs, not recorded mission data, trained
 inference, physiological predictions, or an approved shared interface. Version:
-`internal-v5` for generated sequences. Sources checked November 14, 2026; no external data is downloaded
+`internal-v6` for generated sequences. Sources checked November 14, 2026; no external data is downloaded
 or redistributed. Runtime uses only Python's standard library and local SQLite.
 
 The internal demo defaults to five crew; `--crew-count 4` retains original mission
@@ -138,3 +138,30 @@ The context stays fixed during minute-scale scenarios. No sudden bone loss,
 stress association, gravity alert, Mars partial-gravity trajectory, countermeasure
 benefit, or medical clearance is inferred. This module supplies illustrative
 long-term context through snapshot storage and the service, not measured data.
+
+
+## Habitat pressure/oxygen fixtures and demo checks
+
+`pressure_drop` scripts cabin pressure from 101 to 96 kPa after the first quarter,
+while O2 remains 21%. `oxygen_drop` scripts O2 from 21% to 18%, with pressure fixed
+at 101 kPa. Those endpoints, timing, and linear curves are engineering test
+choices, not validated leak rates or NASA alert limits. Neither fixture identifies
+a real leak, gas consumption process, or human physiological response. CO2 stays
+near its independent baseline; it is not raised to imply a leak.
+
+The derived quantity is dry cabin O2 partial pressure: fraction * total pressure.
+It is not inspired/alveolar oxygen pressure or blood oxygen saturation. The
+pressure scenario lowers this derived value from 21.21 to 20.16 kPa despite an
+unchanged percentage. No medical safety conclusion is made from either number.
+
+RuleConfig defaults flag at least a 2 kPa pressure decrease or 1 percentage-point
+O2 decrease from the selected earlier sample. These are **unvalidated demo delta
+settings**, not absolute safe ranges or time-normalized leak detection. Real
+policy needs exposure duration, mission atmosphere, sensor accuracy, and team
+review. A stable but unsafe atmosphere can yield no delta finding. No earlier
+sample means no trend conclusion, not safe conditions. Inputs outside 0..100%
+for O2/CO2 and negative pressure are invalid; missing readings stay null.
+
+missing_sensor now removes all three cabin fields after halfway; faulty_sensor
+also injects a negative pressure reading. These cases remain distinct from valid
+but changed conditions. No automated spacecraft control is performed.

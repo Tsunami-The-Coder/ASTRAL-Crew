@@ -81,6 +81,9 @@ class MissionLogTests(unittest.TestCase):
                 run('backend.cross_analysis','--save')
                 entries = json.loads(run('backend.mission_log'))
                 self.assertEqual(len(entries),1)
+                expected={'pressure_drop':'CABIN_PRESSURE_DROP','oxygen_drop':'CABIN_OXYGEN_FRACTION_DROP'}.get(scenario)
+                if expected:
+                    self.assertEqual(entries[0]['report']['findings'][0]['code'],expected)
                 if scenario == 'radiation_rise':
                     self.assertEqual(entries[0]['report']['findings'][0]['code'],
                                      'RADIATION_RATE_INCREASE')

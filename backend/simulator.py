@@ -58,7 +58,7 @@ def save_baseline(store, timestamp):
     return store.save_synthetic(timestamp, baseline_snapshot())
 
 
-SCENARIOS = ("baseline", "co2_rise", "missing_sensor", "faulty_sensor", "radiation_rise")
+SCENARIOS = ("baseline", "co2_rise", "missing_sensor", "faulty_sensor", "radiation_rise", "pressure_drop", "oxygen_drop")
 
 
 def generate_scenario(scenario="baseline", *, seed=42, steps=12, crew_count=5,
@@ -83,7 +83,7 @@ def generate_scenario(scenario="baseline", *, seed=42, steps=12, crew_count=5,
     samples = []
     for index in range(steps):
         snapshot = baseline_snapshot(crew_count)
-        snapshot.update(scenario=scenario, fixture_version="internal-v5",
+        snapshot.update(scenario=scenario, fixture_version="internal-v6",
                         seed=seed, elapsed_seconds=index * 60)
         snapshot["limitations"].append(
             "Noise and scripted trends are engineering assumptions, not a physiological model."
@@ -126,11 +126,20 @@ def generate_scenario(scenario="baseline", *, seed=42, steps=12, crew_count=5,
                 "seconds_since_removal_change": seconds_since_change,
                 "limitations": "Synthetic well-mixed constant-pressure approximation; no symptom prediction.",
             }
+        if scenario == "pressure_drop":
+            environment["pressure_kpa"] = round(101.0 - 5.0 * progress, 4)
+            environment["o2_percent"] = 21.0
+        if scenario == "oxygen_drop":
+            environment["o2_percent"] = round(21.0 - 3.0 * progress, 4)
+            environment["pressure_kpa"] = 101.0
         snapshot["environment_quality"] = {
             key: "available" for key in ("co2_percent", "o2_percent", "pressure_kpa")
         }
         if index >= steps // 2 and scenario == "missing_sensor":
             environment["co2_percent"] = None
+            environment["o2_percent"] = None
+            environment["pressure_kpa"] = None
+            snapshot["environment_quality"].update(o2_percent="missing", pressure_kpa="missing")
             snapshot["environment_quality"]["co2_percent"] = "missing"
             snapshot["crew"][0]["radiation"].update(
                 dose_equivalent_rate_msv_per_day=None,
@@ -138,6 +147,8 @@ def generate_scenario(scenario="baseline", *, seed=42, steps=12, crew_count=5,
             snapshot["crew"][0]["biometrics"]["eda_microsiemens"] = None
             snapshot["crew"][0]["sensor_quality"]["eda_microsiemens"] = "missing"
         if index >= steps // 2 and scenario == "faulty_sensor":
+            environment["pressure_kpa"] = -10
+            snapshot["environment_quality"]["pressure_kpa"] = "invalid"
             # Negative bpm is an injected invalid reading, not a plausible pulse.
             snapshot["crew"][0]["biometrics"]["heart_rate_bpm"] = -10
             snapshot["crew"][0]["sensor_quality"]["heart_rate_bpm"] = "invalid"

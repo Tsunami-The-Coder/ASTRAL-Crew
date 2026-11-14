@@ -18,6 +18,8 @@ class RuleConfig:
     eda_increase_microsiemens: float = 0.4
     co2_increase_percentage_points: float = 0.01
     minimum_changed_crew: int = 2
+    pressure_decrease_kpa: float = 2
+    o2_decrease_percentage_points: float = 1
     radiation_rate_ratio: float = 2
     radiation_rate_increase_msv_per_day: float = 1
 
@@ -39,7 +41,7 @@ def _reading(values, quality, field, issues, scope):
         return None
     if (type(value) not in (int, float) or not isfinite(value) or value < 0
             or (field == "heart_rate_bpm" and value == 0)
-            or (field == "co2_percent" and value > 100)):
+            or (field in ("co2_percent", "o2_percent") and value > 100)):
         issues.append({"scope": scope, "field": field, "status": "invalid"})
         return None
     if quality.get(field, "available") != "available":
@@ -92,6 +94,34 @@ def _radiation_changes(snapshot, previous, config, issues):
                                 'current_rate_msv_per_day': rate,
                                 'increase_msv_per_day': round(delta, 6)})
     return changes
+
+
+def _habitat_changes(environment, quality, previous, config, issues):
+    current = {field: _reading(environment, quality, field, issues, 'cabin')
+               for field in ('o2_percent', 'pressure_kpa')}
+    partial = (current['o2_percent'] / 100 * current['pressure_kpa']
+               if all(value is not None for value in current.values()) else None)
+    findings = []
+    view = {'o2_partial_pressure_kpa': round(partial, 6) if partial is not None else None,
+            'pressure_delta_kpa': None, 'o2_delta_percentage_points': None}
+    if previous is None:
+        return findings, view
+    old_environment = previous.get('environment') or {}
+    old_quality = previous.get('environment_quality') or {}
+    for field, threshold, code, delta_key in (
+        ('pressure_kpa', config.pressure_decrease_kpa, 'CABIN_PRESSURE_DROP', 'pressure_delta_kpa'),
+        ('o2_percent', config.o2_decrease_percentage_points, 'CABIN_OXYGEN_FRACTION_DROP', 'o2_delta_percentage_points'),
+    ):
+        old = _reading(old_environment, old_quality, field, issues, 'previous_cabin')
+        observed = current[field]
+        if old is not None and observed is not None:
+            delta = round(observed - old, 6)
+            view[delta_key] = delta
+            if -delta >= threshold:
+                findings.append({'code': code, 'field': field, 'previous': old,
+                                 'current': observed, 'delta': delta,
+                                 'message': 'Cabin reading decreased. Verify sensors and request human review; cause is unconfirmed.'})
+    return findings, view
 
 
 def analyze_snapshot(snapshot, profiles, *, previous=None, config=RuleConfig()):
@@ -176,8 +206,11 @@ def analyze_snapshot(snapshot, profiles, *, previous=None, config=RuleConfig()):
         findings.append({"code": "RADIATION_RATE_INCREASE",
                          "evidence": radiation_changes,
                          "message": "Dose-equivalent rates increased from earlier readings. Verify dosimeters and request human review; cause is unconfirmed."})
-    return {"rules_version": "demo-rules-v2", "data_origin": "simulated_inference",
+    habitat_findings, habitat = _habitat_changes(environment, quality, previous, config, issues)
+    findings.extend(habitat_findings)
+    return {"rules_version": "demo-rules-v3", "data_origin": "simulated_inference",
             "config": asdict(config), "crew": crew_results, "input_issues": issues,
+            "habitat": habitat,
             "co2_delta_percentage_points": delta, "findings": findings,
             "needs_review": bool(findings or issues),
             "limitations": ["Demo thresholds, not clinical limits or validated stress classification.",

@@ -366,3 +366,29 @@ No medical content was downloaded, no external requests are made at runtime,
 and no ui/ files or shared contracts were changed. Run all backend tests using
 unittest discovery. This is the medical module's storage/resource foundation,
 not a completed autonomous medical support system.
+
+
+## Step 14: habitat pressure/oxygen review checks
+
+```sh
+python3 -m backend.simulator --database /tmp/astral-pressure-review.sqlite3 --scenario pressure_drop
+python3 -m backend.cross_analysis --database /tmp/astral-pressure-review.sqlite3 --save
+python3 -m backend.service --database /tmp/astral-pressure-review.sqlite3
+```
+
+Use a fresh filename per independent run. `oxygen_drop` is a separate scenario.
+New findings are CABIN_PRESSURE_DROP and CABIN_OXYGEN_FRACTION_DROP, with previous
+and current values and deltas. The report's habitat object includes derived O2
+partial pressure (kPa), pressure delta (kPa), and O2 delta (percentage points).
+It is stored in analysis logs and passed through the existing service unchanged.
+The rules version is now demo-rules-v3; old reports retain their original version.
+
+RuleConfig exposes pressure_decrease_kpa (default 2) and
+ o2_decrease_percentage_points (default 1). These are demo comparison settings,
+not NASA thresholds or validated fault detection. Findings require a usable prior
+sample and can occur without changed crew biometrics. Missing/invalid/unavailable
+readings produce input issues rather than a fabricated safe value or confirmed
+leak. This is not a complete cabin-safety assessment: stable readings outside a
+safe operating range are not detected by delta-only rules. Freshness/time-window
+policy, complete composition validation, and scientific review remain pending.
+See SCENARIOS.md for curve assumptions and partial-pressure limitations.
