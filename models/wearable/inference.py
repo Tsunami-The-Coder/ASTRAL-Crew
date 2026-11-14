@@ -15,11 +15,15 @@ from .evidence import REFERENCES, explain
 FEATURES = ("heart_rate_bpm", "hrv_rmssd_ms", "eda_microsiemens", "motion_level")
 BOUNDS = ((20, 240), (0, 500), (0, 100), (0, 1))
 ORIGINS = {"synthetic", "research", "replayed", "measured"}
-SOURCE_IDS = ["NASA-STRESS-1160", "NASA-ARCHER", "NASA-STANDARD-MEASURES"]
+SOURCE_IDS = ["NASA-STRESS-1160", "NASA-ARCHER", "NASA-STANDARD-MEASURES",
+              "NASA-HAZARDS", "NASA-RISKS", "CSA-RADIATION"]
 LIMITATIONS = [
     "Research prototype; not a diagnosis or medical device.",
     "Physiological activation does not identify its cause.",
     "No astronaut validation; NASA resources do not validate this algorithm.",
+    "These wrist features cannot measure radiation dose, bone loss, immune changes or cabin air quality.",
+    "Spaceflight physiology may differ from WESAD; no spaceflight correction has been validated.",
+    "The v1 pulse detector can count secondary waveform peaks; extracted pulse rate and RMSSD need reference validation.",
 ]
 
 
@@ -96,24 +100,33 @@ def build_baseline(events, *, min_windows=5):
         raise ValueError("insufficient baseline windows")
     crews = {event.get("crew_id") for event in events}
     origins = {event.get("data_origin") for event in events}
+    pipelines = [event.get("feature_pipeline") for event in events]
+    if (not all(isinstance(p, str) and p for p in pipelines)
+            or len(set(pipelines)) != 1):
+        raise ValueError("baseline requires one explicit feature pipeline")
     if len(crews) != 1 or next(iter(crews)) not in {f"AST-{i:02}" for i in range(1, 5)}:
         raise ValueError("baseline requires one valid crew ID")
     if len(origins) != 1 or not origins <= ORIGINS:
         raise ValueError("baseline requires one supported data origin")
     ordered = sorted(events, key=lambda event: _time(event["timestamp"]))
-    rows, end_previous = [], None
+    rows, end_previous, durations = [], None, set()
     for event in ordered:
         start, end = _time(event["window_start"]), _time(event["timestamp"])
-        if (end - start).total_seconds() < 60 or (end_previous and start < end_previous):
-            raise ValueError("baseline windows must be >=60s and non-overlapping")
+        duration = (end - start).total_seconds()
+        if not 60 <= duration <= 300 or (end_previous and start < end_previous):
+            raise ValueError("baseline windows must be 60..300s and non-overlapping")
+        durations.add(duration)
         row, errors, state = _values(event.get("biometrics"))
         if state != "valid" or row[3] > 0.5:
             raise ValueError("baseline requires valid low-motion readings: " + "; ".join(errors))
         rows.append(row)
         end_previous = end
+    if len(durations) != 1:
+        raise ValueError("baseline requires equal window durations")
     return {
         "crew_id": next(iter(crews)), "data_origin": next(iter(origins)),
         "window_count": len(rows), "end": _iso(end_previous),
+        "feature_pipeline": pipelines[0], "window_seconds": durations.pop(),
         "medians": {key: statistics.median(row[i] for row in rows) for i, key in enumerate(FEATURES)},
         "method": "median_of_user_selected_calibration_windows",
     }
@@ -180,6 +193,12 @@ def _assess(event, *, model=None, baseline=None, now=None, max_age_seconds=300):
         try:
             if baseline["crew_id"] != event["crew_id"] or baseline["data_origin"] != event["data_origin"]:
                 raise ValueError("crew or provenance mismatch")
+            if (not isinstance(baseline.get("feature_pipeline"), str)
+                    or not baseline["feature_pipeline"]
+                    or baseline["feature_pipeline"] != event.get("feature_pipeline")
+                    or not _number(baseline.get("window_seconds"))
+                    or baseline["window_seconds"] != duration):
+                raise ValueError("baseline feature pipeline or duration mismatch")
             if (not isinstance(baseline["window_count"], int) or isinstance(baseline["window_count"], bool)
                     or baseline["window_count"] < 5 or _time(baseline["end"]) > start):
                 raise ValueError("insufficient or future baseline")
@@ -187,7 +206,9 @@ def _assess(event, *, model=None, baseline=None, now=None, max_age_seconds=300):
             if state != "valid":
                 raise ValueError("invalid baseline values")
             result["baseline"] = {"status": "available", "window_count": baseline["window_count"],
-                                  "end": baseline["end"], "data_origin": baseline["data_origin"]}
+                                  "end": baseline["end"], "data_origin": baseline["data_origin"],
+                                  "feature_pipeline": baseline["feature_pipeline"],
+                                  "window_seconds": baseline["window_seconds"]}
             for observation, reference in zip(result["observations"], medians):
                 observation.update(baseline_median=reference, delta=round(observation["value"] - reference, 6))
         except (KeyError, ValueError, TypeError):

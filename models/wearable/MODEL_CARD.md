@@ -53,6 +53,15 @@ as clinical certainty, and do not average it with an unrelated voice-model score
 Actual completed run evidence is in VALIDATION.md; do not substitute the original
 paper's reported accuracy for this implementation's results.
 
+### Known measurement limitation from the follow-up audit
+
+`signal_audit.py` reproduces double-counting on a synthetic 1 Hz waveform with
+a second harmonic: about 120.09 bpm instead of its 60 cycles/min fundamental.
+The extracted RMSSD is also affected. A good classification result is not proof
+of accurate pulse measurement. Keep v1 experimental pending reference-beat
+validation, revised extraction, and a fresh held-out evaluation. No retraining
+or spaceflight calibration was performed in this source-review update.
+
 ## NASA involvement
 
 NASA resources motivate physiological monitoring, sleep/activity context,

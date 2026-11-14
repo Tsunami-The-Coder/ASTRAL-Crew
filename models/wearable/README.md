@@ -3,6 +3,11 @@
 Offline component for ASTRAL-Crew. AI-assisted code and synthetic fixtures.
 No medical diagnosis, astronaut validation, or autonomous spacecraft control.
 
+**Signal audit finding:** v1 can mistake secondary waveform peaks for pulses.
+The included model remains an experimental baseline. See
+[NASA_WEARABLE_REVIEW.md](NASA_WEARABLE_REVIEW.md) for the reproduced limitation,
+challenge-source mapping, data-access findings and five-hazard scope.
+
 ## What works
 
 - Consume window summaries using the existing telemetry biometric names.
@@ -26,13 +31,23 @@ not Git commands; commits and PRs follow the team's GitHub website workflow.
 
 ```text
 python -m unittest models.wearable.test_wearable -v
+python -m unittest models.wearable.test_space -v
 python -m models.wearable.demo --output ../wearable-demo
+python -m models.wearable.space_scenarios --output ../wearable-space-scenarios.json
 ```
 
 Open `wearable-demo.html` for the readable engineering report, or use
 `wearable-demo.json` as integration fixtures. The default model is a deliberately
 hand-authored **synthetic fixture**, not a trained/validated predictor.
 Training tests skip if optional dependencies are absent; the test summary reports this.
+
+The nine wearable-only space scenarios are software checks with arbitrary synthetic
+values, not training examples or a space physiology simulator. With optional training
+dependencies installed, reproduce the peak-detector audit using:
+
+```text
+python -m models.wearable.signal_audit --output ../wearable-signal-audit.json
+```
 
 ## Use the included trained model
 

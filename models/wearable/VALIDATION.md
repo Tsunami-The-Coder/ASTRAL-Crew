@@ -86,3 +86,24 @@ the inspected fusion/backend/UI workstreams contained planning documents and
 the shared handoff is still proposed. Colin must review the interface and run
 the integration checks in COLIN_HANDOFF.md. No changes were made outside this
 wearable workstream, and no code was merged into main.
+
+
+## NASA wearable review follow-up (2026-11-14)
+
+- `python -m unittest models.wearable.test_wearable models.wearable.test_space`:
+  36 tests passed in 0.215s, zero skips/errors/failures, including optional training tests.
+- `python -S -m models.wearable.space_scenarios --output ../output/wearable-space-scenarios.json`:
+  nine wearable-only synthetic scenarios exported successfully without site packages.
+- `python -m models.wearable.signal_audit --output ../output/wearable-signal-audit.json`:
+  nine waveform probes exported; this diagnostic is not a passing accuracy test.
+  A 1 Hz waveform plus an equal second harmonic yielded 120.09 bpm and 124.88 ms
+  RMSSD, demonstrating secondary-peak double counting. At 90 bpm the equal-harmonic
+  probe was rejected. Plain sine probes at 60/90/120 bpm gave 59.97/90.01/120.00 bpm.
+- Model bytes match the previously fitted artifact. No retraining, NASA participant
+  data ingestion, new accuracy result, or spaceflight validation is claimed.
+- Baseline metadata now prevents comparison across different feature pipelines
+  and window lengths. Existing stored baselines must be rebuilt.
+- No new dependencies. No fusion/backend/UI/shared contract changes. Next owner: Colin.
+
+Passing software tests do not resolve the signal-extraction limitation. See
+NASA_WEARABLE_REVIEW.md and MODEL_CARD.md before interpreting the research score.

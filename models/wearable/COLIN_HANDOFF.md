@@ -3,6 +3,19 @@
 Task / owner: issue #4, Khalid. Branch: feature/wearable-ai.
 Scope: models/wearable only. Shared contract remains a proposal.
 
+## NASA resource review follow-up
+
+Read `NASA_WEARABLE_REVIEW.md` for source-to-feature decisions and data-access
+findings. `space_scenarios.py` provides nine wearable-only software scenarios.
+Rebuild stored baselines with `build_baseline`: matching `feature_pipeline` and
+`window_seconds` are now required to display personal deltas. Source lists have
+expanded; iterate over them. No new runtime dependencies or shared event fields.
+
+The raw-signal audit found v1 double-counting secondary waveform peaks. Keep its
+predictions labelled experimental; do not present the WESAD classification metric
+as evidence of accurate HRV, spaceflight validity or five-hazard diagnosis.
+`signal_audit.py` reproduces the issue. The weights remain unchanged.
+
 ## Connect the component
 
 1. Import `assess` and `load_model` from `models.wearable`.

@@ -16,7 +16,9 @@ primary agency/dataset-owner resources. Summaries are paraphrases, not copied ar
 | NASA-HRP-RESEARCH | [Ongoing HRP Research](https://www.nasa.gov/hrp/ongoing-hrp-research/) | Index linking relevant studies | Discovery path for ARCHeR and Standard Measures; no direct numerical data ingestion. |
 
 `evidence_ids` in the current per-person output identify the first three design
-references. Context/mission explanation uses the remaining references in this document.
+references plus NASA-HAZARDS, NASA-RISKS and CSA-RADIATION (the CSA radiation link
+below). See [NASA_WEARABLE_REVIEW.md](NASA_WEARABLE_REVIEW.md) for the follow-up
+challenge-resource audit, source-to-feature decisions and data-access findings.
 No complete NASA page is bundled or needed at runtime. References remain visible
 in the offline report and documentation; following a link requires internet.
 

@@ -95,7 +95,7 @@ class InferenceTests(unittest.TestCase):
         result = self.score(baseline=baseline_for("AST-01"))
         self.assertTrue(any("No stress estimate" in text for text in result["explanation"]))
         self.assertTrue(any("reference" in text for text in result["explanation"]))
-        self.assertEqual(len(result["evidence"]), 3)
+        self.assertTrue({"NASA-HAZARDS", "NASA-RISKS", "CSA-RADIATION"} <= set(result["evidence_ids"]))
         self.assertTrue(all(source["url"].startswith("https://") for source in result["evidence"]))
 
     def test_context_does_not_change_score(self):

@@ -4,6 +4,21 @@ These references motivate the design. They do not endorse model outputs or
 provide numerical parameters. EDA model evidence comes from WESAD, not NASA.
 """
 REFERENCES = {
+    "NASA-HAZARDS": {
+        "title": "Five Hazards of Human Spaceflight",
+        "url": "https://www.nasa.gov/hrp/hazards/",
+        "use": "Scope and transfer limits; the hazards are not five wrist-derived diagnoses.",
+    },
+    "NASA-RISKS": {
+        "title": "Risks of Human Spaceflight",
+        "url": "https://www.nasa.gov/hrp/risks/",
+        "use": "Cardiovascular adaptation and sleep risks motivate cautious longitudinal interpretation.",
+    },
+    "CSA-RADIATION": {
+        "title": "Monitoring radiation for astronaut health",
+        "url": "https://www.asc-csa.gc.ca/eng/news/articles/2026/2026-02-26-monitoring-radiation-astronaut-health.asp",
+        "use": "Dedicated radiation instrumentation; our wrist physiology is not dosimetry.",
+    },
     "NASA-STRESS-1160": {
         "title": "Individualized Stress Detection System",
         "url": "https://humanresearchroadmap.nasa.gov/Tasks/task.aspx?i=1160",
@@ -47,4 +62,6 @@ def explain(result):
     if result["context"]:
         lines.append("Sleep and self-report are displayed as context; they did not alter the model score.")
     lines.append("Review signal quality and the observation trend; this prototype cannot establish medical fitness.")
+    lines.append("These wrist measurements cannot determine radiation exposure, bone loss, immune changes or cabin air quality.")
+    lines.append("Spaceflight can change physiology; this Earth-trained model has no validated spaceflight correction.")
     return lines

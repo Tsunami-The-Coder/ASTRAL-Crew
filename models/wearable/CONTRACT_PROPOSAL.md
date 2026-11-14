@@ -75,6 +75,11 @@ team agreement. Invalid fields dominate missing fields. Neither becomes score ze
 `build_baseline` requires >=5 distinct non-overlapping, valid, low-motion windows
 from one person and one provenance category. The caller chooses a suitable
 calibration period; the algorithm does not infer that someone was healthy.
+All reference windows must also share one explicit `feature_pipeline` and one
+duration in 60..300 seconds. The returned baseline stores `feature_pipeline` and
+`window_seconds`; both must match the current event. Rebuild cached baselines
+created before these fields were added. Incompatible references produce no deltas
+and do not change the current stress score. This is wearable-owned proposal metadata.
 The baseline must end before the scored window. Baseline deltas are observations,
 not extra training features or a calibrated personal risk score.
 
