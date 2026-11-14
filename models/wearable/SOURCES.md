@@ -40,8 +40,10 @@ in the offline report and documentation; following a link requires internet.
   training-only standardization in each participant-held-out fold.
 - Limits: laboratory protocol, 15 individuals, pulse artifacts, no astronaut
   labels, no synchronized voice recordings, no sleep labels for this model.
-- Redistribution: no raw recordings or trained artifacts committed. Team members
-  can reproduce locally using the source and commands in README.md.
+- Distribution: no raw recordings are committed. `model.json` contains fitted
+  coefficients and preprocessing parameters for this scientific, non-commercial
+  prototype. Preserve WESAD attribution and use conditions. Team members can
+  reproduce training using the source and commands in README.md.
 
 Credit: Philip Schmidt, Attila Reiss, Robert Duerichen, Claus Marberger,
 Kristof Van Laerhoven, *Introducing WESAD, a multimodal dataset for Wearable

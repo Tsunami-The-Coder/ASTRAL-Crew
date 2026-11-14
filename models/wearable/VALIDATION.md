@@ -77,7 +77,7 @@ Confusion matrix (rows=true, columns=predicted; non-stress, stress): `[[274, 50]
 
 These are ground-laboratory cross-validation results, not astronaut or clinical validation. Scores are uncalibrated. No hyperparameters were selected using these held-out results.
 
-Command: `python -m models.wearable.train <original-WESAD.zip> --output <outside-repo> --trusted-original-wesad`. The complete local evaluation report records per-subject exclusions and archive SHA256. Raw data and model weights are not committed.
+Command: `python -m models.wearable.train <original-WESAD.zip> --output <outside-repo> --trusted-original-wesad`. The complete local evaluation report records per-subject exclusions and archive SHA256. Raw data are not committed. The fitted research model is now included as `model.json`; its parameters are unchanged from this evaluation run.
 
 ## Integration status
 

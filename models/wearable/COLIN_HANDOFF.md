@@ -9,7 +9,8 @@ Scope: models/wearable only. Shared contract remains a proposal.
 2. Supply the approved backend summary plus the actual window start/end,
    crew ID, input provenance and feature-pipeline ID. Do not manufacture missing
    timing or label ECG measurements as wrist BVP features.
-3. Load the locally trained JSON model once; inject it into `assess`.
+3. Load the included `models/wearable/model.json` once; inject it into `assess`.
+   No retraining is required. Resolve the path from your application location.
    If it is absent, preserve `model_unavailable` and the null score.
 4. Match voice and wearable observations by crew and overlapping intervals.
    Require a team-agreed freshness policy; do not match merely because two
@@ -71,7 +72,7 @@ The contract is a proposal; please review `CONTRACT_PROPOSAL.md` before wiring i
 You can call `assess(event, model=model)` and pass an explicit scenario clock for
 replay. Missing/invalid/stale signals and unavailable models return null scores.
 Please preserve those states. The default demo uses hand-authored synthetic
-fixtures; a separately trained WESAD model can be injected. All demo telemetry
+fixtures; the included WESAD-trained `model.json` can be injected without retraining. All demo telemetry
 remains synthetic. The research model expects the documented wrist feature pipeline.
 
 My integration assumptions: align by crew and observation window, show modality

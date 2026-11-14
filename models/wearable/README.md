@@ -34,11 +34,23 @@ Open `wearable-demo.html` for the readable engineering report, or use
 hand-authored **synthetic fixture**, not a trained/validated predictor.
 Training tests skip if optional dependencies are absent; the test summary reports this.
 
-## Train on the original WESAD data
+## Use the included trained model
+
+`model.json` contains the WESAD-trained research model. No download or retraining
+is required for inference. Run from the repository root:
+
+```text
+python -m models.wearable.demo --model models/wearable/model.json --output ../wearable-research-demo
+```
+
+Demo inputs remain synthetic. The model is uncalibrated and not validated for
+astronauts or clinical use. See SOURCES.md for WESAD attribution and use conditions.
+
+## Train on the original WESAD data (optional)
 
 1. Read the original scientific/non-commercial use terms linked in SOURCES.md.
 2. Download the original WESAD.zip from the University of Siegen source.
-3. Keep the archive and all model artifacts outside the repository.
+3. Keep the raw archive and new training outputs outside the repository. The reviewed research model is included as `models/wearable/model.json`.
 4. Install optional dependencies and run:
 
 ```text
@@ -60,7 +72,7 @@ to measure performance. Synthetic demo data remain synthetic when using a resear
 ```python
 from models.wearable import assess, load_model
 
-model = load_model("/outside/repo/wearable-run/model.json")
+model = load_model("models/wearable/model.json")
 result = assess(window_event, model=model)  # real UTC freshness checks
 ```
 
