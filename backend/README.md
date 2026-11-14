@@ -287,3 +287,36 @@ invented and null career dose is not considered a sensor fault.
 The CLI still checks same-run selection. The pure analyzer relies on its caller
 to supply an earlier snapshot from the same run. Radiation findings flow through
 existing mission-log and service operations without a shared-contract change.
+
+
+## Step 12: illustrative gravity-adaptation context
+
+Each crew has a `gravity` object, stored and returned with their snapshot:
+
+```sh
+python3 -m backend.simulator --microgravity-days 30 --bone-loss-percent-per-30-days 1
+```
+
+`backend/gravity.py` supplies a configurable educational bone-density trend,
+normalized to 100% at zero exposure days. At 30 days with the demo default, the
+illustrative value is 99%. It is not densitometry or a patient prediction. Measured
+bone density and cardiovascular assessment remain null. No clinical gravity
+assessment or automatic alert is made. Data origin is `simulated_inference`.
+
+Defaults are 142 exposure days and 1% per 30 days; context remains fixed across
+minute-scale scenarios. Four/five crew modes are supported. Units, provenance,
+parameter assumptions, and domain restrictions are in SCENARIOS.md. All fields
+remain internal pending scientific review and shared-contract approval.
+
+## Remaining backend milestones
+
+1. Medical-resource catalog and per-crew review/incident context; clinical content
+   must be reviewed and available for lawful offline use.
+2. Fuller habitat checks for O2/pressure and appropriate sensor-fault cases;
+   scientifically reviewed thresholds and time windows are still needed.
+3. Input validation, run identification, stale-data policy, and robust handoffs.
+4. Agree shared interfaces and connect voice/wearable outputs and Anuj's UI.
+5. Final science review, end-to-end/offline verification, documentation, and PR.
+
+These are scope groups, not five small coding edits. The implementation does not
+currently represent a complete integrated five-hazard application.

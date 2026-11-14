@@ -2,7 +2,7 @@
 
 These fixtures are engineering test inputs, not recorded mission data, trained
 inference, physiological predictions, or an approved shared interface. Version:
-`internal-v4` for generated sequences. Sources checked November 14, 2026; no external data is downloaded
+`internal-v5` for generated sequences. Sources checked November 14, 2026; no external data is downloaded
 or redistributed. Runtime uses only Python's standard library and local SQLite.
 
 The internal demo defaults to five crew; `--crew-count 4` retains original mission
@@ -113,3 +113,28 @@ Cross-analysis now flags configured rate increases for recommended review;
 these demo comparisons are not a validated radiation safety alert engine. The generic storage and service retain the fields
 without dropping or interpreting them. Units and new radiation fields remain
 internal fixture choices pending shared-contract review.
+
+
+## Gravity-adaptation context
+
+[NASA: Counteracting Bone and Muscle Loss in Microgravity](https://www.nasa.gov/humans-in-space/counteracting-bone-and-muscle-loss-in-microgravity/)
+provides context for approximately 1% monthly weight-bearing bone-density loss
+without countermeasures. This population-level description is not a validated
+linear equation for a crew member. Our chosen 30-day month, normalized starting
+value of 100%, constant rate, and exposure duration are demo assumptions. NASA's
+[bone-changes risk summary](https://www.nasa.gov/reference/risk-of-spaceflight-induced-bone-changes/)
+also describes variability and countermeasures. Sources checked November 14, 2026.
+
+`gravity_record(days)` generates a labeled educational trajectory:
+`illustrative_percent_of_start = 100 - rate_percent_per_30_days * days / 30`.
+Defaults: rate 1%, exposure 142 days. Demo domain: 0..180 days, rate 0..1.5%.
+These bounds restrict our example; they are not physiological or safety limits.
+No clinical bone-density value in g/cm2 or cardiovascular assessment is generated;
+both are null. Microgravity exposure days are explicitly supplied, not inferred
+from the mission-day label or smartwatch readings. Every member shares the same
+assumption until reviewed individual inputs are available.
+
+The context stays fixed during minute-scale scenarios. No sudden bone loss,
+stress association, gravity alert, Mars partial-gravity trajectory, countermeasure
+benefit, or medical clearance is inferred. This module supplies illustrative
+long-term context through snapshot storage and the service, not measured data.
