@@ -1,28 +1,31 @@
 # ASTRAL Crew — sources, use, and provenance
 
-This file distinguishes information used to design the prototype from data actually processed by it. Public links are provided so a judge can verify the sources.
+This map separates real study measurements from contextual references and synthetic demonstration values.
 
-| Source | How it is used in ASTRAL | Data actually analyzed by this prototype? |
+| Source | Use in ASTRAL | Data use |
 | --- | --- | --- |
-| NASA Space Apps 2026 challenge brief — [Create Health Monitoring Software for Astronauts on Space Missions](https://www.spaceappschallenge.org/2026/challenges/health-monitoring-software/) | Defines the challenge, self-assessment purpose, example health indicators, and design context. | No. It is a project brief. |
-| NASA Human Research Program — [5 Hazards of Human Spaceflight](https://www.nasa.gov/hrp/hazards/) | Supplies the five-hazard framework used in the Mission Hazards view and background descriptions. | No. This is explanatory content, not a sensor dataset. |
-| NASA Open Science Data Repository — [OSD-575: Inspiration4 serum study](https://osdr.nasa.gov/bio/repo/data/studies/OSD-575), [DOI](https://doi.org/10.26030/mc5d-p710) | Biology Evidence view cites the study and summarizes its sample type, assays, sample count, and collection schedule as research context. | No raw measurements. The prototype shows study metadata only; it does not train on or validate against OSD-575. |
-| NASA Science — [OSDR FAQ](https://science.nasa.gov/reference/osdr-faq/) | Informs the source/method explanation about the repository and its data. | No. No records were downloaded through this source. |
-| Canadian Space Agency — [Monitoring radiation for astronaut health](https://www.asc-csa.gc.ca/eng/news/articles/2026/2026-02-26-monitoring-radiation-astronaut-health.asp) | Background for the radiation-monitoring context and the value of dedicated radiation instruments. | No. No CANS readings or CSA data feed are connected. |
-| Canadian Space Agency — [Why do we conduct science experiments in space?](https://www.asc-csa.gc.ca/eng/iss/science/why-do-we-conduct-science-experiments-in-space.asp) | Background for the rationale that space research helps study human health and prepare for exploration. | No. No measurements are integrated. |
-| NASA OSDR license record for OSD-575 | Dataset page identifies the released study data as CC0; this does not mean ASTRAL redistributes or analyzes the data. | No raw data included in this repository. |
+| NASA Space Apps 2026 challenge — [Create Health Monitoring Software for Astronauts on Space Missions](https://www.spaceappschallenge.org/2026/challenges/health-monitoring-software/) | Defines the self-assessment workflow, indicator examples, user guidance, and design objective. | Requirements brief; no data. |
+| NASA Human Research Program — [5 Hazards of Human Spaceflight](https://www.nasa.gov/hrp/hazards/) | Structures the Mission Hazards view and background explanations. | Public explanatory resource; no sensor dataset. |
+| NASA OSDR — [OSD-575 Inspiration4 serum study](https://osdr.nasa.gov/bio/repo/data/studies/OSD-575), [DOI 10.26030/mc5d-p710](https://doi.org/10.26030/mc5d-p710) | Biology Evidence view includes a selectable chart of five analytes from the transformed comprehensive metabolic panel (CMP), by four pseudonymous crew codes and seven sample timepoints. | **Actual public source data used.** File included under `data/OSD-575_CMP_TRANSFORMED.csv`. License on study page: CC0-1.0. SHA-256: `5eb1e7f025dd8443a9e70111e62bc32afae3432753024489c5c013e401d709d9`. |
+| NASA Science — [OSDR FAQ](https://science.nasa.gov/reference/osdr-faq/) | Informs repository/method description and download citation. | Repository guidance; not a separate dataset. |
+| Canadian Space Agency — [Monitoring radiation for astronaut health](https://www.asc-csa.gc.ca/eng/news/articles/2026/2026-02-26-monitoring-radiation-astronaut-health.asp) | Background for radiation-monitoring context and the role of dedicated instruments. | No CANS readings or CSA data feed. |
+| Canadian Space Agency — [Why conduct science experiments in space?](https://www.asc-csa.gc.ca/eng/iss/science/why-do-we-conduct-science-experiments-in-space.asp) | Background rationale for human research in space. | No measurements integrated. |
+| UCI / original WESAD source — [dataset record](https://archive.ics.uci.edu/dataset/465/wesad%2Awearable%2Astress%2Aand%2Affect%2Adetection), [original site](https://ubi29.informatik.uni-siegen.de/usi/data_wesad.html), [2018 paper](https://doi.org/10.1145/3242969.3242985) | Source and terms review for the separate wearable model in the team repository. Original source describes a 15-person laboratory study and scientific, non-commercial use with attribution. | Used to train the team’s experimental WESAD wearable model; that model is not connected to the browser demo or validated for spaceflight. No raw data redistributed. Known pulse peak double-counting limitation is documented in the model card. |
+| Linguistic Data Consortium — [SUSAS LDC99S78](https://catalog.ldc.upenn.edu/LDC99S78), [non-member agreement](https://catalog.ldc.upenn.edu/license/ldc-non-members-agreement.pdf) | Access and redistribution review only. The agreement limits use and does not permit redistribution outside the research group unless allowed. | Not used; no recordings or derived files included. |
+| NASA — [Artemis Audio Library](https://www.nasa.gov/artemisaudio/), [media usage guidelines](https://www.nasa.gov/nasa-brand-center/images-and-media/) | Suitability and use-policy review only. Public clips can be used under NASA's media guidelines with attribution; check each asset for third-party restrictions. | Not used for stress labeling, training, or validation. NASA mission speech has no stress ground truth and is not synchronized with wearable datasets. |
 
-## Demo data and transformations
+## NASA dataset fields and transformation
 
-All individual health readings, check-in history, and habitat readings shown in the prototype are **synthetic**. The illustrative pattern rule compares selected values with a recent personal median and median absolute deviation. It is not clinically validated. No real astronaut medical data, voice recordings, wearable files, or raw research datasets are bundled or uploaded.
+- Source file: `LSDS-8_Comprehensive_Metabolic_Panel_CMP_TRANSFORMED.csv` (downloaded from the OSDR OSD-575 study page; the repository copy is renamed `OSD-575_CMP_TRANSFORMED.csv`).
+- The source file has 28 sample rows and 58 columns. The page chart uses the values and source reference interval for serum glucose, creatinine, sodium, potassium, and calcium.
+- Sample names are parsed to preserve coded crew ID (C001–C004) and collection timepoint (L−92, L−44, L−3, R+1, R+45, R+82, R+194). Values are plotted individually; no averaging, imputation, modeling, or normalization is applied.
+- The source lab reference interval appears as a shaded band, only for data context. It is not described as a NASA operational limit, clinical threshold for astronauts, or diagnosis.
+- No raw values are used to train or validate the personal trend rule. This serum study is separate from the synthetic daily wearable-style demo.
 
-## Sources considered but not used as model data
+## Synthetic data and tools not used
 
-- **WESAD:** not downloaded, trained on, or included. The independent lab wearable dataset is not synchronized with NASA astronaut recordings and does not establish in-flight validity.
-- **SUSAS:** not downloaded or included; access and licensing are not assumed.
-- **NASA Artemis audio:** not used. Public mission audio is not a labeled stress dataset and is not used to infer mental state.
-- **Global Offers** in the event kickoff email (GoDaddy, Google Cloud, Meteomatics, Microsoft, Miro): not required or used in the current prototype. The implementation is a standalone HTML/CSS/JavaScript app with browser-local storage; it has no cloud API or external service dependency.
+All personal check-in history, change scenarios, and habitat values are synthetic. No real user health information is included. The browser prototype does not run a WESAD model. The team repository’s separate experimental wearable component was trained on WESAD; no raw WESAD data are included. The original source limits WESAD use to scientific non-commercial purposes with credit. SUSAS was reviewed but not used; its LDC agreement restricts use and redistribution. Artemis clips were reviewed but not used for stress labels or training: they have no stress ground truth, and use requires compliance with NASA media guidelines and clip-specific third-party restrictions. See [`ELENI_CHECKLIST.md`](ELENI_CHECKLIST.md) for team submission tasks and [`docs/DATA_SOURCES.md`](../docs/DATA_SOURCES.md) for the detailed access review. The optional hackathon Global Offers (GoDaddy, Google Cloud, Meteomatics, Microsoft, and Miro) were not used; the current app has no third-party API or cloud dependency.
 
 ## AI assistance
 
-Generative AI assisted with feasibility review, interface and submission copy editing, and implementation of the standalone HTML/CSS/JavaScript prototype. The team supplied the core ASTRAL concept and initial five-component framing. Team members should verify every source, inspect the final code, and disclose AI use in the official submission.
+Generative AI assisted with feasibility review, interface and submission copy editing, code implementation, and demo-deck preparation. The team supplied the core ASTRAL concept and initial five-component framing. Team members should verify claims and data handling and disclose AI use in the official submission.
