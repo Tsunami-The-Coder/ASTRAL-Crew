@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 from backend.mission_log import MissionLog
+from backend.medical import MedicalStore, resource_catalog
 from backend.storage import DEFAULT_DATABASE, SnapshotStore
 
 
@@ -19,9 +20,11 @@ class MissionService:
     def __init__(self, database_path=DEFAULT_DATABASE):
         self.store = SnapshotStore(database_path)
         self.log = MissionLog(database_path)
+        self.medical = MedicalStore(database_path)
 
     def initialize(self):
         self.log.initialize()
+        self.medical.initialize()
 
     def overview(self):
         snapshot = self.store.latest()
@@ -74,6 +77,18 @@ class MissionService:
 
     def mission_logs(self, limit=100):
         return self.log.entries(limit)
+
+    def medical_resources(self):
+        return resource_catalog()
+
+    def medical_incidents(self, *, crew_id=None, limit=100):
+        return self.medical.incidents(crew_id=crew_id, limit=limit)
+
+    def record_medical_incident(self, crew_id, *, summary, snapshot_id=None):
+        return self.medical.create_incident(crew_id, summary=summary, snapshot_id=snapshot_id)
+
+    def record_medical_note(self, incident_id, *, reviewer, note):
+        return self.medical.add_note(incident_id, reviewer=reviewer, note=note)
 
     def record_review(self, analysis_id, *, reviewer, decision, note):
         return self.log.add_review(analysis_id, reviewer=reviewer, decision=decision, note=note)

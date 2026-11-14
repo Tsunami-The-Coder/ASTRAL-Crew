@@ -320,3 +320,49 @@ remain internal pending scientific review and shared-contract approval.
 
 These are scope groups, not five small coding edits. The implementation does not
 currently represent a complete integrated five-hazard application.
+
+## Step 13: offline medical resources and simulated incidents
+
+`backend/medical.py` provides an offline JSON catalog and append-only synthetic
+incident/note tables. `backend/medical_resources.json` is intentionally empty:
+no reviewed checklist content is present in this checkout. `medical_resources()`
+returns `availability: no_reviewed_content`; it does not fabricate treatment,
+triage, prescriptions, diagnoses, or personal medical histories.
+
+```python
+from backend.service import MissionService
+
+service = MissionService('backend/mission.sqlite3')
+service.initialize()
+resources = service.medical_resources()
+# Requires this crew to have been registered by the simulator first.
+incident_id = service.record_medical_incident(
+    'AST-01', summary='Synthetic demo: crew observation requires review.'
+)
+service.record_medical_note(
+    incident_id, reviewer='Demo reviewer', note='Recorded for human review.'
+)
+incidents = service.medical_incidents(crew_id='AST-01')
+```
+
+Optional snapshot_id links an incident to source telemetry; the snapshot must
+exist and include that crew member. Registered crew and snapshot foreign keys
+are enforced. Incidents and notes retain UTC recording times. These operations
+never alter raw snapshots, rule findings, or previous review notes. No clinical
+resolution status is inferred from a note. Summary/notes must contain synthetic
+demo content only; do not store real medical records in this prototype database.
+
+Resource schema (internal, pending agreement): resource_id, title, version,
+source_url, reuse_terms, review_status (`pending` or `approved`). An approved
+entry additionally requires reviewer, reviewed_at (UTC), and offline_content.
+Pending entries never expose procedure content. Review labels are team-supplied
+metadata, not authenticated clinical certification. All approved content is
+bundled text; URLs are provenance references and are not fetched at runtime.
+Invalid/missing catalog files raise ValueError explicitly. Eleni must verify
+sources/reuse terms, and appropriate review of clinical content remains pending.
+Do not change this catalog to approved merely to populate a dashboard.
+
+No medical content was downloaded, no external requests are made at runtime,
+and no ui/ files or shared contracts were changed. Run all backend tests using
+unittest discovery. This is the medical module's storage/resource foundation,
+not a completed autonomous medical support system.
