@@ -1,0 +1,4 @@
+# Optional training/raw-signal dependencies. Runtime summary inference uses stdlib.
+numpy>=2.0,<3
+scipy>=1.14,<2
+scikit-learn>=1.5,<2
