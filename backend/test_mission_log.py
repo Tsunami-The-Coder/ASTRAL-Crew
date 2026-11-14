@@ -8,7 +8,7 @@ from pathlib import Path
 from backend.crew import demo_profiles
 from backend.cross_analysis import analyze_snapshot
 from backend.mission_log import MissionLog
-from backend.simulator import generate_scenario
+from backend.simulator import generate_scenario, SCENARIOS
 from backend.storage import SnapshotStore
 
 
@@ -71,7 +71,7 @@ class MissionLogTests(unittest.TestCase):
             self.log.entries(limit=True)
 
     def test_cli_full_flow_for_all_scenarios(self):
-        for scenario in ('baseline','co2_rise','missing_sensor','faulty_sensor'):
+        for scenario in SCENARIOS:
             with self.subTest(scenario=scenario):
                 path = self.path.parent / (scenario+'.sqlite3')
                 def run(module,*arguments):
@@ -81,6 +81,9 @@ class MissionLogTests(unittest.TestCase):
                 run('backend.cross_analysis','--save')
                 entries = json.loads(run('backend.mission_log'))
                 self.assertEqual(len(entries),1)
+                if scenario == 'radiation_rise':
+                    self.assertEqual(entries[0]['report']['findings'][0]['code'],
+                                     'RADIATION_RATE_INCREASE')
                 self.assertEqual(len(entries[0]['report']['crew']),5)
                 reviewed = json.loads(run('backend.mission_log','--analysis-id','1',
                     '--reviewer','Test reviewer','--decision','follow_up','--note','Synthetic test only.'))

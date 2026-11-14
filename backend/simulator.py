@@ -10,6 +10,8 @@ from pathlib import Path
 from backend.storage import DEFAULT_DATABASE, SnapshotStore
 from backend.crew import demo_profiles
 from backend.cabin import CabinConfig, co2_percent_after
+from backend.radiation import RadiationConfig, radiation_reading
+from backend.gravity import GravityConfig, gravity_record
 
 
 def baseline_snapshot(crew_count=5):
@@ -34,6 +36,8 @@ def baseline_snapshot(crew_count=5):
                 "crew_id": profile["crew_id"],
                 "data_origin": "synthetic",
                 "biometrics": dict(profile["baseline"]),
+                "radiation": radiation_reading(0),
+                "gravity": gravity_record(142),
                 "voice": None,
                 "wearable_inference": None,
                 "assessment": None,
@@ -54,11 +58,12 @@ def save_baseline(store, timestamp):
     return store.save_synthetic(timestamp, baseline_snapshot())
 
 
-SCENARIOS = ("baseline", "co2_rise", "missing_sensor", "faulty_sensor")
+SCENARIOS = ("baseline", "co2_rise", "missing_sensor", "faulty_sensor", "radiation_rise")
 
 
 def generate_scenario(scenario="baseline", *, seed=42, steps=12, crew_count=5,
-                      cabin_config=None):
+                      cabin_config=None, radiation_config=None,
+                      microgravity_days=142, gravity_config=None):
     """Generate one-minute demo samples with deterministic bounded jitter.
 
     Scripted crew changes are NOT a dose-response model for CO2. Sensor quality
@@ -72,16 +77,24 @@ def generate_scenario(scenario="baseline", *, seed=42, steps=12, crew_count=5,
     rng = random.Random(seed)
     demo_profiles(crew_count)  # Validate before generating any samples.
     cabin_config = CabinConfig() if cabin_config is None else cabin_config
+    radiation_config = RadiationConfig() if radiation_config is None else radiation_config
+    gravity_config = GravityConfig() if gravity_config is None else gravity_config
+    gravity_record(microgravity_days, gravity_config)  # Validate before generation.
     samples = []
     for index in range(steps):
         snapshot = baseline_snapshot(crew_count)
-        snapshot.update(scenario=scenario, fixture_version="internal-v3",
+        snapshot.update(scenario=scenario, fixture_version="internal-v5",
                         seed=seed, elapsed_seconds=index * 60)
         snapshot["limitations"].append(
             "Noise and scripted trends are engineering assumptions, not a physiological model."
         )
         progress = max(0, (index / (steps - 1) - 0.25) / 0.75)
         for member in snapshot["crew"]:
+            # Long-term context stays fixed through this minute-scale replay.
+            member["gravity"] = gravity_record(microgravity_days, gravity_config)
+            member["radiation"] = radiation_reading(
+                index * 60, config=radiation_config,
+                elevation_start_seconds=(steps - 1) * 30 if scenario == "radiation_rise" else None)
             values = member["biometrics"]
             values["heart_rate_bpm"] += rng.randint(-2, 2)
             values["hrv_rmssd_ms"] += rng.randint(-2, 2)
@@ -94,6 +107,8 @@ def generate_scenario(scenario="baseline", *, seed=42, steps=12, crew_count=5,
                 values["hrv_rmssd_ms"] -= round(10 * progress)
                 values["eda_microsiemens"] = round(
                     values["eda_microsiemens"] + 0.8 * progress, 3)
+        snapshot["radiation_model"] = {"version": "dose-accounting-v1",
+                                       "parameters": asdict(radiation_config)}
         environment = snapshot["environment"]
         environment["co2_percent"] = round(
             0.10 + rng.uniform(-0.005, 0.005), 4)
@@ -117,6 +132,9 @@ def generate_scenario(scenario="baseline", *, seed=42, steps=12, crew_count=5,
         if index >= steps // 2 and scenario == "missing_sensor":
             environment["co2_percent"] = None
             snapshot["environment_quality"]["co2_percent"] = "missing"
+            snapshot["crew"][0]["radiation"].update(
+                dose_equivalent_rate_msv_per_day=None,
+                dose_equivalent_since_run_start_msv=None, quality="missing")
             snapshot["crew"][0]["biometrics"]["eda_microsiemens"] = None
             snapshot["crew"][0]["sensor_quality"]["eda_microsiemens"] = "missing"
         if index >= steps // 2 and scenario == "faulty_sensor":
@@ -136,12 +154,21 @@ def main():
     parser.add_argument("--crew-count", type=int, default=5)
     parser.add_argument("--cabin-volume-m3", type=float, default=100.0)
     parser.add_argument("--removal-fraction", type=float, default=0.0)
+    parser.add_argument("--radiation-rate-msv-per-day", type=float, default=1.8)
+    parser.add_argument("--radiation-multiplier", type=float, default=4.0)
+    parser.add_argument("--microgravity-days", type=float, default=142)
+    parser.add_argument("--bone-loss-percent-per-30-days", type=float, default=1.0)
     arguments = parser.parse_args()
     try:
         samples = generate_scenario(arguments.scenario, seed=arguments.seed,
                                     steps=arguments.steps, crew_count=arguments.crew_count,
                                     cabin_config=CabinConfig(volume_m3=arguments.cabin_volume_m3,
-                                                             removal_fraction=arguments.removal_fraction))
+                                                             removal_fraction=arguments.removal_fraction),
+                                    radiation_config=RadiationConfig(
+                                        baseline_rate_msv_per_day=arguments.radiation_rate_msv_per_day,
+                                        elevated_multiplier=arguments.radiation_multiplier),
+                                    microgravity_days=arguments.microgravity_days,
+                                    gravity_config=GravityConfig(arguments.bone_loss_percent_per_30_days))
     except ValueError as error:
         parser.error(str(error))
     store = SnapshotStore(arguments.database)

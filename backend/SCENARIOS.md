@@ -2,7 +2,7 @@
 
 These fixtures are engineering test inputs, not recorded mission data, trained
 inference, physiological predictions, or an approved shared interface. Version:
-`internal-v3` for generated sequences. Sources checked November 14, 2026; no external data is downloaded
+`internal-v4` for generated sequences. Sources checked November 14, 2026; no external data is downloaded
 or redistributed. Runtime uses only Python's standard library and local SQLite.
 
 The internal demo defaults to five crew; `--crew-count 4` retains original mission
@@ -80,3 +80,36 @@ not be used as diagnostic evidence by cross-analysis.
 explains exhaled CO2 and removal equipment. Insufficient removal can cause buildup;
 poor ventilation can cause local accumulation, which this well-mixed model cannot
 resolve. A CO2 rise does not establish a cabin leak or crew symptoms.
+
+
+## Radiation module: synthetic dose-equivalent accounting
+
+Each crew now has a radiation object with rate in mSv/day, dose in mSv **since
+this scenario run started**, data origin, quality, limitations, and null career
+dose. All crew share the same modeled exposure; no individual shielding or
+organ-specific dosimetry is inferred. New runs reset the scenario dose; do not
+sum cumulative snapshots or combine resets into a career history.
+
+The configurable 1.8 mSv/day default is illustrative transit context, based on
+[SwRI's RAD mission investigators' summary (2013)](https://www.swri.org/newsroom/press-releases/swri-scientists-publish-first-radiation-measurements-the-surface-of-mars).
+It is a historical spacecraft measurement context, not a fixed Mars mission
+exposure, absorbed dose in mGy, or personal effective-dose measurement.
+[NASA's RAD comparison](https://science.nasa.gov/resource/radiation-exposure-comparisons-with-mars-trip-calculation/)
+provides additional expedition-dose context. These are references, not downloaded
+sensor datasets. Review applicability with Eleni before final scientific claims.
+
+The `radiation_rise` scenario increases rate halfway through by a configurable
+factor (default 4, an unsupported engineering test choice). Rate changes are
+integrated piecewise: dose = sum(rate_mSv_per_day * duration_seconds / 86400).
+There is no physiological response model, identified solar storm, clinical
+threshold, career limit comparison, or automated shelter action. Biometric
+changes are not scripted in response to this radiation event.
+
+The missing_sensor case sets AST-01 radiation rate and accumulated dose to null
+with missing quality after halfway. Other crew remain available. The displayed
+cumulative dose is unavailable rather than a fabricated continuation.
+
+Cross-analysis now flags configured rate increases for recommended review;
+these demo comparisons are not a validated radiation safety alert engine. The generic storage and service retain the fields
+without dropping or interpreting them. Units and new radiation fields remain
+internal fixture choices pending shared-contract review.

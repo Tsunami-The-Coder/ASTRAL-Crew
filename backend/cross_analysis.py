@@ -18,6 +18,8 @@ class RuleConfig:
     eda_increase_microsiemens: float = 0.4
     co2_increase_percentage_points: float = 0.01
     minimum_changed_crew: int = 2
+    radiation_rate_ratio: float = 2
+    radiation_rate_increase_msv_per_day: float = 1
 
     def __post_init__(self):
         for key, value in asdict(self).items():
@@ -25,6 +27,8 @@ class RuleConfig:
                 raise ValueError(f"{key} must be finite and positive")
         if type(self.minimum_changed_crew) is not int:
             raise ValueError("minimum_changed_crew must be an integer")
+        if self.radiation_rate_ratio <= 1:
+            raise ValueError("radiation_rate_ratio must exceed 1")
 
 
 def _reading(values, quality, field, issues, scope):
@@ -42,6 +46,52 @@ def _reading(values, quality, field, issues, scope):
         issues.append({"scope": scope, "field": field, "status": "unavailable"})
         return None
     return value
+
+
+
+def _radiation_changes(snapshot, previous, config, issues):
+    prior = {}
+    if previous is not None:
+        if not isinstance(previous, dict) or not isinstance(previous.get('crew'), list):
+            raise ValueError('previous snapshot must contain a crew list')
+        for member in previous['crew']:
+            if not isinstance(member, dict):
+                raise ValueError('previous crew entries must be objects')
+            crew_id = member.get('crew_id')
+            if not isinstance(crew_id, str) or not crew_id or crew_id in prior:
+                raise ValueError('previous crew IDs must be unique nonempty strings')
+            prior[crew_id] = member
+    changes = []
+    for member in snapshot['crew']:
+        crew_id = member['crew_id']
+        radiation = member.get('radiation')
+        if radiation is None:
+            radiation = {}
+        if not isinstance(radiation, dict):
+            raise ValueError('radiation must be an object or null')
+        field = 'dose_equivalent_rate_msv_per_day'
+        quality = {field: radiation.get('quality', 'available')}
+        rate = _reading(radiation, quality, field, issues, crew_id + ':radiation')
+        # Validate accumulated dose without interpreting missing career history.
+        dose_field = 'dose_equivalent_since_run_start_msv'
+        _reading(radiation, {dose_field: radiation.get('quality', 'available')},
+                 dose_field, issues, crew_id + ':radiation')
+        if previous is None:
+            continue
+        old_radiation = prior.get(crew_id, {}).get('radiation')
+        if old_radiation is None:
+            old_radiation = {}
+        if not isinstance(old_radiation, dict):
+            raise ValueError('previous radiation must be an object or null')
+        old = _reading(old_radiation, {field: old_radiation.get('quality', 'available')},
+                       field, issues, crew_id + ':previous_radiation')
+        if rate is not None and old is not None:
+            delta = rate - old
+            if delta >= config.radiation_rate_increase_msv_per_day and rate >= old * config.radiation_rate_ratio:
+                changes.append({'crew_id': crew_id, 'previous_rate_msv_per_day': old,
+                                'current_rate_msv_per_day': rate,
+                                'increase_msv_per_day': round(delta, 6)})
+    return changes
 
 
 def analyze_snapshot(snapshot, profiles, *, previous=None, config=RuleConfig()):
@@ -121,7 +171,12 @@ def analyze_snapshot(snapshot, profiles, *, previous=None, config=RuleConfig()):
             findings.append({"code": "POSSIBLE_ENVIRONMENTAL_ASSOCIATION",
                              "co2_delta_percentage_points": delta,
                              "message": "Shared crew changes coincide with a CO2 rise. Review ventilation/removal and verify readings; causation is unconfirmed."})
-    return {"rules_version": "demo-rules-v1", "data_origin": "simulated_inference",
+    radiation_changes = _radiation_changes(snapshot, previous, config, issues)
+    if radiation_changes:
+        findings.append({"code": "RADIATION_RATE_INCREASE",
+                         "evidence": radiation_changes,
+                         "message": "Dose-equivalent rates increased from earlier readings. Verify dosimeters and request human review; cause is unconfirmed."})
+    return {"rules_version": "demo-rules-v2", "data_origin": "simulated_inference",
             "config": asdict(config), "crew": crew_results, "input_issues": issues,
             "co2_delta_percentage_points": delta, "findings": findings,
             "needs_review": bool(findings or issues),

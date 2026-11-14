@@ -245,3 +245,45 @@ This command initializes missing tables but never creates crew readings. Final
 UI field names, model adapters, concurrent-read consistency, and time policies
 require team agreement before integration. No ui/ files or shared contracts were
 changed in this step.
+
+
+## Step 10: per-crew synthetic radiation telemetry
+
+```sh
+python3 -m backend.simulator --scenario radiation_rise --radiation-rate-msv-per-day 1.8 --radiation-multiplier 4
+```
+
+`backend/radiation.py` supplies configurable rate and piecewise dose integration.
+Each crew's radiation object is stored in snapshots and exposed unchanged through
+service overview and crew history. Dose is since run start, not since mission day
+one or career start. Missing radiation produces nulls. No career threshold is implemented. Step 11 adds demo rate-change findings
+alongside the existing biometric/CO2 rules. See SCENARIOS.md for provenance and limitations.
+
+
+## Step 11: radiation rate-change review rules
+
+Cross-analysis now validates current dose rate and accumulated dose, distinguishes
+missing/invalid/unavailable radiation inputs, and compares rates with the earlier
+snapshot for the same crew ID. `RuleConfig` adds `radiation_rate_ratio` (default
+2) and `radiation_rate_increase_msv_per_day` (default 1). Both a doubling and at
+least +1 mSv/day are required by the default **demo** rule. These are engineering
+settings, not NASA limits, exposure-clearance criteria, or validated warnings.
+
+```sh
+python3 -m backend.simulator --database /tmp/astral-radiation-review.sqlite3 --scenario radiation_rise
+python3 -m backend.cross_analysis --database /tmp/astral-radiation-review.sqlite3 --save
+python3 -m backend.service --database /tmp/astral-radiation-review.sqlite3
+```
+
+Use a fresh filename to avoid mixed runs. `RADIATION_RATE_INCREASE` includes
+crew IDs, previous/current rates, and their differences. It can occur without
+biometric changes and does not establish a solar storm or clinical effect.
+Reports now record rules_version `demo-rules-v2`; older saved reports retain
+their original version/configuration. No suitable prior reading means no rate
+comparison, not evidence that the current rate is safe. Radiation absent from
+older fixture layouts is explicitly reported as missing. No career history is
+invented and null career dose is not considered a sensor fault.
+
+The CLI still checks same-run selection. The pure analyzer relies on its caller
+to supply an earlier snapshot from the same run. Radiation findings flow through
+existing mission-log and service operations without a shared-contract change.
