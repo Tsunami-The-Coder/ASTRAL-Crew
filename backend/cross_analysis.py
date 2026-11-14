@@ -134,6 +134,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--database", type=Path, default=DEFAULT_DATABASE)
     parser.add_argument("--limit", type=int, default=12)
+    parser.add_argument("--save", action="store_true", help="Append the report to the local mission log")
     args = parser.parse_args()
     if not args.database.is_file():
         parser.error("Database missing; generate a scenario first.")
@@ -153,6 +154,13 @@ def main():
                                   previous=rows[0]["payload"] if len(rows) > 1 else None)
     except ValueError as error:
         parser.error(str(error))
+    if args.save:
+        from backend.mission_log import MissionLog
+        log = MissionLog(args.database)
+        log.initialize()
+        identifier = log.save_analysis(rows[-1]["id"], report,
+                                       previous_snapshot_id=rows[0]["id"] if len(rows) > 1 else None)
+        print(f"Saved simulated analysis {identifier} to mission log.")
     print(json.dumps(report, indent=2))
 
 

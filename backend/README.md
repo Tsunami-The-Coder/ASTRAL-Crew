@@ -114,9 +114,9 @@ directly to this fixture layout until shared fields and semantics are agreed.
 Future adapters and a service layer can translate approved pipeline results into
 storage and dashboard views without coupling UI code to the simulator.
 
-No fusion rules, medical recommendations, or spacecraft actions are implemented.
-Radiation, gravity, medical resources, incident logs, and UI integration remain
-future steps. Confirm thresholds, score meanings, missing-data conventions, and
+Internal cross-analysis rules and a local analysis/review journal are implemented.
+Radiation, gravity, medical resources, UI integration, and model fusion remain
+future steps. No medical recommendations or spacecraft actions are implemented. Confirm thresholds, score meanings, missing-data conventions, and
 inference time windows with the team before exposing a shared interface.
 
 ## Offline verification
@@ -143,8 +143,8 @@ python3 -m backend.simulator --database /tmp/astral-analysis-demo.sqlite3 --scen
 python3 -m backend.cross_analysis --database /tmp/astral-analysis-demo.sqlite3
 ```
 
-The inspection command reads existing data and prints a report; it does not save
-assessments or incidents. Reusing the database for repeated overlapping runs may
+Without --save, the inspection command reads existing data and prints a report.
+With --save, it appends the report to the mission log (see Step 8). Reusing the database for repeated overlapping runs may
 cause the command to reject mixed history. Use a new filename in that case.
 
 Possible findings: SHARED_CREW_CHANGE and POSSIBLE_ENVIRONMENTAL_ASSOCIATION.
@@ -162,3 +162,41 @@ used to determine diagnostic findings. Future adapters and time-window validatio
 must be agreed with upstream owners before real pipeline integration.
 
 Existing storage, simulator, and shared contract interfaces are unchanged.
+
+
+## Step 8: save analysis and human-review history
+
+Use a fresh database filename for each independent scenario:
+
+```sh
+python3 -m backend.simulator --database /tmp/astral-log-demo.sqlite3 --scenario co2_rise
+python3 -m backend.cross_analysis --database /tmp/astral-log-demo.sqlite3 --save
+python3 -m backend.mission_log --database /tmp/astral-log-demo.sqlite3
+```
+
+The analysis command prints its saved analysis ID. To append a human review,
+replace 1 with that ID and supply your own name and review note:
+
+```sh
+python3 -m backend.mission_log --database /tmp/astral-log-demo.sqlite3 --analysis-id 1 --reviewer "Demo reviewer" --decision follow_up --note "Synthetic demo: verify cabin and crew readings."
+```
+
+Decisions are `acknowledged`, `dismissed`, or `follow_up`. They are human
+statements, not medical clearance or a spacecraft control action. All review
+fields are required. Names are supplied locally; this prototype has no identity
+authentication. The inspection command initializes journal tables if missing but
+never modifies telemetry. Journal entries are append-only through this API; the
+SQLite file itself is not tamper-proof. Every --save appends a new analysis,
+including repeated analyses of the same snapshots. Deduplication is not provided.
+
+`MissionLog.save_analysis` records the current snapshot ID, optional earlier
+snapshot ID, full report, rule configuration/version, and UTC recording time.
+`add_review` appends a reviewer, decision, note, and UTC time. `entries(limit=100)`
+returns the newest N analyses in insertion order with their review history.
+Foreign keys are enabled and nonexistent source IDs/reviews are rejected.
+Raw readings and original needs_review flags remain unchanged after review.
+
+Report/source consistency and same-run selection are the analyzer caller's
+responsibility; the journal checks source existence and chronology. No report
+is accepted as measured data. Schemas remain internal and are not the approved
+model/UI handoff. Run all tests with unittest discovery from Step 5.
