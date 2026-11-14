@@ -126,3 +126,39 @@ python3 -m unittest backend.test_storage backend.test_simulator -v
 ```
 
 Tests use disposable databases and do not modify the local demo database.
+
+## Step 7: internal cross-analysis prototype
+
+`backend/cross_analysis.py` compares synthetic biometrics against registered demo
+references. It requires at least two changed features per crew member, then at
+least two changed crew for a shared-pattern finding. RuleConfig defaults are
+engineering test choices, not medical limits: HR +10 bpm, RMSSD -6 ms, EDA +0.4
+microsiemens, and CO2 increase +0.01 **percentage points** over the selected window.
+All can be replaced by passing a RuleConfig; scientific review remains pending.
+
+Use a fresh scenario database so independent runs do not mix:
+
+```sh
+python3 -m backend.simulator --database /tmp/astral-analysis-demo.sqlite3 --scenario co2_rise
+python3 -m backend.cross_analysis --database /tmp/astral-analysis-demo.sqlite3
+```
+
+The inspection command reads existing data and prints a report; it does not save
+assessments or incidents. Reusing the database for repeated overlapping runs may
+cause the command to reject mixed history. Use a new filename in that case.
+
+Possible findings: SHARED_CREW_CHANGE and POSSIBLE_ENVIRONMENTAL_ASSOCIATION.
+A CO2 association needs an earlier usable CO2 reading; otherwise the cause remains
+unresolved. The report preserves missing/invalid inputs and unavailable model
+outputs. No findings does not establish normal health or a safe cabin. This
+prototype checks HR, HRV, EDA, and CO2 only; it is not a complete cabin safety check.
+
+The pure function analyze_snapshot(snapshot, profiles, previous=..., config=...)
+expects the internal synthetic fixture layout. Callers must select a prior sample
+from the same run; the CLI checks run anchors before comparing. This is not the
+approved integration API. No stale-signal timing policy, voice/wearable fusion,
+clinical triage, or spacecraft action exists yet. Simulator metadata is never
+used to determine diagnostic findings. Future adapters and time-window validation
+must be agreed with upstream owners before real pipeline integration.
+
+Existing storage, simulator, and shared contract interfaces are unchanged.
