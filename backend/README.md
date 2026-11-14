@@ -200,3 +200,48 @@ Report/source consistency and same-run selection are the analyzer caller's
 responsibility; the journal checks source existence and chronology. No report
 is accepted as measured data. Schemas remain internal and are not the approved
 model/UI handoff. Run all tests with unittest discovery from Step 5.
+
+## Step 9: internal service layer for future dashboard integration
+
+`backend/service.py` wraps existing storage and journal operations. It is an
+internal proposal for discussion with Anuj, not an approved shared API. It does
+not import a UI framework, run models, or generate demo inputs during reads.
+
+```python
+from backend.service import MissionService
+
+service = MissionService('backend/mission.sqlite3')
+service.initialize()  # Explicitly create missing tables; inserts no readings.
+view = service.overview()
+profiles = service.crew_profiles()
+crew_points = service.crew_history('AST-01', limit=100)
+logs = service.mission_logs(limit=100)
+```
+
+`overview()` returns the latest raw snapshot and the most recently recorded
+analysis only if it references that exact snapshot ID. Otherwise analysis_status
+is `not_run_for_latest_snapshot`, or `no_telemetry` for empty storage. Older
+analyses remain available in mission_logs(). Matching IDs do not establish
+freshness: per-signal timestamps and an agreed stale-data policy are still needed.
+The view preserves nulls and source labels and makes no safety determination.
+Read methods require prior initialization and leave data unchanged.
+
+`history(limit=..., start=..., end=...)` delegates to snapshot history.
+`crew_history` projects that mission-snapshot window onto a crew ID; its limit
+applies before filtering. An absent crew member produces no points rather than
+fabricated readings. Registered profiles may include crew not active in the latest
+snapshot. Mixed runs remain separate records, not one continuous measured mission;
+use isolated scenario databases for demos. Malformed crew lists/duplicate IDs
+raise ValueError. Other payload validation remains at the producer boundary.
+`record_review(...)` delegates to the journal; it is an explicit write operation.
+
+To print the overview from an existing database:
+
+```sh
+python3 -m backend.service --database /tmp/astral-log-demo.sqlite3
+```
+
+This command initializes missing tables but never creates crew readings. Final
+UI field names, model adapters, concurrent-read consistency, and time policies
+require team agreement before integration. No ui/ files or shared contracts were
+changed in this step.
