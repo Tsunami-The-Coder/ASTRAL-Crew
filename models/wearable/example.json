@@ -2,7 +2,7 @@
   "note": "Synthetic integration example; proposed interface; AI-assisted.",
   "clock": "2026-11-14T14:30:00Z",
   "input": {
-    "crew_id": "AST-01",
+    "crew_id": "AST-05",
     "timestamp": "2026-11-14T14:30:00Z",
     "window_start": "2026-11-14T14:29:00Z",
     "data_origin": "synthetic",
@@ -21,7 +21,7 @@
   "result": {
     "schema_version": "wearable-proposal-v1",
     "source": "wearable",
-    "crew_id": "AST-01",
+    "crew_id": "AST-05",
     "timestamp": "2026-11-14T14:30:00Z",
     "window_start": "2026-11-14T14:29:00Z",
     "data_origin": "synthetic",
@@ -80,7 +80,7 @@
       "No astronaut validation; NASA resources do not validate this algorithm.",
       "These wrist features cannot measure radiation dose, bone loss, immune changes or cabin air quality.",
       "Spaceflight physiology may differ from WESAD; no spaceflight correction has been validated.",
-      "The v1 pulse detector can count secondary waveform peaks; extracted pulse rate and RMSSD need reference validation.",
+      "Raw pulse extraction rejects detected periodicity disagreements; summary inputs cannot prove raw signal quality. Pulse rate and RMSSD still need reference validation.",
       "Summary checks cannot detect all raw-signal artifacts.",
       "Sleep/self-report are context only; not inputs to the WESAD model.",
       "Confidence is null: clinical certainty and probability calibration were not established."

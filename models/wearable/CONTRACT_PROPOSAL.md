@@ -12,7 +12,7 @@ retain their names. Extra telemetry fields are not modified.
 
 | Field | Meaning |
 |---|---|
-| crew_id | AST-01 through AST-04 |
+| crew_id | AST-01 through AST-05 |
 | timestamp | Window END, ISO 8601 with timezone; normalized to UTC |
 | window_start | Proposed explicit beginning; 60..300 seconds before end |
 | data_origin | synthetic, research, replayed, or measured; required |
@@ -92,3 +92,16 @@ not extra training features or a calibrated personal risk score.
 5. Define how different modality scores will be calibrated before numerical fusion.
 
 Until then, examples are fixtures for discussion. They do not establish a shared API.
+
+
+## Quality-gate update
+
+The feature names, units, computation for accepted windows and pipeline ID remain
+unchanged. Raw extraction additionally rejects windows when autocorrelation-based
+periodicity disagrees with peak-derived rate by more than 20%, has correlation
+below 0.3, or has no eligible periodicity peak (lags 20..128 samples at 64 Hz).
+These are engineering rejection settings, not medical thresholds. Handle
+`ValueError` as unusable raw data; never fill rejected measurements with zero.
+The new model version identifies the changed training-window selection. Summary
+inputs do not prove that this raw quality gate was run. Do not relabel data or
+claim validated raw-signal quality merely because the summary is accepted.

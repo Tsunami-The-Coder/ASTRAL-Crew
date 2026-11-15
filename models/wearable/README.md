@@ -3,8 +3,10 @@
 Offline component for ASTRAL-Crew. AI-assisted code and synthetic fixtures.
 No medical diagnosis, astronaut validation, or autonomous spacecraft control.
 
-**Signal audit finding:** v1 can mistake secondary waveform peaks for pulses.
-The included model remains an experimental baseline. See
+**Signal quality update:** raw extraction now rejects detected disagreement between
+pulse peaks and waveform periodicity, including the reproduced double-counting case.
+The included model remains an experimental baseline. Current results are in
+[FIX_VALIDATION.md](FIX_VALIDATION.md). See
 [NASA_WEARABLE_REVIEW.md](NASA_WEARABLE_REVIEW.md) for the reproduced limitation,
 challenge-source mapping, data-access findings and five-hazard scope.
 
@@ -16,7 +18,7 @@ challenge-source mapping, data-access findings and five-hazard scope.
 - Compare readings to a separate, earlier, same-person calibration baseline.
 - Run inert JSON logistic models without third-party runtime dependencies.
 - Extract 60-second WESAD wrist features and train a participant-independent baseline.
-- Demonstrate four crew members across five synthetic scenarios.
+- Demonstrate five crew members across five synthetic scenarios.
 - Trace NASA design evidence through [SOURCES.md](SOURCES.md).
 
 The handoff in [CONTRACT_PROPOSAL.md](CONTRACT_PROPOSAL.md) is **proposed**.
@@ -100,5 +102,5 @@ No package import downloads data or starts training.
 
 See [VALIDATION.md](VALIDATION.md) for actual run evidence and
 [MODEL_CARD.md](MODEL_CARD.md) for intended use, feature semantics and evaluation.
-This component has not been connected to the other workstreams: their inspected
-branches contain plans, and our proposal has not been approved by their owners.
+The backend now uses a five-member roster. This update supports AST-01..AST-05;
+voice processing and dashboard assets remain owned by their respective workstreams.

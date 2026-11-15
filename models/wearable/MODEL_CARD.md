@@ -2,7 +2,7 @@
 
 ## Intended use
 
-Research and demonstration for ASTRAL-Crew's four-person simulated mission.
+Research and demonstration for ASTRAL-Crew's five-person simulated mission.
 Not medical diagnosis, mental-health screening, astronaut certification,
 causal inference or control of spacecraft systems. AI-assisted implementation.
 
@@ -50,7 +50,7 @@ artifact does not make those participants an independent test set for that artif
 No calibration or external validation has been established. Do not use the score
 as clinical certainty, and do not average it with an unrelated voice-model score.
 
-Actual completed run evidence is in VALIDATION.md; do not substitute the original
+Current run evidence is in FIX_VALIDATION.md; VALIDATION.md is historical; do not substitute the original
 paper's reported accuracy for this implementation's results.
 
 ### Known measurement limitation from the follow-up audit
@@ -58,9 +58,11 @@ paper's reported accuracy for this implementation's results.
 `signal_audit.py` reproduces double-counting on a synthetic 1 Hz waveform with
 a second harmonic: about 120.09 bpm instead of its 60 cycles/min fundamental.
 The extracted RMSSD is also affected. A good classification result is not proof
-of accurate pulse measurement. Keep v1 experimental pending reference-beat
-validation, revised extraction, and a fresh held-out evaluation. No retraining
-or spaceflight calibration was performed in this source-review update.
+of accurate pulse measurement. The current extractor rejects detected disagreement with waveform periodicity.
+The model was refitted after this quality gate; see FIX_VALIDATION.md for fresh
+evaluation and rejection counts. This fixes the reproduced failure by abstaining,
+not by claiming a corrected heart rate. Reference-beat and spaceflight validation
+remain outstanding.
 
 ## NASA involvement
 

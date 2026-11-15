@@ -1,4 +1,4 @@
-"""Reproduce a known v1 peak-detector limitation; not a physiological simulator.
+"""Check the regression for a previously identified peak-detector limitation; not a physiological simulator.
 
 Requires optional training dependencies. Harmonic waveforms are engineering probes,
 not NASA measurements. A rejection is reported separately from accurate extraction.
@@ -28,7 +28,7 @@ def audit():
                 row.update(status="rejected", reason=str(exc))
             rows.append(row)
     return {"purpose": "Synthetic morphology sensitivity audit; not spaceflight validation",
-            "known_issue": "v1 can count secondary peaks as pulses",
+            "regression_target": "Reject detected secondary-peak double counting; no clinical accuracy claim",
             "probes": rows}
 
 

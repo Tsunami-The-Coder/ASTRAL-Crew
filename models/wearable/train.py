@@ -1,6 +1,6 @@
 """Participant-independent WESAD baseline and inert JSON model export.
 
-AI-assisted. Raw archive and trained artifacts must stay outside the repository.
+AI-assisted. Raw archive and new training outputs stay outside the repository.
 Only process the original trusted WESAD archive: pickle can execute code.
 """
 from __future__ import annotations
@@ -36,10 +36,17 @@ def window_label(labels):
     return int(labels[0] == 2)
 
 
-def extract_archive(archive_path):
+def extract_archive(archive_path, cache_dir=None):
     rows, audit = [], []
     with zipfile.ZipFile(archive_path) as archive:
         for subject in SUBJECTS:
+            cache = Path(cache_dir) / f"S{subject}.json" if cache_dir else None
+            if cache and cache.exists():
+                cached = json.loads(cache.read_text())
+                rows.extend(cached["rows"])
+                audit.append(cached["audit"])
+                continue
+            first_row = len(rows)
             name = next((n for n in archive.namelist() if re.search(rf"(?:^|/)S{subject}/S{subject}\.pkl$", n)), None)
             if name is None:
                 raise ValueError(f"missing original subject S{subject}")
@@ -69,6 +76,9 @@ def extract_archive(archive_path):
                 kept += 1
             audit.append({"subject": f"S{subject}", "kept_windows": kept,
                           "signal_rejected": rejected, "label_excluded": excluded})
+            if cache:
+                cache.parent.mkdir(parents=True, exist_ok=True)
+                cache.write_text(json.dumps({"rows": rows[first_row:], "audit": audit[-1]}))
             del data, wrist, labels
     return rows, audit
 
@@ -96,23 +106,27 @@ def evaluate(rows):
     predictions = np.empty_like(y)
     folds = []
     for subject, train, test in subject_folds(groups):
-        if set(y[train]) != {0, 1} or set(y[test]) != {0, 1}:
-            raise ValueError("every fold needs both classes for balanced evaluation")
+        if set(y[train]) != {0, 1}:
+            raise ValueError("every training fold needs both classes")
         pipeline = _pipeline().fit(x[train], y[train])
         predicted = pipeline.predict(x[test])
         predictions[test] = predicted
         folds.append({"held_out_subject": subject, "train_subjects": sorted(set(groups[train])),
                       "train_windows": len(train), "test_windows": len(test),
-                      "balanced_accuracy": float(balanced_accuracy_score(y[test], predicted)),
-                      "macro_f1": float(f1_score(y[test], predicted, average="macro", zero_division=0))})
+                      "test_class_counts": {str(label): int((y[test] == label).sum()) for label in (0, 1)},
+                      "balanced_accuracy": (float(balanced_accuracy_score(y[test], predicted))
+                                            if set(y[test]) == {0, 1} else None),
+                      "macro_f1": float(f1_score(y[test], predicted, labels=[0, 1], average="macro", zero_division=0))})
+    balanced = [f["balanced_accuracy"] for f in folds if f["balanced_accuracy"] is not None]
     report = {
         "evaluation": "leave_one_subject_out", "feature_pipeline": FEATURE_PIPELINE,
         "data_origin": "research", "dataset": "WESAD", "n_subjects": len(set(groups)), "n_windows": len(rows),
         "target": "stress (2) vs baseline/amusement (1/3)",
         "threshold": 0.5, "threshold_role": "fixed classifier boundary; not a medical threshold",
         "folds": folds,
-        "mean_subject_balanced_accuracy": float(np.mean([f["balanced_accuracy"] for f in folds])),
-        "std_subject_balanced_accuracy": float(np.std([f["balanced_accuracy"] for f in folds])),
+        "balanced_accuracy_evaluable_subjects": len(balanced),
+        "mean_subject_balanced_accuracy": float(np.mean(balanced)) if balanced else None,
+        "std_subject_balanced_accuracy": float(np.std(balanced)) if balanced else None,
         "pooled_macro_f1": float(f1_score(y, predictions, average="macro", zero_division=0)),
         "confusion_matrix_labels": ["non_stress", "stress"],
         "pooled_confusion_matrix": confusion_matrix(y, predictions, labels=[0, 1]).tolist(),
@@ -124,7 +138,7 @@ def evaluate(rows):
     }
     final = _pipeline().fit(x, y)
     scaler, estimator = final.steps[0][1], final.steps[1][1]
-    model = {"format": "astral-logistic-v1", "version": "wesad-wrist-logistic-v1",
+    model = {"format": "astral-logistic-v1", "version": "wesad-wrist-logistic-v2-quality-gated",
              "features": list(FEATURES), "mean": scaler.mean_.tolist(), "scale": scaler.scale_.tolist(),
              "weights": estimator.coef_[0].tolist(), "intercept": float(estimator.intercept_[0]),
              "training_data_origin": "research", "dataset": "WESAD", "feature_pipeline": FEATURE_PIPELINE,
@@ -146,7 +160,10 @@ def main():
     args.output.mkdir(parents=True, exist_ok=True)
     with args.archive.open("rb") as stream:
         digest = hashlib.file_digest(stream, "sha256").hexdigest()
-    rows, audit = extract_archive(args.archive)
+    # Local derived-feature cache is keyed by archive AND extraction implementation.
+    signal_hash = hashlib.sha256(Path(__file__).with_name("signals.py").read_bytes()).hexdigest()
+    cache_dir = args.output / "feature-cache" / (digest + "-" + signal_hash)
+    rows, audit = extract_archive(args.archive, cache_dir=cache_dir)
     model, report = evaluate(rows)
     report.update(archive_sha256=digest, extraction_audit=audit)
     model["archive_sha256"] = digest

@@ -80,7 +80,7 @@ Suggested factual description (update after team integration):
 > monitoring, ARCHeR, and Standard Measures to guide physiological indicators,
 > activity/sleep context, and longitudinal presentation. Its research classifier
 > is developed separately using the non-NASA WESAD ground-laboratory dataset.
-> Four-person mission demonstrations use explicitly synthetic telemetry. NASA
+> Five-person mission demonstrations use explicitly synthetic telemetry. NASA
 > sources inform the design; they do not establish clinical or astronaut validity.
 
 The supplied 2026 Project Submission Guide (published November 13) requires at
@@ -93,3 +93,5 @@ This change does not alter repository visibility or submit the project.
 AI disclosure: code, documentation and synthetic fixtures were produced with
 Codex assistance and reviewed with actual tests. Disclose this in descriptive
 text and metadata. No NASA logos or mission branding are generated here.
+
+Current evaluation and privacy audit: see FIX_VALIDATION.md. Public examples use synthetic crew IDs; no personal health recordings are bundled.

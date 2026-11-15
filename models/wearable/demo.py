@@ -1,4 +1,4 @@
-"""Four-crew synthetic integration examples; no fusion/backend modifications."""
+"""Five-crew synthetic integration examples; no fusion/backend modifications."""
 from __future__ import annotations
 import argparse
 import copy
@@ -36,7 +36,7 @@ def scenarios(model=None):
     model = model if model is not None else fixture_model()
     cases = []
     for name in ["nominal", "activity", "crew_change", "missing_sensor", "sensor_disagreement"]:
-        events = [event(f"AST-{i:02}") for i in range(1, 5)]
+        events = [event(f"AST-{i:02}") for i in range(1, 6)]
         environment = {"co2_percent": 0.08, "data_origin": "synthetic"}
         expected = "Display individual research indicators; no medical diagnosis."
         voices = []
@@ -106,7 +106,8 @@ def main():
     args.output.mkdir(parents=True, exist_ok=True)
     (args.output / "wearable-demo.json").write_text(json.dumps(cases, indent=2, allow_nan=False), encoding="utf-8")
     (args.output / "wearable-demo.html").write_text(report_html(cases), encoding="utf-8")
-    print(f"Wrote {len(cases)} synthetic scenarios / 20 crew results to {args.output}")
+    total = sum(len(case["wearable_results"]) for case in cases)
+    print(f"Wrote {len(cases)} synthetic scenarios / {total} crew results to {args.output}")
 
 
 if __name__ == "__main__":

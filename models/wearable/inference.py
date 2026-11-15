@@ -23,7 +23,7 @@ LIMITATIONS = [
     "No astronaut validation; NASA resources do not validate this algorithm.",
     "These wrist features cannot measure radiation dose, bone loss, immune changes or cabin air quality.",
     "Spaceflight physiology may differ from WESAD; no spaceflight correction has been validated.",
-    "The v1 pulse detector can count secondary waveform peaks; extracted pulse rate and RMSSD need reference validation.",
+    "Raw pulse extraction rejects detected periodicity disagreements; summary inputs cannot prove raw signal quality. Pulse rate and RMSSD still need reference validation.",
 ]
 
 
@@ -104,7 +104,7 @@ def build_baseline(events, *, min_windows=5):
     if (not all(isinstance(p, str) and p for p in pipelines)
             or len(set(pipelines)) != 1):
         raise ValueError("baseline requires one explicit feature pipeline")
-    if len(crews) != 1 or next(iter(crews)) not in {f"AST-{i:02}" for i in range(1, 5)}:
+    if len(crews) != 1 or next(iter(crews)) not in {f"AST-{i:02}" for i in range(1, 6)}:
         raise ValueError("baseline requires one valid crew ID")
     if len(origins) != 1 or not origins <= ORIGINS:
         raise ValueError("baseline requires one supported data origin")
@@ -158,7 +158,7 @@ def _assess(event, *, model=None, baseline=None, now=None, max_age_seconds=300):
         "evidence_ids": list(SOURCE_IDS), "ai_assisted": True,
     }
     issues = result["quality"]["issues"]
-    if result["crew_id"] not in {f"AST-{i:02}" for i in range(1, 5)}:
+    if result["crew_id"] not in {f"AST-{i:02}" for i in range(1, 6)}:
         issues.append("unsupported crew_id")
     if result["data_origin"] not in ORIGINS:
         issues.append("explicit supported data_origin required")
