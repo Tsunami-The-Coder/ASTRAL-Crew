@@ -7,7 +7,7 @@ if [ ! -x .venv/bin/python ]; then
 fi
 if ! .venv/bin/python -c 'import numpy, scipy' >/dev/null 2>&1; then
   printf 'Installing runtime packages once; this initial setup requires network access.\n'
-  .venv/bin/python -m pip install -r integration/requirements-demo.txt
+  .venv/bin/python -m pip install -r demo/requirements-demo.txt
 fi
 if .venv/bin/python - <<'PY_CHECK'
 import json, urllib.request, sys

@@ -4,7 +4,7 @@ The tested integrated demo has been copied into this Git checkout. These working
 
 ## Open
 
-Double-click `integration/run_demo.command`, then open http://127.0.0.1:8765/astral-prototype/ . The launcher installs NumPy/SciPy once if needed. Runtime operation uses local assets and requires no internet. The service binds to loopback only.
+Double-click `demo/run_demo.command`, then open http://127.0.0.1:8765/astral-prototype/ . The launcher installs NumPy/SciPy once if needed. Runtime operation uses local assets and requires no internet. The service binds to loopback only.
 
 ## Main workflow
 
