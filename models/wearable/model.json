@@ -1,0 +1,34 @@
+{
+  "format": "astral-logistic-v1",
+  "version": "wesad-wrist-logistic-v2-quality-gated",
+  "features": [
+    "heart_rate_bpm",
+    "hrv_rmssd_ms",
+    "eda_microsiemens",
+    "motion_level"
+  ],
+  "mean": [
+    72.86999763051129,
+    209.29377221918293,
+    1.2290638908653853,
+    0.5727354391915437
+  ],
+  "scale": [
+    7.9758185642931085,
+    68.81875037757808,
+    1.441510834442025,
+    0.3979887721042376
+  ],
+  "weights": [
+    2.27267700456152,
+    1.7214171254045922,
+    0.27435519865129454,
+    -2.0900427876754
+  ],
+  "intercept": -3.312886724534094,
+  "training_data_origin": "research",
+  "dataset": "WESAD",
+  "feature_pipeline": "wrist-bvp-eda-acc-60s-v1",
+  "ai_assisted": true,
+  "archive_sha256": "5e15d2606adf16d819ba535c1786d92e94bae5ff5392f7ae01fb63f9938fd71c"
+}

@@ -1,6 +1,6 @@
 # models/voice/: voice stress indicator (owner: Ben)
 
-Part of **ASTRAL-Crew** (NASA Space Apps 2026, *Create Health Monitoring Software for Astronauts on Space Missions*). This module listens to an astronaut's comms speech and reports how far their voice has moved from **their own calm baseline**, in the directions linked to stress. Colin's fusion combines it with Khalid's wearable output.
+Part of **ASTRAL-Crew** (NASA Space Apps 2026, *Create Health Monitoring Software for Astronauts on Space Missions*). This module listens to an astronaut's comms speech and reports how far their voice has moved from **their own calm baseline**, in the directions linked to stress. Fusion combines it with Khalid's wearable output.
 
 > Research indicator, not a diagnosis. Runs fully offline (numpy + scipy).
 

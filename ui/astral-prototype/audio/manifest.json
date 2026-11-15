@@ -1,0 +1,30 @@
+[
+  {
+    "id": "artemis-terminator",
+    "title": "Artemis II Lunar Flyby: The Terminator",
+    "source_url": "https://www.nasa.gov/wp-content/uploads/2026/01/victor-the-terminator.wav",
+    "source_page": "https://www.nasa.gov/artemisaudio/",
+    "credit": "NASA",
+    "usage_guidelines": "https://www.nasa.gov/nasa-brand-center/images-and-media/",
+    "original_sha256": "92502db51a9062fdf226952427afe88f61fddd31feaa3e5e8bda81fd4f971ddc",
+    "original_duration_seconds": 44.42425,
+    "excerpt_start_seconds": 0,
+    "excerpt_end_seconds": 15.0,
+    "transformation": "First 15 seconds, mono 16 kHz PCM16; no stress labels or personal baseline.",
+    "excerpt_sha256": "999d09ca266cc0a202aab8e44267a95239a16f6ef34ebf61838b4777de81d220"
+  },
+  {
+    "id": "artemis-closest",
+    "title": "Artemis II Lunar Flyby: Closest to the Moon",
+    "source_url": "https://www.nasa.gov/wp-content/uploads/2026/01/artemis-ii-closest-point-to-moon.wav",
+    "source_page": "https://www.nasa.gov/artemisaudio/",
+    "credit": "NASA",
+    "usage_guidelines": "https://www.nasa.gov/nasa-brand-center/images-and-media/",
+    "original_sha256": "e91b7bdd8c81d27749f843474b18a3201f34ca5990fefb2ce25d14f666684ec1",
+    "original_duration_seconds": 22.4510625,
+    "excerpt_start_seconds": 0,
+    "excerpt_end_seconds": 15.0,
+    "transformation": "First 15 seconds, mono 16 kHz PCM16; no stress labels or personal baseline.",
+    "excerpt_sha256": "c59fab3085c9ebe66bdca691b8caf9ff53932f9865bbe69d7560438be9f7e0e0"
+  }
+]

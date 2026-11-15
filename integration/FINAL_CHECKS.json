@@ -1,0 +1,54 @@
+{
+  "checked_at": "2026-11-15T11:41:49.265399+05:30",
+  "version": "LOCAL DEMO V3",
+  "scope": "Local integrated prototype, not merged or production/clinical validation",
+  "results": {
+    "backend": {
+      "passed": 100,
+      "skipped": 0
+    },
+    "wearable": {
+      "passed": 36,
+      "skipped": 0
+    },
+    "voice": {
+      "passed": 25,
+      "skipped": 3,
+      "skip_reason": "Original research data-layer/scenario fixtures absent"
+    },
+    "browser": {
+      "passed": true,
+      "javascript_errors": 0,
+      "external_requests_blocked": true,
+      "covers": [
+        "five member entry paths",
+        "reviewed draft equals submitted readings",
+        "backend-driven stages",
+        "elevated/disagreement/missing/unsupported states",
+        "NASA and RAVDESS audio features",
+        "crew and CO2 association",
+        "reload persistence",
+        "saved review",
+        "JSON export",
+        "seven mobile pages",
+        "reduced motion",
+        "method and sources",
+        "V3 assets and cache prevention",
+        "fixed hazards link",
+        "star and nebula layers"
+      ]
+    },
+    "syntax": {
+      "javascript_files": 6,
+      "launcher": true
+    },
+    "audio_hashes_verified": 12,
+    "owner_model_files_unchanged": 39
+  },
+  "remaining": [
+    "Merge and review source on team integration branch",
+    "AST-05 not supported by owner models",
+    "No reviewed medical checklist content",
+    "No live sensor hardware or clinical validation"
+  ]
+}

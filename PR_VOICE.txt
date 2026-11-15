@@ -1,0 +1,5 @@
+Title: Integrate offline personal-baseline voice pipeline
+
+Adds offline audio preprocessing, speech-quality checks, feature extraction and personal-baseline arousal indicators. Includes synthetic examples, CLI enrollment and optional research-training scripts. No shipped RAVDESS-trained voice weights or validated astronaut stress classifications.
+
+Validation: combined preview voice tests: 25 passed, 3 skipped for absent original research fixtures. This is not a GitHub CI result. Local three-way comparison against fetched main b61174e found no overlapping edits. Producer model files are unchanged in the integration preview.

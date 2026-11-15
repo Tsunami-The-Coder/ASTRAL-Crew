@@ -1,0 +1,79 @@
+{
+  "source": "https://zenodo.org/records/1188976",
+  "authors": "Steven R. Livingstone and Frank A. Russo (2018)",
+  "license": "CC BY-NC-SA 4.0",
+  "license_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "note": "Original WAVs, acted emotion labels. Fearful is not a physiological stress label. Eight calm reference clips, one neutral and one fearful test; no training or accuracy claim.",
+  "files": [
+    {
+      "file": "03-01-02-01-01-01-01.wav",
+      "label": "calm",
+      "speaker": "RAVDESS Actor 01",
+      "source_member": "Actor_01/03-01-02-01-01-01-01.wav",
+      "sha256": "4c442cd4ea63c77b38adddcbd67c051e9476c8fff79ca555a677755c2d7f2c6a"
+    },
+    {
+      "file": "03-01-02-01-01-02-01.wav",
+      "label": "calm",
+      "speaker": "RAVDESS Actor 01",
+      "source_member": "Actor_01/03-01-02-01-01-02-01.wav",
+      "sha256": "57271aa6c5c22081f9bd560afb0605b122fd80e36796dc04bec1a67f2b62b41c"
+    },
+    {
+      "file": "03-01-02-01-02-01-01.wav",
+      "label": "calm",
+      "speaker": "RAVDESS Actor 01",
+      "source_member": "Actor_01/03-01-02-01-02-01-01.wav",
+      "sha256": "8ba7c44161ec9bec67c7ba25d531e4118f81578321686c02451e425f2dd3c0a7"
+    },
+    {
+      "file": "03-01-02-01-02-02-01.wav",
+      "label": "calm",
+      "speaker": "RAVDESS Actor 01",
+      "source_member": "Actor_01/03-01-02-01-02-02-01.wav",
+      "sha256": "ef76cad95e9a695009edff703deee1da15833743a801536b223ec4ffb8c51c0d"
+    },
+    {
+      "file": "03-01-02-02-01-01-01.wav",
+      "label": "calm",
+      "speaker": "RAVDESS Actor 01",
+      "source_member": "Actor_01/03-01-02-02-01-01-01.wav",
+      "sha256": "2b66015924416040ade81cd92deca032ec15fc53dfb73b0db80af268e0fa691b"
+    },
+    {
+      "file": "03-01-02-02-01-02-01.wav",
+      "label": "calm",
+      "speaker": "RAVDESS Actor 01",
+      "source_member": "Actor_01/03-01-02-02-01-02-01.wav",
+      "sha256": "d4fd63e69a155b00c978a7ed50d21b159d57a241dedc58d673ae16ccf4fa04c7"
+    },
+    {
+      "file": "03-01-02-02-02-01-01.wav",
+      "label": "calm",
+      "speaker": "RAVDESS Actor 01",
+      "source_member": "Actor_01/03-01-02-02-02-01-01.wav",
+      "sha256": "a5ebeece0c1d5cfb64fdefa0407191014b2540b1ebe766e951c3bf7298b60edc"
+    },
+    {
+      "file": "03-01-02-02-02-02-01.wav",
+      "label": "calm",
+      "speaker": "RAVDESS Actor 01",
+      "source_member": "Actor_01/03-01-02-02-02-02-01.wav",
+      "sha256": "64b4d14dbb2ff4c9656661a3ba8d09f0c5aa2a22a0acc4b083da877e85a1a3ef"
+    },
+    {
+      "file": "03-01-01-01-01-01-01.wav",
+      "label": "neutral",
+      "speaker": "RAVDESS Actor 01",
+      "source_member": "Actor_01/03-01-01-01-01-01-01.wav",
+      "sha256": "c467aad2ca80b089dbd4c2ba0dd16be508e4ce08230f46d36a208b859dc7fbac"
+    },
+    {
+      "file": "03-01-06-01-01-01-01.wav",
+      "label": "fearful",
+      "speaker": "RAVDESS Actor 01",
+      "source_member": "Actor_01/03-01-06-01-01-01-01.wav",
+      "sha256": "a2c792f3c5733f4469ae01c526833c22f3e14cbf145fab47f4d22e56f9552cdb"
+    }
+  ]
+}
