@@ -23,3 +23,7 @@ models/*.joblib
 .DS_Store
 .vscode/
 .idea/
+
+# Attributed demo audio only; raw recordings remain ignored.
+!submission/astral-prototype/audio/*.wav
+!submission/astral-prototype/audio/ravdess/*.wav

@@ -1,0 +1,5 @@
+Title: Integrate offline telemetry, SQLite and crew diagnostics
+
+Adds synthetic five-member mission telemetry, local storage/history, radiation/gravity/habitat modules, medical-resource availability, and snapshot-linked voice/wearable comparison rules. Findings recommend human review; missing/invalid inputs remain distinct.
+
+Validation: backend and integration behavior is covered in the tested combined preview (100 backend tests passed). This is not a claim that GitHub CI has run on this PR. After merging, run the combined integration checks. Local three-way comparison against fetched main b61174e found no overlapping edits. Model handoffs remain internal proposals.

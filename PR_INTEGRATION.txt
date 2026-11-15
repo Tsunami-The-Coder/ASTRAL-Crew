@@ -1,0 +1,7 @@
+Title: Connect timestamped crew entries to the offline mission dashboard
+
+Connects per-member voice/wearable selections and reviewed synthetic reading drafts to actual pipelines, SQLite entry history, snapshot-linked diagnostics, crew/cabin cross-checks and human review. Adds backend-driven processing status, exports, dark menus, attributed NASA/RAVDESS playback, sources/method pages and subtle stars/nebulae. Preserves model implementations and the established visual theme.
+
+Validation in the local combined preview: 100 backend tests; 36 wearable tests; voice 25 passed/3 fixture-related skips. Browser checks passed with external requests blocked: five entry paths, exact drafts, progress, flags, recorded features, persistence, reviews, export and seven mobile views; zero JavaScript errors. Re-run from the actual integration branch before merge.
+
+Inputs remain synthetic except attributed recording/biology demos. AST-05 models and reviewed medical checklist content remain unavailable. No hardware feeds, clinical validation or spacecraft control. Internal demo API additions need team review. Source-only handoff excludes databases, environments and caches.

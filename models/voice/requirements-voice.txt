@@ -1,0 +1,10 @@
+# Voice workstream: no NEW packages beyond Eleni's data layer.
+# Runtime (inference): numpy + scipy only.
+numpy
+scipy
+# Training / demos / tests (already in the team environment):
+pandas
+scikit-learn
+pytest
+# Optional, only for the Artemis spectrogram PNG:
+matplotlib
