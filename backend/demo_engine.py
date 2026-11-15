@@ -10,7 +10,7 @@ from backend.multimodal import analyze_multimodal
 from backend.service import MissionService
 from backend.simulator import generate_scenario
 from backend.export import export_bundle
-from fusion.adapters import adapt_voice, adapt_wearable
+from integration.adapters import adapt_voice, adapt_wearable
 from models.voice import VoiceStressEstimator
 from models.voice import synth
 from models.wearable import assess, load_model

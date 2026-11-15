@@ -10,8 +10,8 @@ from backend.crew import demo_profiles
 from backend.multimodal import analyze_multimodal
 from backend.service import MissionService
 from backend.simulator import generate_scenario
-from fusion.adapters import adapt_voice, adapt_wearable
-from fusion.rules import compare_modalities, FusionConfig
+from integration.adapters import adapt_voice, adapt_wearable
+from integration.rules import compare_modalities, FusionConfig
 
 NOW = '2026-11-15T12:00:00Z'
 

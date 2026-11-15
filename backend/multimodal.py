@@ -1,8 +1,8 @@
 """Internal composition of backend rules with separately adapted model outputs."""
 
 from backend.cross_analysis import analyze_snapshot, RuleConfig
-from fusion.rules import compare_modalities, FusionConfig
-from fusion.adapters import utc, number
+from integration.rules import compare_modalities, FusionConfig
+from integration.adapters import utc, number
 from copy import deepcopy
 
 
