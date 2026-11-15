@@ -451,3 +451,29 @@ contract was edited. The standalone cross_analysis CLI remains telemetry-only;
 the new wrapper/demo is the model-aware path. When producer modules are not on
 this branch, the demo must run in an isolated integration copy containing both
 modules; it does not silently merge branches or replace unavailable models.
+
+## Step 17: reviewable JSON handoff for a dashboard
+
+`backend/export.py` reads an existing, service-initialized demo database and
+exports overview, raw snapshot history for the latest run, registered profiles,
+mission logs/reviews, medical incidents and resource availability. This is a
+static internal review artifact, not an approved shared API or a live connection.
+
+```sh
+python3 -m backend.export --database /tmp/astral-real-fusion-demo.sqlite3 --replay-clock 2026-11-15T12:00:00Z --output /tmp/astral-ui-handoff.json
+```
+
+Use the explicit replay clock only for that synthetic demonstration. Omitting it
+uses real UTC and preserves stale/future status; it never restamps old readings.
+The output filename must not already exist. This command does not initialize or
+modify the source database. Source tables must have been initialized by
+MissionService or fusion.demo. Default limit is 100 records per collection and
+can be configured using --limit. Logs may include older runs; current roster
+comes from overview.snapshot, not every registered profile. Export includes
+reviewer names and notes: only synthetic demo content belongs in these artifacts.
+The export is not an atomic read under concurrent writes.
+
+Choose and agree the UI destination with Anuj before wiring this view into the
+HTML prototype or Streamlit. JSON export alone does not connect browser local
+storage to SQLite. Actual model implementations remain on their owner branches;
+the prototype was exercised together in an isolated integration copy.

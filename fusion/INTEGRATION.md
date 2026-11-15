@@ -115,3 +115,11 @@ CLI continues to run telemetry-only rules. Use the new wrapper/demo for models.
    prototype. This change does not connect browser-local storage to SQLite.
 6. Add the agreed adapter schema to shared documentation and producer/consumer
    fixtures together, rather than declaring either current proposal authoritative.
+
+## Dashboard review artifact
+
+After the integration demo, `python3 -m backend.export` can export its existing
+SQLite results as JSON using the explicit replay clock. See backend/README.md
+Step 17. The artifact contains actual-pipeline outputs on synthetic waveforms,
+not real crew observations. Review this candidate view with the UI owner before
+building the connection; exporting is not evidence of UI integration.
