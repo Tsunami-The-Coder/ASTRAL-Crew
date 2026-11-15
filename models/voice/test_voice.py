@@ -99,7 +99,7 @@ def test_records_pass_elenis_validator(enrolled, tmp_path):
     recs = [enrolled.analyze(synth.utterance(p, 3.0, seed=50 + i), c, TS, data_type="synthetic").record
             for i, (c, p) in enumerate(synth.SPEAKERS.items())]
     path = tmp_path / "voice.jsonl"
-    assert write_jsonl(recs, path) == 4
+    assert write_jsonl(recs, path) == 5
     assert check_outputs(path) == []
 
 
@@ -152,6 +152,18 @@ def test_auto_enrollment_then_scoring():
     statuses = [est.analyze(synth.utterance(prof, 3.0, seed=s), "AST-04", TS).details["status"] for s in range(5)]
     assert statuses[:3] == ["enrolling_baseline"] * 3
     assert statuses[3] == "ok"
+
+
+def test_fifth_speaker_enrollment_and_record_are_personal(enrolled):
+    assert set(synth.SPEAKERS) == {f"AST-{i:02}" for i in range(1, 6)}
+    assert enrolled.store.get("AST-05").crew_id == "AST-05"
+    assert enrolled.store.get("AST-05") is not enrolled.store.get("AST-04")
+    audio = synth.utterance(synth.SPEAKERS["AST-05"], 3.0, seed=4242)
+    result = enrolled.analyze(audio, "AST-05", TS, data_type="synthetic")
+    assert result.ok and result.record["crew_id"] == "AST-05"
+    assert tuple(result.record) == CONTRACT_KEYS
+    assert result.details["baseline_n"] >= 5
+    assert enrolled.analyze(audio, "AST-06", TS).details["status"] == "invalid_input"
 
 
 def test_calm_low_aroused_high(enrolled):
@@ -276,3 +288,4 @@ def test_artemis_demo_makes_no_stress_claims(tmp_path):
     assert (df["stress_label"] == "none").all()
     assert "stress_score" not in df.columns
     assert (tmp_path / "out" / "artemis_voice_features.csv").exists()
+

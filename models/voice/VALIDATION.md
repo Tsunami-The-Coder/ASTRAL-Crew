@@ -59,3 +59,10 @@ Fan hum (60 Hz + harmonics) + pink noise, 4 synthetic speakers × 20 utterances 
 - **Artemis II** demo (`artemis_demo.py`): feature traces and filter spectrogram on real crew audio. Demonstration only.
 
 Until those are run, the only valid voice claims are the ones in sections 1–3, stated as synthetic.
+
+
+## AST-05 roster fix (2026-11-15)
+
+Direct Python integration check passed on all five synthetic profiles: 10 calm enrollment clips per speaker; each yielded a six-field voice record with the correct crew ID and 10-clip personal baseline. All five baseline objects were distinct. AST-06 returned `invalid_input`. For AST-05, four additional calm clips averaged 0.22475 and four synthetic aroused clips averaged 0.987; all aroused scores exceeded calm scores. This verifies software behavior on synthetic audio, not accuracy on real speech.
+
+The existing pytest suite has a new AST-05 case and the output count expectation is now five. The suite was not run in this environment: pytest is unavailable and installation could not reach PyPI (DNS blocked). No dependencies were added to the repository.
