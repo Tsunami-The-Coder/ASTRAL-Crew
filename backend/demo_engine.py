@@ -99,7 +99,6 @@ class DemoEngine:
             sample['limitations'] = [
                 'Synthetic local demo, not live crew measurements.',
                 'Raw features and model indicators do not establish a cause or diagnosis.',
-                'AST-05 has telemetry but is unsupported by current voice/wearable modules.',
             ]
             progress = max(0, (step / (len(samples) - 1) - .25) / .75)
             for index, member in enumerate(sample['crew']):
@@ -182,6 +181,6 @@ class DemoEngine:
             'signals': 'synthetic_audio_and_wrist_waveforms',
             'voice_method': 'personal_baseline_v1', 'wearable_model': self.model['version'],
             'crew_checkins': deepcopy(self.checkins),
-            'supported_model_crew': ['AST-01', 'AST-02', 'AST-03', 'AST-04'],
+            'supported_model_crew': list(synth.SPEAKERS),
         }
         return result

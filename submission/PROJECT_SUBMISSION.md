@@ -38,7 +38,7 @@ ASTRAL joins the team's Digital Health Twin concept with a practical self-check 
 
 NASA OSDR OSD-575 is the SpaceX Inspiration4 serum metabolic panel and immune/cardiac cytokine study. The bundled transformed comprehensive metabolic panel file contains 28 samples for four crew codes, seven timepoints each: L−92, L−44, L−3, R+1, R+45, R+82, and R+194. Those are pre-flight and post-flight collections around a three-day low Earth orbit mission; this CMP series does not provide daily wearable values or in-flight measurements.
 
-ASTRAL displays source values for five analytes, without aggregation or fitting a model. The chart's shaded band reflects the laboratory reference interval in the data file. It is contextual information, not a clinical threshold for astronauts. The small cohort and sparse sampling cannot validate ASTRAL's daily personal trend rule. NASA OSDR study metadata and the exact file hash, license, and transformation are documented in [data/README.md](data/README.md).
+ASTRAL displays source values for five analytes, without aggregation or fitting a model. The chart's shaded band reflects the laboratory reference interval in the data file. It is contextual information, not a clinical threshold for astronauts. The small cohort and sparse sampling cannot validate ASTRAL's daily personal trend rule. NASA OSDR study metadata and the exact file hash, license, and transformation are documented in [root README](../README.md).
 
 NASA's 5 Hazards of Human Spaceflight structure the Mission Hazards view. CSA's radiation-monitoring article and space-experiment overview inform background text only; no CSA dataset or sensor feed is connected. See [REFERENCES.md](REFERENCES.md) for the complete source-use map.
 

@@ -72,7 +72,6 @@
     flags.sort(function(a,b){var ai=priority.indexOf(a.code),bi=priority.indexOf(b.code);return (ai<0?99:ai)-(bi<0?99:bi);});
     if(flags.length){var copy=resultCopy(flags[0]);return {title:copy.title,detail:copy.next,flagged:true};}
     var m=(r.multimodal||[]).find(function(item){return item.crew_id===id;});
-    if(id==='AST-05')return {title:'AI unavailable for AST-05',detail:'Readings are saved. These models support AST-01 to AST-04.',flagged:false};
     var voice=m&&m.signals&&m.signals.voice;
     if(voice&&voice.raw&&voice.raw.details&&voice.raw.details.nasa_demo)return {title:'Recorded audio features extracted',detail:'No crew stress score: this recording has no matching member baseline.',flagged:false};
     if(!m||m.status!=='compared')return {title:'Not enough usable inputs',detail:'Check the voice and wearable panels for the missing or uncertain input.',flagged:false};
@@ -100,7 +99,7 @@
       all.push({ key: 'issue-' + i, title: ({heart_rate_bpm:'Heart rate',hrv_rmssd_ms:'Pulse variability',eda_microsiemens:'Skin conductance',co2_percent:'Cabin CO₂',o2_percent:'Cabin oxygen',pressure_kpa:'Cabin pressure'}[issue.field] || 'Reading') + ' is ' + (issue.status==='invalid'?'invalid':'missing'), category: 'quality', ids: ids, type: 'quality', message: String(issue.scope || 'Input') + ' · ' + String(issue.field || 'reading') + ' · ' + String(issue.status || 'unavailable') + '. Verify input availability; no normal value was substituted.' });
     });
     (r.multimodal || []).forEach(function (m) {
-      if (m.status !== 'compared') all.push({ key: 'model-' + m.crew_id, title: m.crew_id === 'AST-05' ? 'AI unavailable for AST-05' : 'Voice and wearable cannot be compared', category: 'quality', ids: [m.crew_id], type: 'quality', message: m.crew_id === 'AST-05' ? 'Readings are saved, but these AI models support AST-01 to AST-04.' : 'One input is missing, uncertain, or unsuitable for a paired result. Check the member’s Cognitive panel.' });
+      if (m.status !== 'compared') all.push({ key: 'model-' + m.crew_id, title: 'Voice and wearable cannot be compared', category: 'quality', ids: [m.crew_id], type: 'quality', message: 'One input is missing, uncertain, or unsuitable for a paired result. Check the member’s Cognitive panel.' });
     });
     return all;
   }
@@ -112,7 +111,6 @@
     if(has('MODALITY_DISAGREEMENT'))return {tone:'caution',icon:'⇄',label:'Conflicting signals'};
     if(has('MOVEMENT_CAUTION'))return {tone:'caution',icon:'≈',label:'Movement detected'};
     if(flags.length)return {tone:'caution',icon:'!',label:'Readings changed'};
-    if(id==='AST-05')return {tone:'neutral',icon:'—',label:'AI unavailable'};
     var m=(r.multimodal||[]).find(function(item){return item.crew_id===id;});
     var voice=m&&m.signals&&m.signals.voice;
     if(voice&&voice.raw&&voice.raw.details&&voice.raw.details.nasa_demo)return {tone:'info',icon:'i',label:'Audio features only'};
@@ -168,7 +166,7 @@
       var c = member(id), state = crewState(id), card = node('button', 'card mission-crew-card'); card.type = 'button'; card.dataset.crewId = id;
       card.setAttribute('aria-label', id + ', ' + state.label + ', view health details');
       var top = node('div', 'crew-card-top'), avatar = node('span', 'crew-avatar', String(index + 1).padStart(2, '0')); avatar.style.color = COLORS[index];
-      top.append(node('span', 'crew-card-id', id), avatar); card.append(top, node('div', 'crew-card-role', c ? (id === 'AST-05' ? 'Telemetry · models unsupported' : 'Synthetic crew telemetry') : 'Absent from loaded snapshot'));
+      top.append(node('span', 'crew-card-id', id), avatar); card.append(top, node('div', 'crew-card-role', c ? 'Synthetic crew telemetry' : 'Absent from loaded snapshot'));
       var reading = node('div', 'crew-reading', value(c && c.biometrics && c.biometrics.heart_rate_bpm)); if (c && finite(c.biometrics && c.biometrics.heart_rate_bpm)) reading.append(node('small', '', ' bpm'));
       card.append(reading, badge(state.indicator), node('span', 'crew-card-link', 'View health →'));
       card.addEventListener('click', function () { selectCrew(id); }); $('mission-crew-cards').append(card);
@@ -232,7 +230,6 @@
         var meter=node('div','indicator-meter meter-'+indicator.tone);meter.setAttribute('role','meter');meter.setAttribute('aria-label',pair[1]+' demo score');meter.setAttribute('aria-valuemin','0');meter.setAttribute('aria-valuemax','1');meter.setAttribute('aria-valuenow',String(signal.stress_score));
         meter.setAttribute('aria-valuetext',value(signal.stress_score,3)+' out of 1; '+indicator.label+'. Scores have different meanings across models.');var fill=node('span');fill.style.width=(signal.stress_score*100)+'%';meter.append(fill);e.append(meter);
       }
-      if (selected === 'AST-05') e.append(node('p', '', 'AST-05 is not supported by these models yet.'));
       var technical=node('details','evidence-detail');technical.append(node('summary','','Model details'));Array.from(e.children).slice(3).filter(function(child){return !child.classList.contains('indicator-meter');}).forEach(function(child){technical.append(child);});if(technical.children.length>1)e.append(technical);
       var recorded=signal && signal.raw && signal.raw.details && signal.raw.details.nasa_demo;
       if(recorded && recorded.result && recorded.result.features){

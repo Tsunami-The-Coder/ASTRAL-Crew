@@ -86,7 +86,7 @@ Command: `python -m models.wearable.train <original-WESAD.zip> --output <outside
 Component and fixture checks only. No full-app end-to-end test is claimed:
 the inspected fusion/backend/UI workstreams contained planning documents and
 the shared handoff is still proposed. The integration lead must review the interface and run
-the integration checks in INTEGRATION_HANDOFF.md. No changes were made outside this
+the integration checks described in `integration/INTEGRATION.md`. No changes were made outside this
 wearable workstream, and no code was merged into main.
 
 
