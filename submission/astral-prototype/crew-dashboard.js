@@ -54,31 +54,96 @@
     });
     return input;
   }
+  var RESULT_COPY = {
+    BOTH_INDICATORS_ELEVATED: {title:'Voice and wearable indicators are high', what:'Both inputs are above their demo comparison bands.', next:'Check the readings and the member’s recent activity.'},
+    MODALITY_DISAGREEMENT: {title:'Voice and wearable results disagree', what:'One indicator is high while the other is low.', next:'Check both samples before drawing a conclusion.'},
+    SHARED_CREW_CHANGE: {title:'Several crew members changed', what:'At least two members have multiple readings above or below their references.', next:'Check shared activities and cabin conditions.'},
+    POSSIBLE_ENVIRONMENTAL_ASSOCIATION: {title:'Crew changes happened alongside rising CO₂', what:'The crew pattern and CO₂ trend occurred together. This does not prove the cause.', next:'Check the cabin readings and ventilation context.'},
+    MOVEMENT_CAUTION: {title:'Movement affects the wearable result', what:'Motion makes a stress interpretation less reliable.', next:'Use a resting sample or check the activity context.'},
+    RADIATION_RATE_INCREASE: {title:'Radiation dose rate increased', what:'The simulated rate rose from the earlier reading.', next:'Check the dose-rate readings and scenario.'},
+    CABIN_PRESSURE_DROP: {title:'Cabin pressure dropped', what:'Pressure fell from the earlier cabin reading.', next:'Check the cabin sensor and scenario.'},
+    CABIN_OXYGEN_FRACTION_DROP: {title:'Cabin oxygen dropped', what:'The oxygen fraction fell from the earlier reading.', next:'Check oxygen and pressure readings together.'}
+  };
+  function resultCopy(f) { return RESULT_COPY[f.code] || {title:f.message || 'Reading needs checking', what:f.message || 'A reading changed.', next:'Check the source readings.'}; }
+  function memberResult(r,id) {
+    if(!r)return {title:'Analysis not ready', detail:'Finish playback or submit an entry.', flagged:false};
+    var flags=r.findings.filter(function(f){return f.crew_id===id||(f.crew_ids||[]).includes(id);});
+    var priority=['BOTH_INDICATORS_ELEVATED','MODALITY_DISAGREEMENT','MOVEMENT_CAUTION'];
+    flags.sort(function(a,b){var ai=priority.indexOf(a.code),bi=priority.indexOf(b.code);return (ai<0?99:ai)-(bi<0?99:bi);});
+    if(flags.length){var copy=resultCopy(flags[0]);return {title:copy.title,detail:copy.next,flagged:true};}
+    var m=(r.multimodal||[]).find(function(item){return item.crew_id===id;});
+    if(id==='AST-05')return {title:'AI unavailable for AST-05',detail:'Readings are saved. These models support AST-01 to AST-04.',flagged:false};
+    var voice=m&&m.signals&&m.signals.voice;
+    if(voice&&voice.raw&&voice.raw.details&&voice.raw.details.nasa_demo)return {title:'Recorded audio features extracted',detail:'No crew stress score: this recording has no matching member baseline.',flagged:false};
+    if(!m||m.status!=='compared')return {title:'Not enough usable inputs',detail:'Check the voice and wearable panels for the missing or uncertain input.',flagged:false};
+    if(m.agreement==='inconclusive')return {title:'No clear combined result',detail:'The indicators do not meet a clear comparison pattern.',flagged:false};
+    return {title:'No change flagged',detail:'No alert was triggered from the available inputs.',flagged:false};
+  }
+  function missionResult(r) {
+    if(!r)return 'No analysis yet. Submit an entry or run the crew/cabin check.';
+    if(!r.findings.length)return 'No changes flagged from the available inputs. Missing inputs are listed separately.';
+    var ids=new Set();r.findings.forEach(function(f){if(f.crew_id)ids.add(f.crew_id);(f.crew_ids||[]).forEach(function(id){ids.add(id);});});
+    var cabin=r.findings.some(function(f){return /CABIN|ENVIRONMENTAL|RADIATION/.test(f.code);});
+    return r.findings.length+' flags · '+ids.size+' crew members affected'+(cabin?' · Cabin or exposure change detected.':'.')+' See Flagged findings for what changed and what to check.';
+  }
+  window.AstralResultText={member:memberResult,mission:missionResult,finding:resultCopy};
   function findings() {
     var r = report(); if (!r) return [];
     var all = r.findings.map(function (f, i) {
       var category = /CABIN|ENVIRONMENTAL/.test(f.code) ? 'cabin' : 'crew';
       var ids = Array.isArray(f.crew_ids) ? f.crew_ids.slice() : f.crew_id ? [f.crew_id] : [];
       if (Array.isArray(f.evidence)) f.evidence.forEach(function (e) { if (e.crew_id && !ids.includes(e.crew_id)) ids.push(e.crew_id); });
-      return { code: f.code, source: f, key: 'finding-' + i, title: String(f.code || 'Review finding').replaceAll('_', ' ').toLowerCase(), category: category, ids: ids, message: f.message || 'Review the source evidence.', type: 'finding' };
+      return { code: f.code, source: f, key: 'finding-' + i, title: resultCopy(f).title, category: category, ids: ids, message: f.message || 'Review the source evidence.', type: 'finding' };
     });
     r.input_issues.forEach(function (issue, i) {
       var ids = IDS.filter(function (id) { return String(issue.scope).includes(id); });
-      all.push({ key: 'issue-' + i, title: 'Reading ' + String(issue.status || 'unavailable'), category: 'quality', ids: ids, type: 'quality', message: String(issue.scope || 'Input') + ' · ' + String(issue.field || 'reading') + ' · ' + String(issue.status || 'unavailable') + '. Verify input availability; no normal value was substituted.' });
+      all.push({ key: 'issue-' + i, title: ({heart_rate_bpm:'Heart rate',hrv_rmssd_ms:'Pulse variability',eda_microsiemens:'Skin conductance',co2_percent:'Cabin CO₂',o2_percent:'Cabin oxygen',pressure_kpa:'Cabin pressure'}[issue.field] || 'Reading') + ' is ' + (issue.status==='invalid'?'invalid':'missing'), category: 'quality', ids: ids, type: 'quality', message: String(issue.scope || 'Input') + ' · ' + String(issue.field || 'reading') + ' · ' + String(issue.status || 'unavailable') + '. Verify input availability; no normal value was substituted.' });
     });
     (r.multimodal || []).forEach(function (m) {
-      if (m.status !== 'compared') all.push({ key: 'model-' + m.crew_id, title: m.crew_id === 'AST-05' ? 'Model support unavailable' : 'Incomplete model comparison', category: 'quality', ids: [m.crew_id], type: 'quality', message: m.crew_id === 'AST-05' ? 'AST-05 model results are unavailable. No score was substituted.' : (m.issues || []).join('; ') || 'Usable paired model evidence is unavailable.' });
+      if (m.status !== 'compared') all.push({ key: 'model-' + m.crew_id, title: m.crew_id === 'AST-05' ? 'AI unavailable for AST-05' : 'Voice and wearable cannot be compared', category: 'quality', ids: [m.crew_id], type: 'quality', message: m.crew_id === 'AST-05' ? 'Readings are saved, but these AI models support AST-01 to AST-04.' : 'One input is missing, uncertain, or unsuitable for a paired result. Check the member’s Cognitive panel.' });
     });
     return all;
   }
-  function crewState(id) {
-    if (!member(id)) return { label: 'No current reading', cls: 'missing' };
-    if (!report()) return { label: 'Playback in progress', cls: 'missing' };
-    var flags = findings().filter(function (f) { return f.ids.includes(id); });
-    if (flags.some(function (f) { return f.category !== 'quality'; })) return { label: 'Review suggested', cls: 'warn' };
-    if (flags.length) return { label: id === 'AST-05' ? 'Models unsupported' : 'Partial inputs', cls: 'missing' };
-    return { label: 'No current flag', cls: '' };
+  function memberIndicator(r,id) {
+    if(!r)return {tone:'neutral',icon:'…',label:'Not analyzed'};
+    var flags=r.findings.filter(function(f){return f.crew_id===id||(f.crew_ids||[]).includes(id);});
+    var has=function(code){return flags.some(function(f){return f.code===code;});};
+    if(has('BOTH_INDICATORS_ELEVATED'))return {tone:'high',icon:'!',label:'High indicators'};
+    if(has('MODALITY_DISAGREEMENT'))return {tone:'caution',icon:'⇄',label:'Conflicting signals'};
+    if(has('MOVEMENT_CAUTION'))return {tone:'caution',icon:'≈',label:'Movement detected'};
+    if(flags.length)return {tone:'caution',icon:'!',label:'Readings changed'};
+    if(id==='AST-05')return {tone:'neutral',icon:'—',label:'AI unavailable'};
+    var m=(r.multimodal||[]).find(function(item){return item.crew_id===id;});
+    var voice=m&&m.signals&&m.signals.voice;
+    if(voice&&voice.raw&&voice.raw.details&&voice.raw.details.nasa_demo)return {tone:'info',icon:'i',label:'Audio features only'};
+    if(!m||m.status!=='compared'){
+      if(m&&(m.issues||[]).some(function(issue){return /confidence/.test(issue);}))return {tone:'caution',icon:'?',label:'Uncertain signal'};
+      return {tone:'info',icon:'?',label:'Check inputs'};
+    }
+    if(m.agreement==='inconclusive')return {tone:'caution',icon:'?',label:'Inconclusive'};
+    return {tone:'clear',icon:'✓',label:'No change flagged'};
   }
+  function badge(indicator) {
+    var e=node('span','result-indicator result-'+indicator.tone);
+    e.dataset.result=indicator.tone;
+    var icon=node('span','result-symbol',indicator.icon);icon.setAttribute('aria-hidden','true');
+    e.append(icon,node('span','',indicator.label));e.setAttribute('aria-label','Result: '+indicator.label);return e;
+  }
+  function crewState(id) {
+    var indicator=!member(id)?{tone:'info',icon:'?',label:'Reading missing'}:bundle.overview.historical_analysis?{tone:'neutral',icon:'◷',label:'Older reading'}:memberIndicator(report(),id);
+    return {label:indicator.label,cls:indicator.tone,indicator:indicator};
+  }
+  function signalIndicator(signal,source,config) {
+    if(!signal||signal.status!=='available')return {tone:'info',icon:'?',label:'Input unavailable'};
+    if(source==='voice'&&(!finite(signal.confidence)||signal.confidence<(finite(config.minimum_voice_confidence)?config.minimum_voice_confidence:.5)))return {tone:'caution',icon:'?',label:'Uncertain signal'};
+    if(source==='wearable'&&signal.quality&&signal.quality.status==='motion_caution')return {tone:'caution',icon:'≈',label:'Movement detected'};
+    var low=finite(config[source+'_low_score'])?config[source+'_low_score']:.4,high=finite(config[source+'_elevated_score'])?config[source+'_elevated_score']:.6;
+    if(signal.stress_score>=high)return {tone:'high',icon:'!',label:'High indicator'};
+    if(signal.stress_score<=low)return {tone:'clear',icon:'✓',label:'Low indicator'};
+    return {tone:'caution',icon:'•',label:'Between bands'};
+  }
+  window.AstralResultText.indicator=memberIndicator;
+  window.AstralResultText.badge=badge;
   function kpi(title, reading, foot) {
     var card = node('article', 'card kpi'); card.append(node('div', 'kpi-top', title), node('div', 'kpi-value', reading), node('div', 'kpi-foot', foot)); return card;
   }
@@ -92,7 +157,8 @@
     var p = payload(), r = report(), flags = findings(), crew = p.crew || [];
     var affected = new Set(); flags.filter(function (f) { return f.category !== 'quality'; }).forEach(function (f) { f.ids.forEach(function (id) { affected.add(id); }); });
     var missingPairs = IDS.filter(function (id) { var m = multimodal(id); return !m || m.status !== 'compared'; }).length;
-    $('mission-kpis').replaceChildren(kpi('CREW IN VIEW', crew.length + ' / 5', 'Five explicit crew profiles'), kpi('CREW FLAGGED', r ? String(affected.size) : 'Not analyzed', 'Indicators for human review'), kpi('REVIEW FINDINGS', r ? String(r.findings.length) : 'Unavailable', 'Cabin + crew · cause unconfirmed'), kpi('INCOMPLETE MODEL PAIRS', String(missingPairs), 'Missing, withheld or unsupported'));
+    $('mission-kpis').replaceChildren(kpi('CREW IN VIEW', crew.length + ' / 5', 'Five explicit crew profiles'), kpi('CREW FLAGGED', r ? String(affected.size) : 'Not analyzed', 'Indicators for human review'), kpi('FLAGS', r ? String(r.findings.length) : 'Unavailable', 'Changes found in crew or cabin inputs'), kpi('INCOMPLETE MODEL PAIRS', String(missingPairs), 'Missing, withheld or unsupported'));
+    $('mission-recheck-status').textContent = (bundle.overview.historical_analysis?'Older readings · run a new check. ':'') + missionResult(r);
     $('mission-day-label').textContent = finite(p.mission_day) ? 'MISSION DAY ' + p.mission_day : 'MISSION DAY UNAVAILABLE';
     $('mission-source-label').textContent = sourceLabel;
     $('mission-top-day').textContent = finite(p.mission_day) ? 'MISSION DAY ' + p.mission_day : 'MISSION REPLAY';
@@ -104,7 +170,7 @@
       var top = node('div', 'crew-card-top'), avatar = node('span', 'crew-avatar', String(index + 1).padStart(2, '0')); avatar.style.color = COLORS[index];
       top.append(node('span', 'crew-card-id', id), avatar); card.append(top, node('div', 'crew-card-role', c ? (id === 'AST-05' ? 'Telemetry · models unsupported' : 'Synthetic crew telemetry') : 'Absent from loaded snapshot'));
       var reading = node('div', 'crew-reading', value(c && c.biometrics && c.biometrics.heart_rate_bpm)); if (c && finite(c.biometrics && c.biometrics.heart_rate_bpm)) reading.append(node('small', '', ' bpm'));
-      card.append(reading, node('div', 'crew-status ' + state.cls, state.label), node('span', 'crew-card-link', 'View health →'));
+      card.append(reading, badge(state.indicator), node('span', 'crew-card-link', 'View health →'));
       card.addEventListener('click', function () { selectCrew(id); }); $('mission-crew-cards').append(card);
     });
     $('mission-cabin-values').replaceChildren(); var env = p.environment || {};
@@ -115,25 +181,20 @@
     $('mission-freshness-label').textContent = 'Snapshot: ' + (f.status || 'unavailable') + ' · ' + date(snapshot() ? snapshot().timestamp : null) + '. Synthetic input.';
     $('crew-chart-caption').textContent = bundle.snapshot_history.length + ' stored snapshots · actual timestamps in UTC';
     $('mission-crew-legend').replaceChildren(); IDS.forEach(function (id, i) { var e = node('span'), swatch = node('i'); swatch.style.background = COLORS[i]; e.append(swatch, document.createTextNode(id)); $('mission-crew-legend').append(e); });
+    var legend=$('result-indicator-key');if(!legend){legend=node('div','result-key');legend.id='result-indicator-key';$('mission-crew-cards').before(legend);}
+    legend.replaceChildren();[{tone:'high',icon:'!',label:'High indicators'},{tone:'caution',icon:'⇄',label:'Check / disagreement'},{tone:'info',icon:'?',label:'Input issue'},{tone:'clear',icon:'✓',label:'No change flagged'}].forEach(function(item){legend.append(badge(item));});
+    legend.append(node('small','','Demo results · colour is not a medical severity scale.'));
     renderFlagList($('mission-flag-preview'), flags.slice(0, 3));
   }
   function renderFlagList(container, items) {
     container.replaceChildren();
     if (!report()) { empty(container, 'Playback in progress. Cross-check findings appear on the final sample.'); return; }
-    if (!items.length) { empty(container, 'No flags for this scenario. Try the CO₂ cross-check, disagreement, or missing-signal tests in Test lab.'); return; }
+    if (!items.length) { empty(container, 'No matching flags. Choose a crew member to add an entry, or change the cabin scenario in Mission control.'); return; }
     items.forEach(function (f) {
       var article = node('article', 'flag-item ' + (f.category === 'quality' ? 'quality' : '')), body = node('div'), top = node('div', 'flag-top');
-      var title = f.title.charAt(0).toUpperCase() + f.title.slice(1); top.append(node('b', '', title), node('span', 'state ' + (f.category === 'quality' ? 'info' : 'demo'), f.category === 'quality' ? 'DATA QUALITY' : 'RECOMMENDED REVIEW'));
-      var shortText = {
-        SHARED_CREW_CHANGE: 'Several crew readings changed from their reference.',
-        POSSIBLE_ENVIRONMENTAL_ASSOCIATION: 'Crew changes coincide with rising CO₂. Cause unconfirmed.',
-        BOTH_INDICATORS_ELEVATED: 'Voice and wearable bands are elevated. Review context.',
-        MODALITY_DISAGREEMENT: 'Indicators disagree. Verify both signals and crew context.',
-        RADIATION_RATE_INCREASE: 'Dose rate increased. Verify the dosimeters.',
-        CABIN_PRESSURE_DROP: 'Cabin pressure dropped. Verify readings.',
-        CABIN_OXYGEN_FRACTION_DROP: 'Oxygen fraction dropped. Verify readings.'
-      };
-      body.append(top, node('p', '', shortText[f.code] || f.message), node('div', 'flag-meta', f.ids.length ? f.ids.join(' · ') : 'Shared cabin / crew context'));
+      var title = f.title.charAt(0).toUpperCase() + f.title.slice(1),indicator=f.category==='quality'?{tone:'info',icon:'?',label:'Input issue'}:f.code==='BOTH_INDICATORS_ELEVATED'?{tone:'high',icon:'!',label:'High indicators'}:f.code==='MODALITY_DISAGREEMENT'?{tone:'caution',icon:'⇄',label:'Conflicting signals'}:{tone:'caution',icon:'!',label:'Check readings'}; article.dataset.result=indicator.tone;top.append(node('b','',title),badge(indicator));
+      var copy=f.type==='finding'?resultCopy(f.source):{what:f.message,next:'Check the input source or submit a new sample.'};
+      body.append(top,node('p','',copy.what),node('p','flag-next','Next: '+copy.next),node('div','flag-meta',f.ids.length?f.ids.join(' · '):'Shared cabin'));
       if (f.type === 'finding') { var detail = node('details', 'evidence-detail'); detail.append(node('summary', '', 'Evidence & limits'), node('p', '', f.message)); body.append(detail); }
       article.append(node('div', 'flag-mark', f.category === 'quality' ? 'i' : '!'), body); container.append(article);
     });
@@ -141,9 +202,9 @@
   function renderFlags() {
     var filter = $('mission-flag-filter').value, flags = findings().filter(function (f) { return filter === 'all' || f.category === filter; });
     renderFlagList($('mission-flag-list'), flags);
-    $('mission-report-state').textContent = bundle.overview.historical_analysis ? 'Historical report: these findings belong to stale or future-dated telemetry. Verify current readings before interpretation.' : 'Snapshot-linked report · ' + (report() ? report().rules_version : 'analysis unavailable') + '. Demo rules are not clinical thresholds. Review history is separate from the findings.';
+    $('mission-report-state').textContent = (bundle.overview.historical_analysis?'Older readings · submit a fresh entry. ':'') + missionResult(report());
     $('mission-reviews').replaceChildren(); var entries = (bundle.mission_logs || []).flatMap(function (entry) { return (entry.reviews || []).map(function (review) { return { entry: entry, review: review }; }); });
-    if (!entries.length) empty($('mission-reviews'), 'No recorded human-review entries in the loaded export.');
+    if (!entries.length) empty($('mission-reviews'), report()?'No team notes added yet. Analysis is already complete.':'No team notes added yet.');
     entries.forEach(function (item) { var e = node('div', 'review-item'); e.append(node('b', '', 'Analysis ' + item.entry.id + ' · ' + item.review.decision), node('p', '', item.review.note), node('small', 'flag-meta', item.review.reviewer + ' · ' + date(item.review.recorded_at))); $('mission-reviews').append(e); });
   }
   function renderCrew() {
@@ -154,25 +215,30 @@
     }); $('mission-crew-select').value = selected;
     var c = member(selected), state = crewState(selected), vitals = c && c.biometrics || {};
     var summary = node('article', 'card crew-detail-banner'), info = node('div'); info.append(node('h2', '', selected), node('p', '', c ? 'Individual synthetic readings · ' + date(snapshot().timestamp) : 'No reading for this member in the loaded snapshot'));
-    summary.append(node('div', 'crew-avatar', selected.slice(-2)), info, node('span', 'state ' + (state.cls === 'warn' ? 'demo' : 'info'), state.label)); $('crew-detail-summary').replaceChildren(summary);
+    summary.append(node('div', 'crew-avatar', selected.slice(-2)), info, badge(state.indicator)); $('crew-detail-summary').replaceChildren(summary);
     $('crew-detail-vitals').replaceChildren(kpi('HEART RATE', value(vitals.heart_rate_bpm), 'bpm · synthetic'), kpi('RMSSD PROXY', value(vitals.hrv_rmssd_ms, 1), 'ms · extraction-dependent'), kpi('SKIN CONDUCTANCE', value(vitals.eda_microsiemens, 2), 'µS · synthetic'), kpi('MODEL COMPARISON', multimodal(selected) ? multimodal(selected).status : 'Unavailable', 'Not a health diagnosis'));
     $('crew-model-evidence').replaceChildren(); var m = multimodal(selected);
     [['voice', 'Voice arousal'], ['wearable', 'Wearable research indicator']].forEach(function (pair) {
       var signal = m && m.signals && m.signals[pair[0]], e = node('div', 'model-evidence'), title = node('div', 'model-title');
-      title.append(node('span', '', pair[1]), node('span', 'state info', signal ? signal.status : 'missing')); e.append(title);
-      e.append(node('div', 'model-score', signal && signal.status === 'available' ? (signal.stress_score >= .6 ? 'Elevated indicator · ' : signal.stress_score <= .4 ? 'Below demo band · ' : 'Intermediate · ') + value(signal.stress_score, 3) : 'No usable score'));
-      e.append(node('p', 'model-meaning', signal && signal.score_semantics ? (pair[0] === 'voice' ? 'Personal-baseline stress-related arousal indicator · not a diagnosis' : 'Uncalibrated WESAD research score') : 'No usable model score; no normal value substituted.'));
+      var indicator=signalIndicator(signal,pair[0],m&&m.config||{});title.append(node('span','',pair[1]),badge(indicator));e.append(title);
+      e.append(node('div', 'model-score', signal && signal.status === 'available' ? value(signal.stress_score,3)+' / 1' : 'Score unavailable'));
+      e.append(node('p', 'model-meaning', signal && signal.score_semantics ? (pair[0] === 'voice' ? 'Voice change from the generated calm reference.' : 'Wearable indicator from pulse, skin conductance and movement.') : 'Check the sample or baseline. Missing data does not mean a normal result.'));
       if (signal) {
         e.append(node('p', '', (signal.model_version || 'Version unavailable') + ' · ' + (signal.input_origin || 'Input unavailable')));
         e.append(node('p', '', pair[0] === 'voice' ? 'Heuristic confidence: ' + value(signal.confidence, 2) : 'Confidence: not calibrated; kept null.'));
         if (signal.issues && signal.issues.length) e.append(node('p', '', signal.issues.join('; ')));
       }
+      if(signal&&signal.status==='available'&&finite(signal.stress_score)){
+        var meter=node('div','indicator-meter meter-'+indicator.tone);meter.setAttribute('role','meter');meter.setAttribute('aria-label',pair[1]+' demo score');meter.setAttribute('aria-valuemin','0');meter.setAttribute('aria-valuemax','1');meter.setAttribute('aria-valuenow',String(signal.stress_score));
+        meter.setAttribute('aria-valuetext',value(signal.stress_score,3)+' out of 1; '+indicator.label+'. Scores have different meanings across models.');var fill=node('span');fill.style.width=(signal.stress_score*100)+'%';meter.append(fill);e.append(meter);
+      }
       if (selected === 'AST-05') e.append(node('p', '', 'AST-05 is not supported by these models yet.'));
-      var technical=node('details','evidence-detail');technical.append(node('summary','','Model details'));Array.from(e.children).slice(3).forEach(function(child){technical.append(child);});if(technical.children.length>1)e.append(technical);
+      var technical=node('details','evidence-detail');technical.append(node('summary','','Model details'));Array.from(e.children).slice(3).filter(function(child){return !child.classList.contains('indicator-meter');}).forEach(function(child){technical.append(child);});if(technical.children.length>1)e.append(technical);
       var recorded=signal && signal.raw && signal.raw.details && signal.raw.details.nasa_demo;
       if(recorded && recorded.result && recorded.result.features){
+        e.querySelector('.result-indicator').replaceWith(badge({tone:'info',icon:'i',label:'Features extracted'}));
         e.querySelector('.model-score').textContent='Features extracted';
-        e.querySelector('.model-meaning').textContent='Recorded sample · no paired crew stress score';
+        e.querySelector('.model-meaning').textContent='Audio processed; no matching crew baseline for stress scoring.';
         var features=recorded.result.features,box=node('div','recorded-features');
         box.append(node('p','',recorded.origin),node('b','','Pitch '+value(features.f0_mean_hz,1)+' Hz · TEO '+value(features.teo_log_mean,2)),node('p','','MFCC 1: '+value(features.mfcc_1_mean,2)+' · source label is not a model prediction.'));
         e.append(box);
@@ -185,6 +251,7 @@
     var medical = node('article', 'card panel'), incidents = (bundle.medical_incidents || []).filter(function (i) { return i.crew_id === selected; }); medical.append(node('h3', '', 'Medical-support records'), node('p', '', incidents.length + ' incident records in this export. ' + (bundle.medical_resources && bundle.medical_resources.availability === 'available' ? 'Reviewed resources are listed in the export.' : 'No reviewed medical checklist content is available.'))); longTerm.append(medical);
     renderFlagList($('crew-detail-flags'), findings().filter(function (f) { return f.ids.includes(selected) || f.category === 'cabin'; }));
     $('crew-detail-chart-caption').textContent = 'Stored readings · gaps preserved';
+    var entryBadge=$('member-result-indicator');if(!entryBadge){entryBadge=node('div','entry-result-indicator');entryBadge.id='member-result-indicator';$('member-checkin-result').before(entryBadge);}entryBadge.replaceChildren(badge(state.indicator));
     renderTable();
     renderModules();
   }
@@ -273,5 +340,7 @@
     load: function (input, label) { var next = validate(input); bundle = next; sourceLabel = label || 'Local backend'; render(); },
     current: function () { return JSON.parse(JSON.stringify(bundle)); }
   };
+  $('page-flagged').querySelector('h1').textContent='What changed?';
+  var reviewTitle=document.querySelector('.review-panel .panel-title');if(reviewTitle)reviewTitle.textContent='Add a team note and decision';
   validate(bundle); render();
 })();

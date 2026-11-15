@@ -76,3 +76,11 @@ Task/owner: Aarika backend and integrated demo; UI review with Anuj. Branch/PR: 
 This checkout was on an older local main when the files were transferred. Review the working-tree changes on an integration feature branch against current remote main, excluding `.venv`, `runtime`, caches, raw archives and generated outputs. Narrow `.gitignore` exceptions include only the attributed demo WAV assets. Backend and voice workstreams still need reconciliation with main. Then rerun checks from that actual branch and open a PR for teammate review. Remaining scope decisions: four supported model identities versus five displayed members, medical content, optional real hardware, and shared interface approval.
 
 V3 final recheck: all counts above were reproduced on the finalized version. The hazards link, versioned/no-cache assets, stars and nebula layers were checked separately. See `FINAL_CHECKS.json` for the dated verification record.
+
+## Result wording
+The dashboard separates three things: analysis results, missing/unsuitable inputs, and optional team review notes. Each flag states the change and one next check. Labels such as “high indicator” refer to unvalidated demo comparison bands; they do not diagnose stress. “No change flagged” refers only to the available inputs. Internal rule codes, model details and saved reports are preserved for inspection.
+
+Active development folder: `/Users/tanushreedas/Documents/project/ASTRAL-Crew`. The downloadable full-project ZIP is a source snapshot, not a Git clone: it contains no repository history, virtual environment, runtime database or private/local files. New edits must still be committed and pushed to update the open PR.
+
+## Result indicators
+Badges use text and a symbol as well as colour: coral `!` for both indicators high, amber `⇄` for disagreement or amber `?` for uncertainty, blue `?` for input gaps, muted `—` for unavailable models, and teal `✓` for no change flagged. Older readings use a muted time badge. Individual voice/wearable panels show score meters only for available numeric outputs; missing inputs never receive a filled meter. Voice confidence and movement cautions override an apparently low/high score badge. Colours describe software demo outcomes, not medical severity or fitness for duty.
