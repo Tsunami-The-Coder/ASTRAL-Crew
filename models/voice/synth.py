@@ -39,6 +39,7 @@ SPEAKERS = {
     "AST-02": VoiceProfile(f0_hz=205, f0_var=0.07, tilt=0.91),
     "AST-03": VoiceProfile(f0_hz=130, tilt=0.92, level=0.22),
     "AST-04": VoiceProfile(f0_hz=190, f0_var=0.05, tilt=0.90),
+    "AST-05": VoiceProfile(f0_hz=160, f0_var=0.06, tilt=0.92),
 }
 
 
@@ -120,3 +121,4 @@ def mix_at_snr(speech: np.ndarray, noise: np.ndarray, snr_db: float) -> np.ndarr
     y = speech + scale * noise[: len(speech)]
     peak = np.max(np.abs(y))
     return (y / peak * 0.9 if peak > 0.99 else y).astype(np.float32)
+

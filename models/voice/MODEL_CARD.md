@@ -4,7 +4,7 @@
 Flags when an astronaut's voice deviates from **their own** calm baseline in the directions associated with stress and arousal. The output is one input to Colin's multimodal fusion. It is a **research indicator, not a diagnosis**, and it is never used alone to trigger actions.
 
 ## Inputs and outputs
-- **Input:** one utterance of mono audio (any sample rate, resampled to 16 kHz), `crew_id` (`AST-01`…`AST-04`), timestamp.
+- **Input:** one utterance of mono audio (any sample rate, resampled to 16 kHz), `crew_id` (`AST-01`…`AST-05`), timestamp.
 - **Output:** the DATA_CONTRACT record `{crew_id, timestamp, stress_score, confidence, source:"voice", data_type}`, or no record when there is no usable speech or the baseline is still being enrolled. Optional `details` (explanation, flags, features) are kept separate so the contract is unchanged.
 
 ## Method
@@ -35,3 +35,4 @@ See `VALIDATION.md`. Everything measured so far uses **synthetic** speech: it te
 
 ## Ethical use
 Indicators for crew self-monitoring and the crew medical officer, with the crew in the loop. No automatic lock-outs or task removal from voice alone (`research/SCIENCE_REVIEW.md` item 7). Audio should stay on board; only scores and features need to be stored.
+

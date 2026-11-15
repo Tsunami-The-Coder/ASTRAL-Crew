@@ -4,6 +4,9 @@ Part of **ASTRAL-Crew** (NASA Space Apps 2026, *Create Health Monitoring Softwar
 
 > Research indicator, not a diagnosis. Runs fully offline (numpy + scipy).
 
+The crew roster accepts `AST-01` through `AST-05`. Each speaker requires their
+own calm enrollment; `synth.py` includes a fifth synthetic test profile.
+
 ## How it works
 ```
 comms audio ──► 300–3400 Hz Butterworth band-pass ──► voice activity detection
@@ -65,3 +68,4 @@ python -m models.voice.train          # writes results/ravdess_eval.json and mod
 | "Detects stress from voice with X % accuracy" | "Flags deviation from each astronaut's own calm voice; tested on synthetic speech and cabin noise" |
 | "Validated on NASA audio" | "Demonstrated on authentic Artemis II crew audio" |
 | "Uses SUSAS" | "Feature design grounded in SUSAS research (Hansen et al.)" |
+

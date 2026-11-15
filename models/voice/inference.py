@@ -39,7 +39,7 @@ from . import scoring
 from .baseline import BaselineStore, CrewBaseline
 from .features import SR, extract, load_wav
 
-CREW_IDS = {"AST-01", "AST-02", "AST-03", "AST-04"}
+CREW_IDS = {"AST-01", "AST-02", "AST-03", "AST-04", "AST-05"}
 CONTRACT_KEYS = ("crew_id", "timestamp", "stress_score", "confidence", "source", "data_type")
 ISO_Z = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
 MIN_SPEECH_S = 1.0
@@ -233,3 +233,4 @@ def _cli() -> None:
 
 if __name__ == "__main__":
     _cli()
+

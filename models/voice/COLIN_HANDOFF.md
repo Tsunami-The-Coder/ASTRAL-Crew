@@ -44,3 +44,6 @@ else:
 ## Assumptions to confirm with you
 - Calm threshold 0.4 / elevated 0.6 are suggestions, not fitted values.
 - `crew_id` comes from the comms channel (headset ID), so the speaker is known. If that's not true, we need speaker identification first.
+
+
+AST-05 follow-up: the voice estimator now accepts AST-01..AST-05 and requires a separate calm enrollment for the fifth speaker. The six-field output contract is unchanged. The synthetic voice demo has a fifth test profile; do not treat it as real speech or real-person validation.
