@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from backend.service import MissionService
-from fusion.adapters import utc
+from integration.adapters import utc
 
 
 def export_bundle(service, *, limit=100):
