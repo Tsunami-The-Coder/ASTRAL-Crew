@@ -2,6 +2,7 @@
 (function () {
   'use strict';
   var connected = false, running = false;
+  window.AstralBackendConnected=false;
   var $ = function (id) { return document.getElementById(id); };
   var view = window.AstralMissionView;
   async function request(path, body) {
@@ -9,6 +10,7 @@
     var data = await response.json(); if (!response.ok) throw Error(data.error || 'Local backend request failed'); return data;
   }
   function refreshControls() {
+    if(window.AstralBackendConnected!==connected){window.AstralBackendConnected=connected;document.dispatchEvent(new Event('astral-connection-changed'));}
     $('demo-run').disabled = !connected || running;
     var bundle = view.current();
     $('demo-review-save').disabled = !connected || running || !bundle.demo_server || !bundle.demo_server.connected || !bundle.overview.current_analysis;
@@ -28,7 +30,7 @@
     if (!connected || running) return;
     running = true; document.body.classList.add('demo-busy'); refreshControls();
     $('demo-run').textContent = 'Running…'; $('demo-connection-status').textContent = 'Extracting wrist features and analyzing voice…';
-    try { var generated = await request('/api/demo/run', { scenario: $('demo-scenario').value }); display(generated); document.dispatchEvent(new CustomEvent('astral-demo-generated', { detail: generated })); }
+    try { var generated = await request('/api/demo/run', { scenario: $('demo-scenario').value }); connected=true; display(generated); document.dispatchEvent(new CustomEvent('astral-demo-generated', { detail: generated })); }
     catch (error) { $('demo-connection-status').textContent = error.message; }
     finally { running = false; document.body.classList.remove('demo-busy'); $('demo-run').textContent = 'Run preset demo'; refreshControls(); }
   });

@@ -1,23 +1,9 @@
-/* Theme-owned dropdowns avoid platform-native white menus. */
+/* Native dark select controls retain platform keyboard and screen-reader behavior. */
 (function(){
-'use strict';var records=new WeakMap();
-function closeAll(except){document.querySelectorAll('.dark-select.open').forEach(function(e){if(e!==except){e.classList.remove('open');e.querySelector('button').setAttribute('aria-expanded','false');}});}
-function install(select){if(records.has(select)||select.id==='mission-crew-select')return;
- var wrap=document.createElement('div');wrap.className='dark-select';var trigger=document.createElement('button');trigger.type='button';trigger.className='select dark-trigger';trigger.setAttribute('aria-haspopup','listbox');trigger.setAttribute('aria-expanded','false');trigger.setAttribute('aria-label',select.getAttribute('aria-label')||select.closest('label')?.childNodes[0]?.textContent.trim()||'Choose option');
- var list=document.createElement('div');list.className='dark-options';list.setAttribute('role','listbox');wrap.append(trigger,list);select.after(wrap);select.classList.add('native-select-source');select.tabIndex=-1;select.setAttribute('aria-hidden','true');
- function sync(){trigger.textContent=(select.selectedOptions[0]?.textContent||'Choose')+' ▾';trigger.disabled=select.disabled;list.replaceChildren();Array.from(select.options).forEach(function(option){var b=document.createElement('button');b.type='button';b.textContent=option.textContent;b.setAttribute('role','option');b.setAttribute('aria-selected',String(option.selected));b.disabled=option.disabled;b.onclick=function(){select.value=option.value;select.dispatchEvent(new Event('change',{bubbles:true}));sync();closeAll();trigger.focus();};list.append(b);});}
- trigger.onclick=function(){var open=!wrap.classList.contains('open');closeAll(wrap);wrap.classList.toggle('open',open);trigger.setAttribute('aria-expanded',String(open));if(open)list.querySelector('[aria-selected="true"]')?.focus();};
- wrap.onkeydown=function(e){var options=Array.from(list.querySelectorAll('button:not(:disabled)')),i=options.indexOf(document.activeElement);if(e.key==='Escape'){closeAll();trigger.focus();}if(['ArrowDown','ArrowUp','Home','End'].includes(e.key)){e.preventDefault();wrap.classList.add('open');trigger.setAttribute('aria-expanded','true');var next=e.key==='Home'?0:e.key==='End'?options.length-1:(i+(e.key==='ArrowDown'?1:-1)+options.length)%options.length;options[next]?.focus();}};
- select.addEventListener('change',sync);new MutationObserver(sync).observe(select,{childList:true,subtree:true,attributes:true,attributeFilter:['disabled']});records.set(select,{sync:sync});sync();}
- document.querySelectorAll('select').forEach(install);
- document.addEventListener('click',function(e){if(!e.target.closest('.dark-select'))closeAll();});
- document.addEventListener('astral-crew-selected',function(){document.querySelectorAll('select').forEach(function(s){records.get(s)?.sync();});});
- document.addEventListener('astral-data-changed',function(){document.querySelectorAll('select').forEach(function(s){records.get(s)?.sync();});});
- var stages=[
- ['Choose inputs','Select a voice sample and a 60-second wearable window. Generate the remaining synthetic readings, inspect them, then submit.','Voice + wrist','Draft readings'],
- ['Extract features','Voice: band-pass, speech quality, pitch, MFCCs and Teager energy. Wrist: pulse, RMSSD proxy, EDA and movement. Missing signals stay missing.','Actual Python pipelines','Quality checks'],
- ['Compare evidence','Compare each member with their reference, then check voice/wearable agreement and shared cabin changes. Rules flag associations; they do not establish causes.','Personal reference','Crew + cabin'],
- ['Save and review','Timestamped entries and snapshot-linked findings are stored locally. Mission control summarizes the crew; a person reviews the evidence and records next steps.','SQLite history','Human review']];
- var current=0;function stage(i){current=i;document.querySelectorAll('#method-stages button').forEach(function(b,j){b.classList.toggle('active',i===j);b.setAttribute('aria-pressed',String(i===j));});document.getElementById('method-title').textContent=stages[i][0];document.getElementById('method-copy').textContent=stages[i][1];document.getElementById('method-tags').textContent=stages[i][2]+' · '+stages[i][3];var visual=document.getElementById('method-visual');visual.textContent=['◉  +  ⌁','⌁  →  ▥','◎  ⇄  ⌂','▤  →  ✓'][i];visual.classList.remove('method-reveal');requestAnimationFrame(function(){visual.classList.add('method-reveal');});}
- document.querySelectorAll('#method-stages button').forEach(function(b,i){b.onclick=function(){stage(i);};});document.getElementById('method-next').onclick=function(){stage((current+1)%4);};stage(0);
+ 'use strict';
+ document.querySelectorAll('select').forEach(function(select){
+  if(select.hasAttribute('aria-label')||select.labels.length)return;
+  var label=select.closest('label');
+  if(label)select.setAttribute('aria-label',Array.from(label.childNodes).filter(function(n){return n.nodeType===3;}).map(function(n){return n.textContent.trim();}).join(' '));
+ });
 })();
