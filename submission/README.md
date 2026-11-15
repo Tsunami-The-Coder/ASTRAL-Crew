@@ -60,7 +60,6 @@ User-entered demo values stay in the current browser's local storage. The bundle
 - [30-second demo narration](DEMO_SCRIPT.md)
 - [NASA OSDR data provenance](data/README.md)
 - [Eleni’s team submission checklist](ELENI_CHECKLIST.md)
-- [Editable seven-slide demo deck](ASTRAL_Crew_Demo.pptx)
 
 ## AI assistance disclosure
 
