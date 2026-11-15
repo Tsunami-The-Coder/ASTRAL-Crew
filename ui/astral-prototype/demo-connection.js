@@ -1,4 +1,4 @@
-/* Same-origin local demo bridge; no connection attempted from file:// previews. */
+/* Same-origin demo bridge for local HTTP or hosted HTTPS; file:// stays offline. */
 (function () {
   'use strict';
   var connected = false, running = false;
@@ -14,12 +14,19 @@
     $('demo-review-save').disabled = !connected || running || !bundle.demo_server || !bundle.demo_server.connected || !bundle.overview.current_analysis;
   }
   function display(data) {
-    view.load(data, 'Local model backend');
+    var publicDemo = !!(data.demo_server && data.demo_server.public_demo);
+    view.load(data, publicDemo ? 'Public synthetic model demo' : 'Local model backend');
     document.body.classList.add('backend-connected');
+    if (publicDemo) {
+      var mode = document.querySelector('.topbar .offline');
+      if (mode) mode.textContent = '◉ PUBLIC SYNTHETIC DEMO';
+    }
     $('mission-mode-badge').textContent = 'SYNTHETIC SIGNALS';
     var scenario = data.demo_server && data.demo_server.scenario;
     if (scenario) $('demo-scenario').value = scenario;
-    $('demo-connection-status').textContent = 'Voice + wearable pipelines connected · saved locally';
+    $('demo-connection-status').textContent = publicDemo
+      ? 'Voice + wearable pipelines connected · private temporary demo session (clears on restart)'
+      : 'Voice + wearable pipelines connected · saved locally';
     $('mission-import-message').textContent = data.overview.current_analysis ? 'Generated test signals, actual pipeline code. No live sensor feed.' : 'Historical results — run a scenario for a fresh demo.';
     $('mission-import-message').className = 'import-message';
     refreshControls();
@@ -38,7 +45,9 @@
     $('demo-review-save').disabled = true;
     try {
       var data = await request('/api/reviews', { analysis_id: analysis.id, snapshot_id: current.overview.snapshot.id, run_id: current.overview.snapshot.payload.run_id, reviewer: $('demo-reviewer').value, decision: $('demo-decision').value, note: $('demo-review-note').value });
-      display(data); $('demo-review-status').textContent = 'Review saved locally. Original findings retained.'; $('demo-review-note').value = '';
+      display(data); $('demo-review-status').textContent = data.demo_server && data.demo_server.public_demo
+        ? 'Review saved temporarily in this browser session.' : 'Review saved locally. Original findings retained.';
+      $('demo-review-note').value = '';
     } catch (error) { $('demo-review-status').textContent = error.message; }
     finally { refreshControls(); }
   });
@@ -48,17 +57,31 @@
     link.href = url; link.download = 'astral-mission-results.json'; link.click(); setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
   });
   document.addEventListener('astral-data-changed', refreshControls);
-  var localMode = location.protocol === 'http:' && ['127.0.0.1', 'localhost'].includes(location.hostname);
-  if (location.protocol === 'http:' && ['127.0.0.1', 'localhost'].includes(location.hostname)) {
-    $('demo-connection-status').textContent = 'Connecting to local model backend…';
-    request('/api/health').then(function (health) { if (health.status !== 'ready') throw Error('Backend is not ready'); connected = true; return request('/api/mission'); }).then(display).catch(function () { connected = false; $('demo-connection-status').textContent = 'Backend unavailable · offline replay retained'; refreshControls(); });
+  var apiMode = location.protocol === 'https:' || (location.protocol === 'http:' && ['127.0.0.1', 'localhost'].includes(location.hostname));
+  if (apiMode) {
+    $('demo-connection-status').textContent = 'Connecting to model backend…';
+    request('/api/health').then(async function (health) {
+      if (health.status !== 'ready') throw Error('Backend is not ready');
+      if (health.public_demo) {
+        document.dispatchEvent(new CustomEvent('astral-public-demo'));
+        await request('/api/session', {});
+      }
+      connected = true;
+      return request('/api/mission');
+    }).then(display).catch(function () { connected = false; $('demo-connection-status').textContent = 'Backend unavailable · offline replay retained'; refreshControls(); });
   }
-  if (localMode) setInterval(async function () {
+  if (apiMode) setInterval(async function () {
     if (running || document.hidden) return;
     var current = view.current();
     if (connected && !current.demo_server) return; // Preserve an explicitly loaded offline replay.
     try {
-      var data = await request('/api/mission');
+      var data;
+      try { data = await request('/api/mission'); }
+      catch (error) {
+        if (!error.message.includes('Session expired')) throw error;
+        await request('/api/session', {});
+        data = await request('/api/mission');
+      }
       var previous = current.overview;
       connected = true;
       if (!current.demo_server || previous.snapshot.id !== data.overview.snapshot.id || previous.freshness.status !== data.overview.freshness.status || JSON.stringify(current.mission_logs) !== JSON.stringify(data.mission_logs)) display(data);

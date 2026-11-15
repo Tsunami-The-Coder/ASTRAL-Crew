@@ -31,24 +31,31 @@ SCENARIOS = {
 
 class DemoEngine:
     """No training, downloads, raw human recordings, or spacecraft control."""
-    def __init__(self, database, model_path):
+    def __init__(self, database, model_path, *, prepared=None):
         self.database = Path(database)
         self.service = MissionService(self.database)
         self.service.initialize()
-        self.model = load_model(model_path)
-        self.voice = VoiceStressEstimator(baseline_path=None, model_path=None, auto_enroll=False)
-        for i, (crew, profile) in enumerate(synth.SPEAKERS.items()):
-            clips = [synth.utterance(profile, 3, seed=i * 100 + n) for n in range(10)]
-            self.voice.enroll(crew, clips, data_type='synthetic')
-        self.profiles = []
-        for index in range(5):
-            features = self._wrist_features(1 + index * .1)
-            self.profiles.append({
-                'crew_id': f'AST-{index + 1:02}', 'data_origin': 'synthetic',
-                'profile_version': 'integration-wrist-reference-v1',
-                'baseline': features,
-                'limitations': 'Reference extracted from generated waveforms; not a clinical or measured personal baseline.',
-            })
+        # Public sessions share only immutable research model/baseline references;
+        # their mutable mission databases, check-ins and reviews remain separate.
+        if prepared is not None:
+            self.model = prepared.model
+            self.voice = prepared.voice  # auto_enroll=False; analyze does not modify baselines.
+            self.profiles = deepcopy(prepared.profiles)
+        else:
+            self.model = load_model(model_path)
+            self.voice = VoiceStressEstimator(baseline_path=None, model_path=None, auto_enroll=False)
+            for i, (crew, profile) in enumerate(synth.SPEAKERS.items()):
+                clips = [synth.utterance(profile, 3, seed=i * 100 + n) for n in range(10)]
+                self.voice.enroll(crew, clips, data_type='synthetic')
+            self.profiles = []
+            for index in range(5):
+                features = self._wrist_features(1 + index * .1)
+                self.profiles.append({
+                    'crew_id': f'AST-{index + 1:02}', 'data_origin': 'synthetic',
+                    'profile_version': 'integration-wrist-reference-v1',
+                    'baseline': features,
+                    'limitations': 'Reference extracted from generated waveforms; not a clinical or measured personal baseline.',
+                })
         self.service.store.register_synthetic_profiles(self.profiles)
         self.progress = None
         self.last_case = None

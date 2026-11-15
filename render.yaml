@@ -1,0 +1,15 @@
+# Render Blueprint: deploy the full website and Python analysis server from main.
+services:
+  - type: web
+    name: astral-crew
+    runtime: python
+    plan: free
+    repo: https://github.com/Tsunami-The-Coder/ASTRAL-Crew
+    branch: main
+    autoDeployTrigger: commit
+    buildCommand: pip install -r demo/requirements-demo.txt
+    startCommand: python -m backend.demo_server --public --host 0.0.0.0
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.10

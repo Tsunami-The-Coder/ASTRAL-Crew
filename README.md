@@ -16,7 +16,7 @@ You need **Python 3.11+**, a modern web browser, and an internet connection **fo
    ```bash
    git clone https://github.com/Tsunami-The-Coder/ASTRAL-Crew.git
    cd ASTRAL-Crew
-   git switch final-end
+   git switch main
    ```
 
 2. **macOS (easiest):** launch the included setup/server script from the repository root:
@@ -39,7 +39,7 @@ python3 -m venv .venv
 .venv/bin/python -m backend.demo_server --open-browser
 ```
 
-If the browser does not open automatically, visit **http://127.0.0.1:8765/astral-prototype/** yourself. The app intentionally accepts only local-host requests; **a remotely forwarded Codespaces URL may receive HTTP 403**. A local machine/browser is the supported demo setup.
+If the browser does not open automatically, visit **http://127.0.0.1:8765/astral-prototype/** yourself. Local mode intentionally accepts only localhost requests; **a remotely forwarded Codespaces URL may receive HTTP 403**. To share the demo over the internet, use the Render deployment below.
 
 ### Windows (PowerShell)
 
@@ -54,6 +54,46 @@ py -m venv .venv
 Then open **http://127.0.0.1:8765/astral-prototype/** in your browser. Use **Ctrl+C** to stop the server.
 
 **Why a server?** The website lives in `ui/`, but it requests Python analysis routes and files stored under `submission/`. Opening the HTML file directly does not provide those connections.
+
+## Host the full website on Render (public HTTPS)
+
+The repository includes [`render.yaml`](render.yaml) for a Render **Python Web Service**. This deploys **`main`**, serving the website, audio/data assets, Python model pipelines, and API on the **same HTTPS domain**. It is **not** a static-site deploy. No separate frontend deployment, database subscription, or secret API key is required for this synthetic demonstration.
+
+### Fastest setup — Render Blueprint
+
+1. Sign in at [Render](https://dashboard.render.com/) and connect your GitHub account with access to `Tsunami-The-Coder/ASTRAL-Crew`.
+2. Choose **New → Blueprint**, select `Tsunami-The-Coder/ASTRAL-Crew`, and use the `main` branch (the repository's `render.yaml` defines this branch explicitly).
+3. Review the proposed `astral-crew` **Web Service**, choose **Apply/Deploy**. The Blueprint selects the Free plan and Python 3.12, installs runtime dependencies, and starts the server.
+4. Wait until Render reports **Live**. Visit the assigned URL, for example `https://astral-crew.onrender.com/astral-prototype/` (the actual subdomain may differ). The root URL redirects to the website.
+5. Open `https://YOUR-SERVICE.onrender.com/api/health`; the JSON must say `"status":"ready"` and `"public_demo":true`. In the website, check the **voice + wearable pipelines connected** message, then run a scenario and open crew **AST-05**.
+
+### Manual Web Service setup (if not using Blueprint)
+
+Choose **New → Web Service → GitHub repository**. Configure:
+
+| Render setting | Exact value |
+| --- | --- |
+| Repository | `Tsunami-The-Coder/ASTRAL-Crew` |
+| Branch | **`main`** |
+| Root directory | Leave **blank** (repository root) |
+| Language / runtime | **Python** |
+| Build command | `pip install -r demo/requirements-demo.txt` |
+| Start command | `python -m backend.demo_server --public --host 0.0.0.0` |
+| Health check path | `/api/health` |
+| Environment variable | `PYTHON_VERSION=3.12.10` |
+| Instance | Free for a small showcase; upgrade for more capacity |
+
+Render provides `PORT` and `RENDER_EXTERNAL_URL` automatically. The server uses them to bind on `0.0.0.0` and accept **only** requests for the service's designated HTTPS hostname. To use a custom domain, set `ASTRAL_PUBLIC_ORIGIN` to its exact origin (e.g. `https://demo.example.com`) and configure the domain and TLS in Render. Keep the Render subdomain as the public address until a custom domain is working.
+
+### Public-demo safety and limitations
+
+- Visitors get **separate temporary synthetic-data sessions**, protected by an HTTPS-only, HttpOnly, SameSite cookie. Review notes/check-ins in one session are not visible to others. **There is no user login and no permanent personal account.**
+- Session databases are ephemeral, expire after **30 minutes idle**, and are erased on service restart, redeploy, or Render Free-plan sleep. Do **not** enter real astronaut, patient, or personal medical information. Use fictional reviewer names. Export demonstration results before leaving if needed.
+- Personal WAV and sensor-file uploads are **disabled online**, to avoid collecting visitors' recordings. Generated examples and bundled public source clips still work. Local mode retains the upload tools.
+- A small demo guard limits concurrent sessions and API writes; visitors may see a retry/capacity message during a busy showcase. This is a public **prototype**, not a production authenticated application or clinical service.
+- On Render's Free plan, the service **spins down after inactivity**; the next visit can take approximately a minute to wake, and temporary results will be gone. A paid instance avoids automatic idle sleep, but still needs external persistent storage for durable records. Free-tier capacity is suitable for low-traffic demonstration only.
+
+**Security note:** Do not run `--host 0.0.0.0` without `--public`. Public mode fails to start without a trusted HTTPS origin (`RENDER_EXTERNAL_URL` or `ASTRAL_PUBLIC_ORIGIN`). All changes are confined to the source branch you deploy; the Render service must track `main` to show the main website.
 
 ## What to show in the demo
 
@@ -89,7 +129,7 @@ The demo also offers attributed NASA Artemis audio excerpts and RAVDESS acted sp
 | `models/voice/`, `models/wearable/` | Voice and wearable research inference, synthetic samples, tests, and model evidence. |
 | `integration/` | Adapters and rules joining the different analysis outputs. |
 | `demo/` | Launch script and minimal runtime dependencies. |
-| `runtime/demo.sqlite3` | Local SQLite file created on first run; keeps demo history between sessions. |
+| `runtime/demo.sqlite3` | Local-only SQLite file created on first run; keeps local demo history between sessions. Public visitor databases are temporary and isolated. |
 
 The server supplies assets under **`/submission-assets/`**, while the browser UI is served at **`/astral-prototype/`**. Keep both the `ui/` and `submission/` folders in place. The audio manifests are at `submission/astral-prototype/audio/manifest.json` and `submission/astral-prototype/audio/ravdess/manifest.json`.
 
@@ -114,7 +154,9 @@ These are **commands to run**, not a claim that tests passed on your machine. Ad
 
 - **ModuleNotFoundError for NumPy/SciPy:** rerun `.venv/bin/python -m pip install -r demo/requirements-demo.txt` from the repository root.
 - **Port 8765 already in use:** check whether the demo is already running at the URL above. To use a different port, run `.venv/bin/python -m backend.demo_server --port 8766` and open `http://127.0.0.1:8766/astral-prototype/`.
-- **HTTP 403 / “Local host required”:** use `127.0.0.1` on the computer running the demo. The bundled server intentionally rejects public-host requests; a Codespaces forwarding link is not equivalent to localhost.
+- **HTTP 403 / “Unrecognized host”:** use `127.0.0.1` when running locally, or the exact HTTPS hostname assigned to the Render service. Forwarded Codespaces addresses are not trusted origins.
+- **Render shows only the static replay / backend unavailable:** verify the **Web Service** (not Static Site) builds from `main`, that the start command includes `--public --host 0.0.0.0`, and that `/api/health` reports `"public_demo":true`. Inspect Render runtime logs for errors.
+- **Public demo at capacity / HTTP 429:** wait for an idle session to expire or try fewer back-to-back model runs. This protects the demo instance from unlimited concurrent work.
 - **Missing audio or manifest / 404:** make sure you downloaded the **whole repository** and start from its root; audio is intentionally stored under `submission/`, not `ui/`.
 - **Old saved results appearing:** the database at `runtime/demo.sqlite3` intentionally keeps previous entries. Demo scenario changes do not automatically erase the history.
 

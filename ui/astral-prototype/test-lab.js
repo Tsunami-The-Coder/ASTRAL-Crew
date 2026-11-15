@@ -1,5 +1,12 @@
 (function(){
 'use strict';var $=function(id){return document.getElementById(id);},blobURL=null;
+document.addEventListener('astral-public-demo',function(){
+  ['lab-voice','lab-wearable'].forEach(function(id){
+    var select=$(id),option=select.querySelector('option[value="upload"]');
+    if(option){if(select.value==='upload')select.value=select.options[0].value;option.remove();select.dispatchEvent(new Event('change'));}
+  });
+  $('lab-uploads').hidden=true;$('lab-wrist-upload').hidden=true;
+});
 $('lab-voice').onchange=function(){var upload=this.value==='upload';$('lab-uploads').hidden=!upload;if(!upload)$('lab-audio').src=this.value.startsWith('artemis-')?'/submission-assets/audio/'+this.value+'.wav':'/api/lab/audio/'+this.value;else{$('lab-audio').removeAttribute('src');$('lab-audio').load();}};
 $('lab-wearable').onchange=function(){$('lab-wrist-upload').hidden=this.value!=='upload';};
 $('lab-wav').onchange=function(){if(blobURL)URL.revokeObjectURL(blobURL);if(this.files[0]){$('lab-audio').src=blobURL=URL.createObjectURL(this.files[0]);}};
