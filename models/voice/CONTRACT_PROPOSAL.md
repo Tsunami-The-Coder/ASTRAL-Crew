@@ -1,6 +1,6 @@
-# Voice section for `docs/DATA_CONTRACT.md` (proposal from Ben)
+# Voice section for `docs/DATA_CONTRACT.md` (proposal from the voice lead)
 
-Fully compatible with the playbook example and with Eleni's `research/DATA_CONTRACT_PROPOSAL.md`. Nothing new is required from other workstreams.
+Fully compatible with the playbook example and with the research lead's `research/DATA_CONTRACT_PROPOSAL.md`. Nothing new is required from other workstreams.
 
 ## Record (voice → fusion), unchanged schema
 ```json
@@ -16,10 +16,10 @@ Fully compatible with the playbook example and with Eleni's `research/DATA_CONTR
 | `source` | `"voice"` | Always |
 | `data_type` | `"real"` \| `"synthetic"` | Passed through from the caller |
 
-Records contain **exactly** these six keys, so Eleni's `validate_data.check_outputs` accepts them.
+Records contain **exactly** these six keys, so the research lead's `validate_data.check_outputs` accepts them.
 
 ## When there is NO record
-Voice records only exist when the astronaut speaks (Eleni's contract rule). `VoiceStressEstimator.analyze()` returns `record=None` and a `details["status"]`:
+Voice records only exist when the astronaut speaks (the research lead's contract rule). `VoiceStressEstimator.analyze()` returns `record=None` and a `details["status"]`:
 | `status` | Meaning | Fusion should |
 |---|---|---|
 | `no_speech` | Silence, noise only, or < 1 s of speech | Treat voice as missing |
@@ -39,7 +39,7 @@ Kept separate so the contract does not change. Useful for the UI ("why?") and th
 ```
 Possible `flags`: `short_utterance`, `low_snr`, `moderate_noise`, `clipping`, `small_baseline`, `voice_profile_mismatch`.
 
-## Open questions for Colin
+## Open questions for the integration lead
 1. Sensor-fault rule from the pitch: "wearable says 220 bpm, voice is calm". Voice is "calm" when `stress_score < 0.4` with `confidence ≥ 0.5`. OK?
-2. Should `details.flags` travel with the record into fusion (e.g. as an optional `"quality"` key, like Eleni suggested for the wearable)? That would need everyone to agree to an optional key, and Eleni's validator would need to allow it.
+2. Should `details.flags` travel with the record into fusion (e.g. as an optional `"quality"` key, like research lead suggested for the wearable)? That would need everyone to agree to an optional key, and the research lead's validator would need to allow it.
 

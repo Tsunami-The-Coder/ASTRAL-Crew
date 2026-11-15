@@ -50,7 +50,7 @@
       "head": "c6caec4267f56a6adb1a20fc6eb4fa076eb7f56e",
       "merge_base": "0aa71e02a3dc9dafc64ff6588536624ffc09e9f9",
       "changed_paths": [
-        "models/voice/COLIN_HANDOFF.md",
+        "models/voice/INTEGRATION_HANDOFF.md",
         "models/voice/CONTRACT_PROPOSAL.md",
         "models/voice/MODEL_CARD.md",
         "models/voice/README.md",

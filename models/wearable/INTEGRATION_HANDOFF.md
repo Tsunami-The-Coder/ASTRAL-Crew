@@ -1,4 +1,4 @@
-# Wearable handoff to Colin
+# Wearable handoff to the integration lead
 
 Task / owner: issue #4, wearable owner. Branch: feature/wearable-fixes.
 Scope: models/wearable only. Shared contract remains a proposal.
@@ -32,12 +32,12 @@ as evidence of accurate HRV, spaceflight validity or five-hazard diagnosis.
    Do not multiply a score by a made-up confidence or average uncalibrated scores.
 6. Build a fusion result that exposes agreement, disagreement, single-modality
    availability or insufficient information. Use explicit rules reviewed by the team.
-7. Pass that assessment via Aarika's backend to Anuj's UI/log, preserving
+7. Pass that assessment via the backend lead's backend to the UI lead's UI/log, preserving
    provenance, reasons, time window and source references.
 
 The current implementation contains no changes to your fusion code. Your actual
 function signatures were not available in the inspected planning repository.
-The synthetic voice fixture is not a claim about Ben's output schema.
+The synthetic voice fixture is not a claim about the voice lead's output schema.
 
 ## Suggested adapter decisions (assumptions, not approved behavior)
 
@@ -75,7 +75,7 @@ the Python standard library. No root dependency/config file was edited.
 
 ## Ready-to-send message (not sent automatically)
 
-Hey Colin - the wearable component is ready for interface review on
+Integration team - the wearable component is ready for interface review on
 `feature/wearable-ai` under `models/wearable/`.
 
 It supplies window-based wearable results with crew ID, timestamps, score meaning,

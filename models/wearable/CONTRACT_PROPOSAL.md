@@ -1,7 +1,7 @@
 # Wearable-owned handoff proposal v1
 
 **Status: implemented locally for review, not a team-approved shared contract.**
-Owner: Khalid. Next integration owner: Colin; backend: Aarika; display: Anuj.
+Owner: wearable lead. Next integration owner: integration lead; backend: backend lead; display: UI lead.
 No edits to the shared contract or another workstream are included.
 
 ## Input

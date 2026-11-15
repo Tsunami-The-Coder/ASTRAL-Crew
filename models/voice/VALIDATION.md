@@ -6,11 +6,11 @@ Run on 14 Nov 2026 with Python 3.13, numpy 2.5, scipy 1.18. Every number here co
 
 ## 1. Automated tests
 `python -m pytest models/voice -q` → **28 passed** (~15 s).
-Together with Eleni's data tests: `python -m pytest tests models/voice -q` → **48 passed**.
+Together with the research lead's data tests: `python -m pytest tests models/voice -q` → **48 passed**.
 
-Covered: band-pass removes 60 Hz hum by > 30 dB and keeps 1 kHz (< 1 dB loss); pitch within 3 % at 110 and 200 Hz; Teager energy identity; resampling from 44.1 kHz; records have exactly the 6 contract keys and pass Eleni's `check_outputs`; silence, noise-only, NaN, empty, unreadable files, unknown crew, bad timestamps → no record and no crash; auto-enrollment; calm < 0.4 and aroused > 0.6 for all four synthetic speakers; a naturally high voice is not flagged; save/load of baselines; low SNR lowers confidence; RAVDESS training pipeline runs end to end on fake RAVDESS-named files; scenario demo output validates; Artemis demo writes no stress labels.
+Covered: band-pass removes 60 Hz hum by > 30 dB and keeps 1 kHz (< 1 dB loss); pitch within 3 % at 110 and 200 Hz; Teager energy identity; resampling from 44.1 kHz; records have exactly the 6 contract keys and pass the research lead's `check_outputs`; silence, noise-only, NaN, empty, unreadable files, unknown crew, bad timestamps → no record and no crash; auto-enrollment; calm < 0.4 and aroused > 0.6 for all four synthetic speakers; a naturally high voice is not flagged; save/load of baselines; low SNR lowers confidence; RAVDESS training pipeline runs end to end on fake RAVDESS-named files; scenario demo output validates; Artemis demo writes no stress labels.
 
-## 2. Full pipeline on Eleni's nine scenarios (`demo.py --all --snr 15`)
+## 2. Full pipeline on the research lead's nine scenarios (`demo.py --all --snr 15`)
 For every voice event in `data/scenarios/*/voice_events.csv`, a synthetic utterance with the scenario's assumed arousal was generated, mixed with cabin noise at 15 dB SNR, and run through the real pipeline (8 calm enrollment clips per astronaut).
 
 | Scenario | Records | All valid | r (intended vs. pipeline) | Mean score, calm | Mean score, stressed | Calm utterances ≥ 0.6 |

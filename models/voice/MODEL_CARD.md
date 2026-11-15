@@ -1,7 +1,7 @@
 # Model card: ASTRAL-Crew voice stress indicator (`personal_baseline_v1`)
 
 ## Purpose
-Flags when an astronaut's voice deviates from **their own** calm baseline in the directions associated with stress and arousal. The output is one input to Colin's multimodal fusion. It is a **research indicator, not a diagnosis**, and it is never used alone to trigger actions.
+Flags when an astronaut's voice deviates from **their own** calm baseline in the directions associated with stress and arousal. The output is one input to the integration lead's multimodal fusion. It is a **research indicator, not a diagnosis**, and it is never used alone to trigger actions.
 
 ## Inputs and outputs
 - **Input:** one utterance of mono audio (any sample rate, resampled to 16 kHz), `crew_id` (`AST-01`…`AST-05`), timestamp.
@@ -27,7 +27,7 @@ See `VALIDATION.md`. Everything measured so far uses **synthetic** speech: it te
 ## Known limitations
 - **Arousal ≠ stress.** Excitement, laughter, shouting over noise or a heated but harmless discussion also raise arousal. Fusion must combine voice with wearables and context.
 - **Wrong `crew_id` = wrong baseline.** A different speaker scored against someone else's baseline looks "aroused". The `voice_profile_mismatch` flag catches only large timbre differences.
-- **Masking:** Aarika raised astronauts who act calm under stress. Trained crew may control pitch and loudness; TEO/jitter features are less voluntary, but we have not measured whether they reveal masked stress. This is an open question, not a feature.
+- **Masking:** backend lead raised astronauts who act calm under stress. Trained crew may control pitch and loudness; TEO/jitter features are less voluntary, but we have not measured whether they reveal masked stress. This is an open question, not a feature.
 - **Noise:** at 0 dB SNR, calm speech triggers ≥ 0.6 in 16 % of synthetic cases (see `VALIDATION.md`). Confidence is halved below 5 dB SNR so fusion trusts it less.
 - **Microgravity** changes the voice (fluid shift, upper-airway congestion). This is another reason baselines must be enrolled **in flight**, not on the ground.
 - **Short clips** (< 1 s of speech) are rejected; 1–3 s get reduced confidence.

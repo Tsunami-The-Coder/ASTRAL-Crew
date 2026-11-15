@@ -9,9 +9,9 @@ NASA Space Apps Challenge 2026 · Create Health Monitoring Software for Astronau
 
 Open [`astral-prototype/index.html`](../ui/astral-prototype/index.html) in a modern browser. No build step, account, network access, API key, or external JavaScript library is required. The published demo is [ASTRAL Crew](https://astral-crew-health.eleftherialili81.chatgpt.site/).
 
-## Eleni’s contribution
+## Research contribution
 
-Eleni’s team role is NASA research, data-source verification, provenance, and scientific citations. The project’s interface and code are collaborative work; the repository team plan records each workstream.
+The research lead’s team role is NASA research, data-source verification, provenance, and scientific citations. The project’s interface and code are collaborative work; the repository team plan records each workstream.
 
 ## The idea
 
@@ -59,7 +59,7 @@ User-entered demo values stay in the current browser's local storage. The bundle
 - [Source-by-source provenance and use map](REFERENCES.md)
 - [30-second demo narration](DEMO_SCRIPT.md)
 - [NASA OSDR data provenance](data/README.md)
-- [Eleni’s team submission checklist](ELENI_CHECKLIST.md)
+- [Team submission checklist](SUBMISSION_CHECKLIST.md)
 
 ## AI assistance disclosure
 

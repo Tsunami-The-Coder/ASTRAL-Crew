@@ -24,12 +24,12 @@ The five hazard areas are radiation, gravity adaptation, habitat health, autonom
 
 | Owner | Primary paths | Responsibilities |
 |---|---|---|
-| Anuj | `ui/` | Streamlit/Plotly UI, body map, product integration |
-| Aarika | `backend/` | Synthetic mission telemetry, SQLite, logs, orchestration |
-| Eleni | `research/`, `data/` | Dataset provenance, scientific sources, preprocessing |
-| Khalid | `models/wearable/` | Wearable stress features and model |
-| Ben | `models/voice/` | Voice features and model |
-| Colin | `fusion/`, `tests/` | Multimodal fusion, crew-wide anomaly rules, QA |
+| UI lead | `ui/` | Streamlit/Plotly UI, body map, product integration |
+| backend lead | `backend/` | Synthetic mission telemetry, SQLite, logs, orchestration |
+| research lead | `research/`, `data/` | Dataset provenance, scientific sources, preprocessing |
+| wearable lead | `models/wearable/` | Wearable stress features and model |
+| voice lead | `models/voice/` | Voice features and model |
+| integration lead | `fusion/`, `tests/` | Multimodal fusion, crew-wide anomaly rules, QA |
 
 Paths indicate intended ownership; create subfolders only when implementation is permitted and needed. Coordinate before changing another owner's files. Shared files (root config, dependencies, contracts, app entry points) require explicit cross-team review.
 

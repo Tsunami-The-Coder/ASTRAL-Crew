@@ -1,4 +1,4 @@
-# UI/UX — Anuj
+# UI/UX — UI lead
 
 Planned: Streamlit screens, Plotly charts, interactive SVG body selector, simulated-data labeling.
 

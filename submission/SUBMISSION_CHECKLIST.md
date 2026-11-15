@@ -1,4 +1,4 @@
-# Eleni — final team submission checklist
+# Final team submission checklist
 
 Use this as the team’s working list. The official Team Project page is the source of truth for form fields and the applicable deadline.
 
@@ -23,6 +23,6 @@ Use this as the team’s working list. The official Team Project page is the sou
 - [ ] Submit from the team Project tab, using the owner’s applicable local time for a Universal Event team. The challenge text supplied by the team states Sunday, November 15 at 11:59 p.m.; verify the current event page before submitting.
 - [ ] After pressing Submit, reopen the team Project page and confirm the project status shows submitted.
 
-## Eleni’s role to describe
+## Research role to describe
 
 Research and provenance: verified NASA OSDR OSD-575 as the actual numeric dataset used in the Biology Evidence view; documented the sample timing, file transformation, citation, license, and limitations; verified the WESAD terms and its use in a separate, non-integrated team wearable research component; reviewed SUSAS and Artemis audio suitability. Do not present WESAD laboratory results as astronaut validation or claim that NASA serum samples train or validate the daily trend rule.

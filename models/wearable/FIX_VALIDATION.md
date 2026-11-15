@@ -1,6 +1,6 @@
 # Wearable fixes and current evaluation
 
-2026-11-15. AI-assisted. Owner: wearable workstream. Next integration owner: Colin.
+2026-11-15. AI-assisted. Owner: wearable workstream. Next integration owner: integration lead.
 
 ## Changes
 - AST-01 through AST-05 supported in inference, personal baselines and five-member demos.

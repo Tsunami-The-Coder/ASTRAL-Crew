@@ -11,7 +11,7 @@ and it does NOT label any astronaut as stressed and does NOT report accuracy.
 Say: "Demonstrated on authentic Artemis II crew audio from NASA's Artemis
 Audio Library." Never say "validated".
 
-Prepare audio (Eleni's audio_manifest.py does steps 2-3 for you):
+Prepare audio (the research lead's audio_manifest.py does steps 2-3 for you):
     1. download clips from https://www.nasa.gov/artemisaudio into data/raw/audio/artemis2/
     2. for f in *.mp3; do ffmpeg -i "$f" -ac 1 -ar 16000 "${f%.mp3}.wav"; done
     3. python -m data.scripts.audio_manifest --in data/raw/audio/artemis2 \
