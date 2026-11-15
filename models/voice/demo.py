@@ -1,6 +1,6 @@
-"""End-to-end SYNTHETIC demo: run the real voice pipeline on Eleni's scenarios.
+"""End-to-end SYNTHETIC demo: run the real voice pipeline on the research lead's scenarios.
 
-Eleni's scenarios (data/scenarios/<name>/voice_events.csv) contain the voice
+the research lead's scenarios (data/scenarios/<name>/voice_events.csv) contain the voice
 stress level each astronaut is ASSUMED to have at each moment. Until now,
 fusion used those numbers directly as mock outputs. This script replaces the
 mock with the actual pipeline:
@@ -10,7 +10,7 @@ mock with the actual pipeline:
     baseline, score  ->  contract record (source="voice", data_type="synthetic")
 
 Output per scenario: data/processed/voice_outputs/<scenario>.jsonl (contract
-records only, drop-in for Colin) and <scenario>.details.jsonl.
+records only, drop-in for the integration lead) and <scenario>.details.jsonl.
 
 What this shows: the code path works end to end, on all scenarios, with noise,
 and its scores track the intended arousal. What it does NOT show: accuracy on

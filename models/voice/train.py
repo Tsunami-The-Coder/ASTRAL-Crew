@@ -1,6 +1,6 @@
 """Train and evaluate the optional learned voice-arousal model on RAVDESS.
 
-Requires the RAVDESS manifest from Eleni's data layer:
+Requires the RAVDESS manifest from the research lead's data layer:
     # 1. download Audio_Speech_Actors_01-24.zip (~215 MB) from https://zenodo.org/records/1188976
     # 2. unzip into data/raw/RAVDESS/
     python -m data.scripts.ravdess_prepare --in data/raw/RAVDESS
@@ -11,7 +11,7 @@ Design (matches our Digital Twin idea and avoids leakage):
     clips (4 per actor). Those clips are never scored.
   * The remaining clips are scored as z-scores against that baseline:
     calm = label 0 (low arousal), angry/fearful = label 1 (high arousal).
-  * Evaluation is actor-independent: Eleni's 6 actor folds; train on 5 folds
+  * Evaluation is actor-independent: the research lead's 6 actor folds; train on 5 folds
     of actors, test on actors the model never heard.
   * Reported: balanced accuracy and F1 per fold (mean +- SD and worst fold),
     for (a) the hand-set rule score alone and (b) logistic regression.

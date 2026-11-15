@@ -1,4 +1,4 @@
-# Backend — Aarika
+# Backend — backend lead
 
 ## Step 1: local storage
 
@@ -204,7 +204,7 @@ model/UI handoff. Run all tests with unittest discovery from Step 5.
 ## Step 9: internal service layer for future dashboard integration
 
 `backend/service.py` wraps existing storage and journal operations. It is an
-internal proposal for discussion with Anuj, not an approved shared API. It does
+internal proposal for discussion with the UI lead, not an approved shared API. It does
 not import a UI framework, run models, or generate demo inputs during reads.
 
 ```python
@@ -315,7 +315,7 @@ remain internal pending scientific review and shared-contract approval.
 2. Fuller habitat checks for O2/pressure and appropriate sensor-fault cases;
    scientifically reviewed thresholds and time windows are still needed.
 3. Input validation, run identification, stale-data policy, and robust handoffs.
-4. Agree shared interfaces and connect voice/wearable outputs and Anuj's UI.
+4. Agree shared interfaces and connect voice/wearable outputs and the UI lead's UI.
 5. Final science review, end-to-end/offline verification, documentation, and PR.
 
 These are scope groups, not five small coding edits. The implementation does not
@@ -358,7 +358,7 @@ entry additionally requires reviewer, reviewed_at (UTC), and offline_content.
 Pending entries never expose procedure content. Review labels are team-supplied
 metadata, not authenticated clinical certification. All approved content is
 bundled text; URLs are provenance references and are not fetched at runtime.
-Invalid/missing catalog files raise ValueError explicitly. Eleni must verify
+Invalid/missing catalog files raise ValueError explicitly. The research lead must verify
 sources/reuse terms, and appropriate review of clinical content remains pending.
 Do not change this catalog to approved merely to populate a dashboard.
 
@@ -473,7 +473,7 @@ comes from overview.snapshot, not every registered profile. Export includes
 reviewer names and notes: only synthetic demo content belongs in these artifacts.
 The export is not an atomic read under concurrent writes.
 
-Choose and agree the UI destination with Anuj before wiring this view into the
+Choose and agree the UI destination with the UI lead before wiring this view into the
 HTML prototype or Streamlit. JSON export alone does not connect browser local
 storage to SQLite. Actual model implementations remain on their owner branches;
 the prototype was exercised together in an isolated integration copy.

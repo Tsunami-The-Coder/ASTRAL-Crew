@@ -1,6 +1,6 @@
 # Dataset access and provenance checklist
 
-This file records the current source review for Eleni’s research workstream. Status refers to the ASTRAL prototype in this repository, not to every teammate's separate branch.
+This file records the current source review for the research lead’s research workstream. Status refers to the ASTRAL prototype in this repository, not to every teammate's separate branch.
 
 | Source | Access, terms, and scientific fit | ASTRAL use/status |
 | --- | --- | --- |

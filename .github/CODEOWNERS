@@ -2,23 +2,23 @@
 # GitHub requests review from these GitHub accounts when matching files change.
 # Current temporary reviewer: repository maintainer.
 # Replace with each teammate's GitHub @username after confirming they have access.
-# Names such as "Aarika" alone are not valid CODEOWNERS entries.
+# Role labels such as "backend lead" alone are not valid CODEOWNERS entries.
 #
-# Anuj — UI/UX and product integration
+# UI lead — UI/UX and product integration
 /ui/ @Tsunami-The-Coder
 #
-# Aarika — backend, SQLite, simulation
+# backend lead — backend, SQLite, simulation
 /backend/ @Tsunami-The-Coder
 #
-# Eleni — research, data and citations
+# research lead — research, data and citations
 /research/ @Tsunami-The-Coder
 /data/ @Tsunami-The-Coder
 #
-# Khalid and Ben — wearable and voice AI
+# wearable lead and voice lead — wearable and voice AI
 /models/wearable/ @Tsunami-The-Coder
 /models/voice/ @Tsunami-The-Coder
 #
-# Colin — fusion and QA
+# integration lead — fusion and QA
 /fusion/ @Tsunami-The-Coder
 /tests/ @Tsunami-The-Coder
 #

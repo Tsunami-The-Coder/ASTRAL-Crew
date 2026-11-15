@@ -47,7 +47,7 @@ def scenarios(model=None):
             for reading in events[:3]:
                 reading["biometrics"].update(heart_rate_bpm=105., hrv_rmssd_ms=18., eda_microsiemens=7.)
             environment["co2_percent"] = 0.32
-            expected = "Colin may investigate shared changes and environment; causation is unproven."
+            expected = "The integration lead may investigate shared changes and environment; causation is unproven."
         elif name == "missing_sensor":
             events[1]["biometrics"]["eda_microsiemens"] = None
             expected = "AST-02 is missing, with null score; never replace it with normal."
@@ -55,7 +55,7 @@ def scenarios(model=None):
             events[0]["biometrics"].update(heart_rate_bpm=105., hrv_rmssd_ms=18., eda_microsiemens=7.)
             voices = [{"crew_id": "AST-01", "stress_score": 0.1, "source": "voice", "data_origin": "synthetic",
                        "timestamp": events[0]["timestamp"], "window_start": events[0]["window_start"],
-                       "note": "Mock only; not Ben's actual schema/model."}]
+                       "note": "Mock only; not the voice lead's actual schema/model."}]
             expected = "Flag disagreement; no averaging of uncalibrated model scores."
         events[0]["context"] = {"sleep_hours": 5.5, "self_report_stress_0_10": 4}
         cases.append({"scenario": name, "data_origin": "synthetic", "ai_assisted": True,

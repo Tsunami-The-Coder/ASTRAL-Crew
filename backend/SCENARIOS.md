@@ -26,7 +26,7 @@ separate from scenario readings and are not updated by incidents.
   At 101 kPa, 0.50% gives approximately 0.505 kPa (3.79 mmHg).
 
 HRV centers 41–52 ms, EDA centers 1.1–1.7 microsiemens, their jitter, and the
-scripted changes are unvalidated demo assumptions needing Eleni's review. They
+scripted changes are unvalidated demo assumptions needing the research lead's review. They
 are not diagnostic ranges. O2 near 21% and pressure near 101 kPa describe the
 chosen Earth-like demo cabin, not a specification for all spacecraft atmospheres.
 Uniform bounded noise is for repeatable testing, not a realistic sensor-noise
@@ -96,7 +96,7 @@ It is a historical spacecraft measurement context, not a fixed Mars mission
 exposure, absorbed dose in mGy, or personal effective-dose measurement.
 [NASA's RAD comparison](https://science.nasa.gov/resource/radiation-exposure-comparisons-with-mars-trip-calculation/)
 provides additional expedition-dose context. These are references, not downloaded
-sensor datasets. Review applicability with Eleni before final scientific claims.
+sensor datasets. Review applicability with the research lead before final scientific claims.
 
 The `radiation_rise` scenario increases rate halfway through by a configurable
 factor (default 4, an unsupported engineering test choice). Rate changes are

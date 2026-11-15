@@ -17,7 +17,7 @@
 |---|---|---|---|
 | **RAVDESS** speech (Livingstone SR, Russo FA (2018), *PLoS ONE* 13(5): e0196391; https://zenodo.org/records/1188976) | Real but **acted** | Optional training/evaluation of the arousal model (`train.py`). Not downloaded or trained in this commit. | CC BY-NC-SA 4.0 |
 | **NASA Artemis Audio Library** (https://www.nasa.gov/artemisaudio) | Real, **unlabelled** | Demonstration only (`artemis_demo.py`). No accuracy claims. | NASA media usage guidelines |
-| ASTRAL mission scenarios (`data/scenarios/`, Eleni) | **Synthetic** | Timing and assumed voice levels for `demo.py` | Ours |
+| ASTRAL mission scenarios (`data/scenarios/`, research lead) | **Synthetic** | Timing and assumed voice levels for `demo.py` | Ours |
 | Synthetic speech (`synth.py`) | **Synthetic** | Tests, demos, robustness check | Ours |
 
 No NASA participant data and no real astronaut stress labels were used. No model weights were trained in this commit.

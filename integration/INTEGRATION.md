@@ -1,17 +1,17 @@
 # Multimodal integration prototype — pending team review
 
-Backend/fusion owner: Aarika (Colin unavailable). No shared contract, model source,
+Backend/fusion owner: backend lead (integration lead unavailable). No shared contract, model source,
 root dependency file, UI file, or Git history is modified by this implementation.
 This is an internal candidate adapter, not a declaration that either owner's
-proposal has been approved. Review these assumptions with Ben, Khalid, and Anuj.
+proposal has been approved. Review these assumptions with the voice lead, wearable lead, and UI lead.
 
 ## Architecture
 
 ```
-Ben's actual VoiceResult + explicit audio window end/version/provenance
+the voice lead's actual VoiceResult + explicit audio window end/version/provenance
                          -> adapt_voice -------------------------\
                                                                   compare_modalities
-Khalid's actual assess output -> adapt_wearable ------------------/        |
+the wearable lead's actual assess output -> adapt_wearable ------------------/        |
                                                                            |
 Synthetic cabin/crew snapshot + reference -> existing backend rules --------+
                                                                            |
@@ -88,8 +88,8 @@ The CLI explicitly errors when they are absent; it does not download or train.
 scores. It does not change the team's agreed roster. The scenario clock is pinned
 and labeled synthetic. The service uses that clock to inspect the replay.
 
-This demo runs Ben's synthetic speaker/audio generation and actual baseline
-inference; Khalid's actual feature extraction on generated 60-second BVP/EDA/ACC
+This demo runs the voice lead's synthetic speaker/audio generation and actual baseline
+inference; the wearable lead's actual feature extraction on generated 60-second BVP/EDA/ACC
 arrays and actual research-model inference; then both adapters, cross-analysis,
 SQLite logging, a **synthetic** review entry, and service retrieval. Wearable
 features in the current backend snapshot are replaced by the actually extracted

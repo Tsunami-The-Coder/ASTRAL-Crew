@@ -1,4 +1,4 @@
-# Wearable stress research prototype - Khalid
+# Wearable stress research prototype - wearable lead
 
 Offline component for ASTRAL-Crew. AI-assisted code and synthetic fixtures.
 No medical diagnosis, astronaut validation, or autonomous spacecraft control.
@@ -24,7 +24,7 @@ challenge-source mapping, data-access findings and five-hazard scope.
 The handoff in [CONTRACT_PROPOSAL.md](CONTRACT_PROPOSAL.md) is **proposed**.
 It does not amend `docs/DATA_CONTRACT.md`. Shared integration requires team review.
 Inspect [example.json](example.json) for a synthetic input/output pair.
-See [COLIN_HANDOFF.md](COLIN_HANDOFF.md) for integration and a ready-to-send message.
+See [INTEGRATION_HANDOFF.md](INTEGRATION_HANDOFF.md) for integration and a ready-to-send message.
 
 ## Run locally
 

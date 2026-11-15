@@ -16,12 +16,12 @@ Offline-first, software-only prototype for a four-person Mars mission. Combines 
 ## Team
 | Member | Responsibility |
 |---|---|
-| Anuj | UI/UX and product integration |
-| Aarika | Backend, SQLite, simulation |
-| Eleni | Research, datasets and scientific citations |
-| Khalid | Wearable biometric AI |
-| Ben | Voice AI |
-| Colin | Multimodal fusion, anomaly rules, QA |
+| UI lead | UI/UX and product integration |
+| backend lead | Backend, SQLite, simulation |
+| research lead | Research, datasets and scientific citations |
+| wearable lead | Wearable biometric AI |
+| voice lead | Voice AI |
+| integration lead | Multimodal fusion, anomaly rules, QA |
 
 ## Planned stack
 Python, Streamlit, Plotly, pandas, SciPy, librosa, XGBoost, SQLite.

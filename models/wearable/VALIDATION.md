@@ -2,7 +2,7 @@
 
 # Verification evidence
 
-Date: 2026-11-14. Owner: Khalid. AI-assisted implementation.
+Date: 2026-11-14. Owner: wearable lead. AI-assisted implementation.
 
 ## Component tests
 
@@ -85,8 +85,8 @@ Command: `python -m models.wearable.train <original-WESAD.zip> --output <outside
 
 Component and fixture checks only. No full-app end-to-end test is claimed:
 the inspected fusion/backend/UI workstreams contained planning documents and
-the shared handoff is still proposed. Colin must review the interface and run
-the integration checks in COLIN_HANDOFF.md. No changes were made outside this
+the shared handoff is still proposed. The integration lead must review the interface and run
+the integration checks in INTEGRATION_HANDOFF.md. No changes were made outside this
 wearable workstream, and no code was merged into main.
 
 
@@ -105,7 +105,7 @@ wearable workstream, and no code was merged into main.
   data ingestion, new accuracy result, or spaceflight validation is claimed.
 - Baseline metadata now prevents comparison across different feature pipelines
   and window lengths. Existing stored baselines must be rebuilt.
-- No new dependencies. No fusion/backend/UI/shared contract changes. Next owner: Colin.
+- No new dependencies. No fusion/backend/UI/shared contract changes. Next owner: integration lead.
 
 Passing software tests do not resolve the signal-extraction limitation. See
 NASA_WEARABLE_REVIEW.md and MODEL_CARD.md before interpreting the research score.

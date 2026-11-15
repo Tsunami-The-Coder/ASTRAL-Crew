@@ -4,12 +4,12 @@ Each link opens a teammate's folder **on their own branch**. Bookmark your link.
 
 | Owner | Branch | Workspace | Issue |
 | --- | --- | --- | --- |
-| Anuj | `feature/ui-dashboard` | [Open UI folder](https://github.com/Tsunami-The-Coder/ASTRAL-Crew/tree/feature/ui-dashboard/ui) | [#1](https://github.com/Tsunami-The-Coder/ASTRAL-Crew/issues/1) |
-| Aarika | `feature/backend` | [Open backend folder](https://github.com/Tsunami-The-Coder/ASTRAL-Crew/tree/feature/backend/backend) | [#2](https://github.com/Tsunami-The-Coder/ASTRAL-Crew/issues/2) |
-| Eleni | `docs/research` | [Open research folder](https://github.com/Tsunami-The-Coder/ASTRAL-Crew/tree/docs/research/research) | [#3](https://github.com/Tsunami-The-Coder/ASTRAL-Crew/issues/3) |
-| Khalid | `feature/wearable-ai` | [Open wearable folder](https://github.com/Tsunami-The-Coder/ASTRAL-Crew/tree/feature/wearable-ai/models/wearable) | [#4](https://github.com/Tsunami-The-Coder/ASTRAL-Crew/issues/4) |
-| Ben | `feature/voice-ai` | [Open voice folder](https://github.com/Tsunami-The-Coder/ASTRAL-Crew/tree/feature/voice-ai/models/voice) | [#5](https://github.com/Tsunami-The-Coder/ASTRAL-Crew/issues/5) |
-| Colin | `feature/fusion` | [Open fusion folder](https://github.com/Tsunami-The-Coder/ASTRAL-Crew/tree/feature/fusion/fusion) | [#6](https://github.com/Tsunami-The-Coder/ASTRAL-Crew/issues/6) |
+| UI lead | `feature/ui-dashboard` | [Open UI folder](https://github.com/Tsunami-The-Coder/ASTRAL-Crew/tree/feature/ui-dashboard/ui) | [#1](https://github.com/Tsunami-The-Coder/ASTRAL-Crew/issues/1) |
+| backend lead | `feature/backend` | [Open backend folder](https://github.com/Tsunami-The-Coder/ASTRAL-Crew/tree/feature/backend/backend) | [#2](https://github.com/Tsunami-The-Coder/ASTRAL-Crew/issues/2) |
+| research lead | `docs/research` | [Open research folder](https://github.com/Tsunami-The-Coder/ASTRAL-Crew/tree/docs/research/research) | [#3](https://github.com/Tsunami-The-Coder/ASTRAL-Crew/issues/3) |
+| wearable lead | `feature/wearable-ai` | [Open wearable folder](https://github.com/Tsunami-The-Coder/ASTRAL-Crew/tree/feature/wearable-ai/models/wearable) | [#4](https://github.com/Tsunami-The-Coder/ASTRAL-Crew/issues/4) |
+| voice lead | `feature/voice-ai` | [Open voice folder](https://github.com/Tsunami-The-Coder/ASTRAL-Crew/tree/feature/voice-ai/models/voice) | [#5](https://github.com/Tsunami-The-Coder/ASTRAL-Crew/issues/5) |
+| integration lead | `feature/fusion` | [Open fusion folder](https://github.com/Tsunami-The-Coder/ASTRAL-Crew/tree/feature/fusion/fusion) | [#6](https://github.com/Tsunami-The-Coder/ASTRAL-Crew/issues/6) |
 
 ## Workflow
 1. Accept the repository collaborator invitation.

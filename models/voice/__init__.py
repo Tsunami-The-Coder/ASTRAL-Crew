@@ -1,6 +1,6 @@
-"""ASTRAL-Crew voice stress workstream (owner: Ben).
+"""ASTRAL-Crew voice stress workstream (owner: voice lead).
 
-Public interface (see COLIN_HANDOFF.md):
+Public interface (see INTEGRATION_HANDOFF.md):
     VoiceStressEstimator   enroll a calm baseline, then analyze utterances
     VoiceResult            .record (DATA_CONTRACT record or None) + .details
     make_record            build a contract-shaped voice record

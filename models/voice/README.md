@@ -1,6 +1,6 @@
-# models/voice/: voice stress indicator (owner: Ben)
+# models/voice/: voice stress indicator (owner: voice lead)
 
-Part of **ASTRAL-Crew** (NASA Space Apps 2026, *Create Health Monitoring Software for Astronauts on Space Missions*). This module listens to an astronaut's comms speech and reports how far their voice has moved from **their own calm baseline**, in the directions linked to stress. Fusion combines it with Khalid's wearable output.
+Part of **ASTRAL-Crew** (NASA Space Apps 2026, *Create Health Monitoring Software for Astronauts on Space Missions*). This module listens to an astronaut's comms speech and reports how far their voice has moved from **their own calm baseline**, in the directions linked to stress. Fusion combines it with the wearable lead's wearable output.
 
 > Research indicator, not a diagnosis. Runs fully offline (numpy + scipy).
 
@@ -50,7 +50,7 @@ python -m models.voice.train          # writes results/ravdess_eval.json and mod
 | `cli.py` | Command line: `python -m models.voice.cli enroll / analyze / analyze-dir` |
 | `train.py` | Optional RAVDESS training with actor-independent folds |
 | `synth.py` | **Synthetic** speech-like audio and cabin noise for tests/demos |
-| `demo.py` | Runs the real pipeline on Eleni's 9 scenarios → contract JSONL for fusion |
+| `demo.py` | Runs the real pipeline on the research lead's 9 scenarios → contract JSONL for fusion |
 | `robustness.py` | Cabin-noise test: no filter vs. band-pass vs. band-pass + denoise |
 | `artemis_demo.py` | Feature demo on real NASA Artemis II audio + filter spectrogram |
 | `test_voice.py` | 28 tests: signal processing, contract, invalid input, baseline, scripts |
@@ -58,7 +58,7 @@ python -m models.voice.train          # writes results/ravdess_eval.json and mod
 | `MODEL_CARD.md` | Purpose, method, assumptions, limitations |
 | `VALIDATION.md` | What was actually measured, with numbers |
 | `CONTRACT_PROPOSAL.md` | Voice section for `docs/DATA_CONTRACT.md` |
-| `COLIN_HANDOFF.md` | How fusion uses this module |
+| `INTEGRATION_HANDOFF.md` | How fusion uses this module |
 | `SOURCES.md` | References, datasets, licences, AI disclosure |
 | `requirements-voice.txt` | Dependencies (no new ones) |
 

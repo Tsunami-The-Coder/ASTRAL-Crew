@@ -1,4 +1,4 @@
-# Handoff to Colin (fusion): voice stress component
+# Handoff to the integration lead (fusion): voice stress component
 
 ## TL;DR
 - **Drop-in data now:** `python -m models.voice.demo --all` writes `data/processed/voice_outputs/<scenario>.jsonl` for all nine scenarios. These are produced by the **real** voice pipeline (on synthetic audio), in exactly the contract format. Use them instead of the voice lines in `mock_model_outputs.jsonl`.
@@ -37,8 +37,8 @@ else:
 4. **Never alone:** do not raise RED from voice alone.
 
 ## Checks I ran (see VALIDATION.md)
-- `python -m pytest models/voice -q`: 28 passed (includes Eleni's `check_outputs` on my records).
-- Ran together with Eleni's tests: `python -m pytest tests models/voice -q`: 48 passed.
+- `python -m pytest models/voice -q`: 28 passed (includes the research lead's `check_outputs` on my records).
+- Ran together with the research lead's tests: `python -m pytest tests models/voice -q`: 48 passed.
 - All nine scenario outputs pass `check_outputs`.
 
 ## Assumptions to confirm with you

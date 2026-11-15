@@ -3,7 +3,7 @@
     python -m pytest models/voice -q
 
 All audio here is SYNTHETIC (models/voice/synth.py). Integration tests that
-need Eleni's data layer (data/) are skipped automatically if it is missing.
+need the research lead's data layer (data/) are skipped automatically if it is missing.
 """
 from __future__ import annotations
 
@@ -91,7 +91,7 @@ def test_make_record_clips_values():
     assert r["stress_score"] == 1.0 and r["confidence"] == 0.0
 
 
-@pytest.mark.skipif(not HAS_DATA, reason="Eleni's data layer not in repo")
+@pytest.mark.skipif(not HAS_DATA, reason="the research lead's data layer not in repo")
 def test_records_pass_elenis_validator(enrolled, tmp_path):
     from data.scripts.validate_data import CONTRACT_KEYS as ELENI_KEYS
     from data.scripts.validate_data import check_outputs
@@ -243,7 +243,7 @@ def _fake_ravdess(root: Path, actors=(1, 2, 3, 4)) -> None:
                     wavfile.write(d / f"03-01-{emo}-01-{stmt}-{rep}-{a:02d}.wav", F.SR, (x * 32767).astype(np.int16))
 
 
-@pytest.mark.skipif(not HAS_DATA, reason="Eleni's data layer not in repo")
+@pytest.mark.skipif(not HAS_DATA, reason="the research lead's data layer not in repo")
 def test_training_pipeline_on_fake_ravdess(tmp_path):
     from data.scripts.ravdess_prepare import build_manifest
 

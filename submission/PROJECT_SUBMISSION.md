@@ -8,7 +8,7 @@
 
 ## Summary
 
-**Eleni’s role:** NASA research, dataset access checks, provenance, and scientific citations. The interface and software prototype are collaborative team work; individual responsibilities are listed in the repository.
+**Research role:** NASA research, dataset access checks, provenance, and scientific citations. The interface and software prototype are collaborative team work; individual responsibilities are listed in the repository.
 
 
 ASTRAL Crew is an offline-first astronaut health-monitoring prototype for long-duration missions. It combines a daily self-check with an individual's recent health history, NASA's human-spaceflight hazard framework, and a separately labeled chart of real NASA Inspiration4 serum chemistry data. Instead of treating an isolated number as a diagnosis, it helps an astronaut notice a pattern change, verify a measurement, consider context, and follow an approved mission procedure.

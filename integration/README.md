@@ -1,4 +1,4 @@
-# Integration — fusion and QA (Aarika)
+# Integration — fusion and QA (backend lead)
 
 Planned: voice/wearable signal fusion, missing-signal handling, crew-level environmental correlations, scenario tests.
 

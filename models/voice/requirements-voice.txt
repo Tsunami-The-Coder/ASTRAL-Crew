@@ -1,4 +1,4 @@
-# Voice workstream: no NEW packages beyond Eleni's data layer.
+# Voice workstream: no NEW packages beyond the research lead's data layer.
 # Runtime (inference): numpy + scipy only.
 numpy
 scipy
