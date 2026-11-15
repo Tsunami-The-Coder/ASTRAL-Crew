@@ -435,3 +435,19 @@ Run all checks:
 ```sh
 python3 -m unittest discover -s backend -p 'test_*.py' -q
 ```
+
+## Step 16: candidate voice/wearable adapters and multimodal analysis
+
+`backend/multimodal.py` composes the existing telemetry rules with adapters and
+qualitative model comparison from `fusion/`. Original score semantics, input
+origins, model versions, raw JSON-safe outputs, windows, and quality are retained.
+There is no combined numeric score or automatic diagnosis. Reports can be saved
+through the existing mission log and displayed through the existing service.
+
+See [fusion/INTEGRATION.md](../fusion/INTEGRATION.md) for the explicit adapter
+proposal, pinned producer versions, runnable synthetic demo, unavailable/fifth-crew
+behavior, and required team-review decisions. No producer source or shared
+contract was edited. The standalone cross_analysis CLI remains telemetry-only;
+the new wrapper/demo is the model-aware path. When producer modules are not on
+this branch, the demo must run in an isolated integration copy containing both
+modules; it does not silently merge branches or replace unavailable models.
