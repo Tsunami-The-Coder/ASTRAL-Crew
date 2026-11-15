@@ -45,7 +45,8 @@ in the offline report and documentation; following a link requires internet.
 - Distribution: no raw recordings are committed. `model.json` contains fitted
   coefficients and preprocessing parameters for this scientific, non-commercial
   prototype. Preserve WESAD attribution and use conditions. Team members can
-  reproduce training using the source and commands in README.md.
+  reproduce training using `models/wearable/train.py` and
+  `models/wearable/requirements-training.txt` (see CLI help).
 
 Credit: Philip Schmidt, Attila Reiss, Robert Duerichen, Claus Marberger,
 Kristof Van Laerhoven, *Introducing WESAD, a multimodal dataset for Wearable

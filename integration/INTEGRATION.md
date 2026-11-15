@@ -118,7 +118,7 @@ CLI continues to run telemetry-only rules. Use the new wrapper/demo for models.
 ## Dashboard review artifact
 
 After the integration demo, `python3 -m backend.export` can export its existing
-SQLite results as JSON using the explicit replay clock. See backend/README.md
-Step 17. The artifact contains actual-pipeline outputs on synthetic waveforms,
+SQLite results as JSON using the explicit replay clock. See the root README
+for local setup. The artifact contains actual-pipeline outputs on synthetic waveforms,
 not real crew observations. Review this candidate view with the UI owner before
 building the connection; exporting is not evidence of UI integration.
