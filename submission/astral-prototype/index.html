@@ -124,191 +124,60 @@ body{background-image:radial-gradient(ellipse at 78% -8%,rgba(41,95,132,.34),tra
             </div>
             <div class="actions"><button class="btn secondary" id="run-wesad-model" type="button">Run model on demo vector</button><a class="model-source-link" href="data/wesad-model.json" download="wesad-model.json">Download model configuration</a></div>
             <div class="result" id="wesad-result" role="status" aria-live="polite"><div class="result-row"><div class="result-mark">i</div><div><h3>Research model ready</h3><p>Prefilled values are synthetic copies of the model’s training-feature means. Run the model to see its uncalibrated output.</p></div></div></div>
-<button class="active" data-page="overview"><span class="icon">◫</span>Mission control</button>
-<button class="sandbox-nav" data-page="checkin"><span class="icon">＋</span>Personal sandbox</button>
-<button data-page="crew"><span class="icon">◎</span>Crew</button>
-<button data-page="flagged"><span class="icon">!</span>Flagged findings</button>
-<button data-page="hazards"><span class="icon">⌁</span>Mission hazards</button>
-<button data-page="biology"><span class="icon">✣</span>Biology evidence</button>
-<button data-page="about"><span class="icon">⌁</span>Method</button>
-<button data-page="sources"><span class="icon">↗</span>Sources</button>
-</nav>
-
-<div class="side-note">
-  <b>Demo workflow</b>
-  Crew → Add entry → Generate readings → Submit. Review the combined picture in Mission control.
-</div>
-</aside>
-
-<main class="content">
-  <section class="page active" id="page-overview">
-    <div class="head">
-      <div>
-        <div class="eyebrow">Mission control · crew & habitat</div>
-        <h1>Mission control</h1>
-        <p>Overall crew health and cabin conditions.</p>
-      </div>
-      <div class="day-chip" id="mission-day-label">MISSION REPLAY</div>
-    </div>
-
-    <details class="mission-tools">
-      <summary>Advanced scenario playback & export</summary>
-
-      <div class="mission-data-bar">
-        <div>
-          <span class="state demo" id="mission-mode-badge">SYNTHETIC REPLAY</span>
-          <span id="mission-source-label">Bundled backend demo</span>
-          <small id="mission-timestamp"></small>
+            <p class="model-output-note"><b>Interpretation limit:</b> this is not a calibrated clinical probability, diagnosis, stress state, or fitness-for-duty assessment. The WESAD model uses a pulse-derived RMSSD proxy; its version-one peak detector has a documented secondary-peak double-counting limitation. The app does not collect sensor signals or link this score to its crew entry. The motion-caution cutoff is a software rule, not a NASA threshold. <a class="model-source-link" href="data/wesad-model-card.md">Read model limitations</a>.</p>
+          </article>
         </div>
-        <div class="actions advanced-import">
-          <label class="btn secondary file-button" for="mission-import">
-            Import saved JSON
-            <input type="file" id="mission-import" accept=".json,application/json">
-          </label>
-          <button class="reset" id="mission-reset">Reset replay</button>
+      <details class="local-preview"><summary>View local check-in charts · separate from mission replay</summary>
+        <div class="head"><div><div class="eyebrow">Separate personal sandbox</div><h1>Your local check-in preview.</h1><p>Your check-in is a quick snapshot, not a diagnosis. Review changes against your own baseline and decide whether to repeat a measurement or follow your mission protocol.</p></div><div class="day-chip">MISSION DAY <b>186</b> &nbsp;·&nbsp; CHECK-IN <b id="checkin-time">07:30</b></div></div>
+        <div class="grid kpis">
+          <article class="card kpi"><div class="kpi-top"><span>RESTING HEART RATE</span><span class="kpi-icon">♡</span></div><div class="kpi-value" id="kpi-hr">68 <small>bpm</small></div><div class="kpi-foot" id="kpi-hr-foot">Within your demo baseline</div></article>
+          <article class="card kpi"><div class="kpi-top"><span>SLEEP</span><span class="kpi-icon">☾</span></div><div class="kpi-value" id="kpi-sleep">7.2 <small>hours</small></div><div class="kpi-foot" id="kpi-sleep-foot">Last sleep period</div></article>
+            <article class="card kpi"><div class="kpi-top"><span>HRV</span><span class="kpi-icon">∿</span></div><div class="kpi-value" id="kpi-hrv">53 <small>ms</small></div><div class="kpi-foot" id="kpi-hrv-foot">Within your demo baseline</div></article>
+          <article class="card kpi"><div class="kpi-top"><span>CHECK-IN STATUS</span><span class="kpi-icon">◉</span></div><div class="kpi-value green" id="kpi-status">Nominal</div><div class="kpi-foot" id="kpi-status-foot">No new review prompt</div></article>
         </div>
-      </div>
-
-      <div class="demo-controls">
-        <div class="demo-run-controls">
-          <label for="demo-scenario">SCENARIO</label>
-          <select id="demo-scenario" class="select" aria-label="Demonstration scenario">
-            <option value="baseline">Baseline crew</option>
-            <option value="co2_rise">Shared changes + CO₂ rise</option>
-            <option value="disagreement">Voice / wearable disagreement</option>
-            <option value="missing_sensor">Missing signals</option>
-            <option value="faulty_sensor">Invalid sensor</option>
-            <option value="exercise">Movement caution</option>
-            <option value="radiation_rise">Radiation rise</option>
-            <option value="pressure_drop">Pressure drop</option>
-            <option value="oxygen_drop">Oxygen drop</option>
-          </select>
-          <button id="demo-run" class="btn" disabled>Run preset demo</button>
+        <div class="grid main-grid">
+          <article class="card panel">
+            <div class="panel-head"><div><div class="panel-title">Your recent trend</div><div class="panel-sub">Resting heart rate · last 7 check-ins</div></div><span class="state info">PERSONAL BASELINE</span></div>
+            <div class="chart-wrap"><canvas id="trend-chart" aria-label="Chart of resting heart rate compared with personal baseline"></canvas></div>
+            <div class="legend"><span><i style="background:var(--teal)"></i>Check-in</span><span><i class="line" style="background:#6c8298"></i>Personal baseline</span><span>Demo values</span></div>
+            <div class="baseline-note"><strong>Digital Health Twin · MVP</strong> &nbsp;This is a personal pattern profile, not a simulated body. The demo compares readings with your recent history using a transparent rolling median and median absolute deviation (MAD).</div>
+          </article>
+          <article class="card panel">
+            <div class="panel-head"><div><div class="panel-title">Spaceflight hazard context</div><div class="panel-sub">NASA Human Research Program framework</div></div><button class="reset" data-go="hazards">View all 5</button></div>
+            <div class="hazard-list">
+              <div class="hazard"><div class="hazard-icon">☼</div><div><strong>Space radiation</strong><small>Exposure context · data input not connected</small></div><span class="state demo">SIMULATED</span></div>
+              <div class="hazard"><div class="hazard-icon">◌</div><div><strong>Isolation & confinement</strong><small>Sleep and self-reported mood</small></div><span class="state info">CHECK-IN</span></div>
+              <div class="hazard"><div class="hazard-icon">⌂</div><div><strong>Gravity fields</strong><small>Movement and cardiovascular trends</small></div><span class="state info">TREND</span></div>
+            </div>
+            <div class="actions"><button class="btn" data-go="crew">Open crew entries <span aria-hidden="true">→</span></button><button class="btn secondary" data-go="biology">View NASA evidence</button></div>
+            <p class="disclaimer">ASTRAL does not diagnose, identify causes, or control spacecraft systems. Follow approved mission procedures for medical concerns.</p>
+          </article>
         </div>
+      </details></section>
 
-        <div id="demo-connection-status" role="status" aria-live="polite">Offline replay</div>
-        <button id="demo-export" class="btn secondary">Export results</button>
-      </div>
+      <section class="page" id="page-crew"><div class="head"><div><div class="eyebrow">Individual crew health</div><h1>Crew</h1><p>Select a member to review or add an entry.</p></div><select id="mission-crew-select" class="select crew-select" aria-label="Select crew member"></select></div><div id="mission-crew-tabs" class="crew-tabs"></div><div id="crew-detail-summary"></div><article class="card panel member-latest"><div class="panel-head"><div><div class="panel-title">Latest entry</div><div id="member-latest-time" class="panel-sub"></div></div><span id="member-latest-kind" class="state info">PRELOADED · SYNTHETIC</span></div><div id="member-latest-values" class="entry-values"></div></article>
+<details id="member-entry-editor" class="card panel connected-checkin"><summary>Add entry <span>Voice + wearable + generated readings</span></summary><form id="member-checkin-form"><h2 id="member-checkin-title" class="section-title">New entry</h2><span id="member-checkin-state" hidden></span><div class="review-fields"><label>1 · Voice sample<select id="member-voice" class="select"><option value="calm">Generated · calm</option><option value="aroused">Generated · elevated arousal</option><option value="silence">Silence · missing speech</option><option value="artemis-terminator">NASA Artemis II · The Terminator</option><option value="artemis-closest">NASA Artemis II · Closest to the Moon</option><option value="ravdess-calm">RAVDESS · calm (acted)</option><option value="ravdess-neutral">RAVDESS · neutral (acted)</option><option value="ravdess-fearful">RAVDESS · fearful (acted)</option></select></label><label>2 · Wearable sample<select id="member-wearable" class="select"><option value="rest">Generated · resting window</option><option value="elevated">Generated · elevated window</option><option value="movement">Generated · movement window</option><option value="missing">Missing EDA test</option></select></label></div><audio id="member-audio" controls preload="none"></audio><p id="member-input-note" class="panel-sub"></p><button id="member-generate" class="btn secondary" type="button">3 · Generate demo readings</button><div id="member-draft-values" class="entry-values" hidden></div><p id="member-draft-time" class="panel-sub"></p><button id="member-checkin-submit" class="btn" type="submit" disabled>4 · Submit & analyze</button></form><div id="member-processing" class="processing-track" hidden><span>Validate inputs</span><span>Prepare readings</span><span>Run analysis</span><span>Save results</span></div><div id="member-checkin-result" class="entry-feedback" role="status" aria-live="polite"></div></details>
+<details class="card panel member-history"><summary>Entry history <span id="member-history-count"></span></summary><div id="member-history-list"></div></details><div id="crew-module-tabs" class="crew-tabs" aria-label="Health modules"></div><div class="grid kpis" id="crew-detail-vitals"></div><div class="grid main-grid"><article class="card panel"><div class="panel-head"><div><div class="panel-title" id="crew-detail-chart-title">Individual history</div><div class="panel-sub" id="crew-detail-chart-caption"></div></div><select class="select" id="crew-detail-metric" aria-label="Individual history metric"><option value="heart_rate_bpm">Heart rate · bpm</option><option value="hrv_rmssd_ms">RMSSD proxy · ms</option><option value="eda_microsiemens">EDA · µS</option><option value="radiation">Dose since run start · mSv</option></select></div><div class="chart-wrap"><canvas id="crew-detail-chart" aria-label="Selected crew history"></canvas></div><details class="chart-data"><summary>View source readings</summary><div id="crew-detail-table" class="table-scroll"></div></details></article><article class="card panel"><div class="panel-title">Voice & wearable evidence</div><p class="panel-sub">Separate indicator meanings. No combined risk score.</p><div id="crew-model-evidence" class="signal-list"></div></article></div><div id="crew-long-term" class="grid about-grid crew-long-term"></div><article class="card panel"><div class="panel-title">Findings for this crew member</div><div id="crew-detail-flags" class="flag-list"></div></article></section>
 
-      <p class="import-message" id="mission-import-message" role="status" aria-live="polite"></p>
-
-      <div class="card playback-bar">
-        <button id="demo-play" class="btn secondary">▶ Replay readings</button>
-        <input id="demo-timeline" type="range" min="0" max="11" value="11" aria-label="Demo timeline">
-        <span id="demo-frame">12 / 12 samples</span>
-        <span id="demo-play-state">Recorded simulation · not a live feed</span>
-      </div>
-    </details>
-
-    <article class="card panel connected-summary">
-      <div class="panel-head">
-        <div>
-          <div class="panel-title">Overall crew + cabin analysis</div>
-          <div id="checkin-roster-summary" class="panel-sub">Select each crew card to submit inputs.</div>
+      <section class="page" id="page-flagged"><div class="head"><div><div class="eyebrow">Evidence → human review</div><h1>What needs attention?</h1><p>Review the evidence. Record the next human-reviewed step.</p></div><select id="mission-flag-filter" class="select" aria-label="Filter findings"><option value="all">All findings</option><option value="crew">Crew indicators</option><option value="cabin">Cabin context</option><option value="quality">Data quality</option></select></div><div id="mission-report-state" class="callout"></div><div id="mission-flag-list" class="flag-list"></div><article class="card panel review-panel"><div class="panel-title">Record a review</div><form id="demo-review-form"><div class="review-fields"><label>Reviewer<input id="demo-reviewer" type="text" required maxlength="80" placeholder="Your name"></label><label>Decision<select id="demo-decision" class="select"><option value="follow_up">Follow-up needed</option><option value="acknowledged">Acknowledged</option><option value="dismissed">Dismissed after review</option></select></label><label class="review-note">Note<input id="demo-review-note" type="text" required maxlength="1000" placeholder="What should be verified next?"></label></div><div class="actions"><button id="demo-review-save" class="btn secondary" type="submit" disabled>Save review</button><span id="demo-review-status" role="status" aria-live="polite">Complete a demo run, then record your review.</span></div></form></article><article class="card panel review-log"><div class="panel-title">Reviews for this analysis</div><div class="panel-sub">Saved reviews remain linked to this scenario analysis.</div><div id="mission-reviews"></div></article></section>
+<section class="page" id="page-lab"><div class="head"><div><div class="eyebrow">Run the actual pipelines</div><h1>Listen. Select. Test.</h1><p>Explore samples here. To feed a member’s results into Mission control, use Crew check-ins & health.</p></div><span class="state demo">LOCAL PROCESSING</span></div>
+<div class="grid lab-grid"><article class="card panel"><h2 class="section-title">01 · Voice test</h2><p class="panel-sub">NASA selections are authentic recorded excerpts for feature extraction. Generated selections test personal-baseline scoring.</p><label for="lab-voice">Choose a sample</label><select id="lab-voice" class="select"><option value="artemis-terminator">NASA Artemis II · The Terminator (15 s)</option><option value="artemis-closest">NASA Artemis II · Closest to the Moon (15 s)</option><option value="calm">Generated calm reference</option><option value="aroused">Generated arousal example</option><option value="silence">Silence · missing speech test</option><option value="upload">My WAV + same-speaker calm baseline</option></select><audio id="lab-audio" controls preload="none" src="audio/artemis-terminator.wav"></audio><p class="panel-sub">NASA clips: first 15 seconds, converted to mono WAV. <a href="https://www.nasa.gov/artemisaudio/" target="_blank" rel="noopener">Source: NASA Audio Library</a> · No NASA endorsement.</p><div id="lab-uploads" hidden><label>5–10 calm WAV files · same speaker<input id="lab-baseline" type="file" multiple accept=".wav,audio/wav"></label><label>Test WAV · 1–20 seconds<input id="lab-wav" type="file" accept=".wav,audio/wav"></label><p class="panel-sub">Record with permission. Files are processed in memory and are not saved. A different speaking style does not prove stress.</p></div><button id="lab-run-voice" class="btn">Analyze voice sample</button><div id="lab-voice-result" class="lab-result" aria-live="polite">Select a sample, listen, then analyze.</div></article>
+<article class="card panel"><h2 class="section-title">02 · Wearable test</h2><p class="panel-sub">No audio here: the input is a 60-second pulse, skin-conductance and movement window.</p><label for="lab-wearable">Choose a sample</label><select id="lab-wearable" class="select"><option value="rest">Generated resting window</option><option value="elevated">Generated elevated window</option><option value="movement">Generated exercise / movement</option><option value="missing">Missing EDA · quality test</option><option value="upload">Upload recorded signal JSON</option></select><div id="lab-wrist-upload" hidden><input id="lab-signals" type="file" accept=".json,application/json"><p class="panel-sub">BVP: 3,840 values at 64 Hz. EDA: 240 values at 4 Hz (µS). ACC: 1,920 × 3 values at 32 Hz, E4 units (1/64 g). All from the same 60 seconds. BPM alone is insufficient.</p></div><div class="wrist-preview" aria-hidden="true">⌁ &nbsp; Pulse &nbsp; · &nbsp; EDA &nbsp; · &nbsp; Motion</div><button id="lab-run-wearable" class="btn">Analyze wearable sample</button><div id="lab-wearable-result" class="lab-result" aria-live="polite">Select a window, then run feature extraction and inference.</div></article></div><article class="card panel lab-combined"><h2 class="section-title">03 · See the cross-check</h2><p class="panel-sub">Standalone samples are not assumed to be synchronized. This runs a labelled synthetic five-crew scenario through both pipelines and the cabin rules.</p><button id="lab-cross" class="btn">Run crew + CO₂ cross-check →</button></article></section>
+<section class="page" id="page-hazards">
+        <div class="head"><div><div class="eyebrow">NASA Human Research Program</div><h1>Mission hazards</h1><p>NASA’s five hazards explain the mission context. Add readings once, under Crew; Mission control combines crew and cabin evidence.</p></div><div class="day-chip">FRAMEWORK <b>5 HAZARDS</b></div></div>
+        <div class="grid hazard-cards">
+          <article class="card hazard-card"><div class="row"><div class="hazard-icon">☼</div><span class="state demo">CONTEXT</span></div><h3>Space radiation</h3><p>The Radiation module shows simulated dose accumulation and rate changes. No physical dosimeter is connected.</p><div class="mapping">View: Crew → Radiation</div></article>
+          <article class="card hazard-card"><div class="row"><div class="hazard-icon">◌</div><span class="state info">INDICATORS</span></div><h3>Isolation & confinement</h3><p>Voice and wearable indicators appear in each member’s Cognitive module. They do not establish a psychological condition.</p><div class="mapping">View: Crew → Cognitive</div></article>
+          <article class="card hazard-card"><div class="row"><div class="hazard-icon">⇢</div><span class="state info">DELAY CONTEXT</span></div><h3>Distance from Earth</h3><p>Communication delays motivate local records and human-reviewed support. Entries and reviews are saved offline; reviewed medical checklists are not yet included.</p><div class="mapping">View: Crew → Medical support · Flagged findings</div></article>
+          <article class="card hazard-card"><div class="row"><div class="hazard-icon">⌂</div><span class="state info">TREND</span></div><h3>Gravity fields</h3><p>The Gravity module shows an illustrative adaptation trend. It does not measure bone density or predict individual health.</p><div class="mapping">View: Crew → Gravity adaptation</div></article>
+          <article class="card hazard-card"><div class="row"><div class="hazard-icon">▣</div><span class="state demo">SENSOR INPUT</span></div><h3>Hostile / closed environment</h3><p>Simulated CO₂, oxygen and pressure readings are shared cabin inputs. Mission control checks their changes alongside crew indicators.</p><div class="mapping">View: Mission control · Crew → Habitat</div></article>
+          <article class="card hazard-card"><div class="row"><div class="hazard-icon">＋</div><span class="state">ACTION</span></div><h3>From signal to next step</h3><p>Review flagged evidence and verify unexpected inputs. Record a human-reviewed next step; the prototype does not operate spacecraft systems.</p><div class="mapping">View: Flagged findings</div></article>
         </div>
-        <button id="mission-recheck" class="btn">Analyze saved crew inputs + cabin</button>
-      </div>
+        <div class="actions"><button class="btn" data-go="crew">Open crew entries →</button></div>
+      </section>
 
-      <label class="panel-sub">
-        Cabin scenario
-        <select id="mission-checkin-cabin" class="select">
-          <option value="baseline">Baseline cabin</option>
-          <option value="co2_rise">Rising CO₂</option>
-          <option value="pressure_drop">Pressure drop</option>
-          <option value="oxygen_drop">Oxygen drop</option>
-          <option value="radiation_rise">Radiation rise</option>
-        </select>
-      </label>
-
-      <div id="mission-recheck-status" class="panel-sub" role="status"></div>
-
-      <div id="mission-processing" class="processing-track" hidden>
-        <span>Validate inputs</span>
-        <span>Prepare readings</span>
-        <span>Run analysis</span>
-        <span>Save results</span>
-      </div>
-    </article>
-
-    <div class="grid kpis" id="mission-kpis"></div>
-
-    <div class="panel-head crew-heading">
-      <div>
-        <div class="panel-title">The crew at a glance</div>
-        <div class="panel-sub">Select a member → choose voice + wearable samples → Analyze & save.</div>
-      </div>
-      <span class="state info">AST-01 — AST-05</span>
-    </div>
-
-    <div id="mission-crew-cards" class="mission-crew-grid"></div>
-
-    <div class="grid main-grid mission-charts">
-      <article class="card panel">
-        <div class="panel-head">
-          <div>
-            <div class="panel-title">Crew heart-rate history</div>
-            <div class="panel-sub" id="crew-chart-caption"></div>
-          </div>
-          <span class="state demo">bpm</span>
-        </div>
-
-        <div class="chart-wrap">
-          <canvas id="mission-crew-chart" aria-label="Heart rate by crew member from stored snapshots"></canvas>
-        </div>
-
-        <div class="mission-legend" id="mission-crew-legend"></div>
-        <p class="disclaimer">Synthetic signals · missing readings stay missing.</p>
-      </article>
-
-      <article class="card panel">
-        <div class="panel-head">
-          <div>
-            <div class="panel-title">Shared cabin situation</div>
-            <div class="panel-sub">One habitat reading for the whole crew.</div>
-          </div>
-
-          <select class="select" id="cabin-chart-metric" aria-label="Cabin chart metric">
-            <option value="co2_percent">CO₂ · %</option>
-            <option value="o2_percent">Oxygen · %</option>
-            <option value="pressure_kpa">Pressure · kPa</option>
-          </select>
-        </div>
-
-        <div id="mission-cabin-values" class="mission-cabin-grid"></div>
-
-        <div class="chart-wrap cabin-chart">
-          <canvas id="mission-cabin-chart" aria-label="Cabin telemetry history"></canvas>
-        </div>
-
-        <p class="disclaimer" id="mission-freshness-label"></p>
-      </article>
-    </div>
-
-    <article class="card panel flagged-preview">
-      <div class="panel-head">
-        <div>
-          <div class="eyebrow">Attention & verification</div>
-          <h2 class="section-title">Flagged for review</h2>
-          <div class="panel-sub">Crew, cabin, and data-quality findings.</div>
-        </div>
-        <button class="btn secondary" data-go="flagged">View all findings →</button>
-      </div>
-
-      <div id="mission-flag-preview" class="flag-list"></div>
-    </article>
-  </section>
-
-  <section class="page" id="page-checkin">
-    <div class="head">
-      <div>
-        <div class="eyebrow">Daily self-assessment</div>
-        <h1>Personal check-in sandbox</h1>
-        <p>Optional browser-only experiment. These entries are not assigned to a mission crew member and do not feed the backend demo.</p>
-      </div>
-      <div class="day-chip">
-        SOL 186 &nbsp;·&nbsp; <span class="accent">LOCAL ONLY</span>
-      </div>
-    </div>
+      <section class="page" id="page-biology">
+        <div class="head"><div><div class="eyebrow">ASTRAL BIOLOGY · NASA dataset view</div><h1>NASA mission data, in context.</h1><p>Explore serum glucose and other chemistry results from the Inspiration4 crew. These public samples provide real human spaceflight data, while remaining separate from ASTRAL’s synthetic crew entries.</p></div><div class="day-chip">NASA OSDR <b>OSD-575</b></div></div>
         <div class="grid biology-grid">
           <article class="card panel"><div class="panel-head"><div><div class="panel-title">Inspiration4 serum chemistry</div><div class="panel-sub">Individual sample values · four pseudonymous crew codes · 28 samples</div></div><label class="chart-select-label" for="osdr-analyte">ANALYTE <select class="select" id="osdr-analyte" aria-label="Choose a NASA OSDR serum measurement"><option value="glucose">Serum glucose · mg/dL</option><option value="creatinine">Creatinine · mg/dL</option><option value="sodium">Sodium · mmol/L</option><option value="potassium">Potassium · mmol/L</option><option value="calcium">Calcium · mg/dL</option></select></label></div>
             <div class="osdr-chart-wrap"><canvas id="osdr-chart" aria-label="Chart of public NASA OSDR Inspiration4 serum measurements"></canvas></div>
