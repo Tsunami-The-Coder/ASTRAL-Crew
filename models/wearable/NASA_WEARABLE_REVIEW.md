@@ -1,3 +1,5 @@
+> Historical v1 record. See [FIX_VALIDATION.md](FIX_VALIDATION.md) for the current quality-gated model, five-member support and fresh evaluation.
+
 # NASA challenge resources: wearable evidence review
 
 Reviewed 2026-11-14. Owner: Khalid. AI-assisted source review and implementation.

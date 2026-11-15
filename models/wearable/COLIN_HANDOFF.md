@@ -1,6 +1,6 @@
 # Wearable handoff to Colin
 
-Task / owner: issue #4, Khalid. Branch: feature/wearable-ai.
+Task / owner: issue #4, wearable owner. Branch: feature/wearable-fixes.
 Scope: models/wearable only. Shared contract remains a proposal.
 
 ## NASA resource review follow-up
@@ -14,7 +14,7 @@ expanded; iterate over them. No new runtime dependencies or shared event fields.
 The raw-signal audit found v1 double-counting secondary waveform peaks. Keep its
 predictions labelled experimental; do not present the WESAD classification metric
 as evidence of accurate HRV, spaceflight validity or five-hazard diagnosis.
-`signal_audit.py` reproduces the issue. The weights remain unchanged.
+`signal_audit.py` reproduces the issue. See FIX_VALIDATION.md for the new quality-gated model and evaluation.
 
 ## Connect the component
 
@@ -58,7 +58,7 @@ Do not silently rename `data_origin` to the playbook's earlier `data_type`.
 
 ## Acceptance checks for the integrated app
 
-- Four distinct crew records reach the correct cards.
+- Five distinct crew records reach the correct cards.
 - Window timestamps and units survive backend serialization and storage.
 - Missing EDA yields unavailable wearable inference, not a normal score.
 - Stale signals are excluded even if their previous score was high/low.
@@ -95,5 +95,7 @@ not a diagnosis or autonomous intervention.
 
 If your interface differs, let's agree a small adapter and update the shared
 contract and integration tests together. `demo.py` includes five scenarios with
-20 crew results; `VALIDATION.md` records the actual component/model checks.
+25 crew results; `VALIDATION.md` records the actual component/model checks.
 NASA source mappings, limitations and AI/data provenance are documented alongside.
+
+Current model: wesad-wrist-logistic-v2-quality-gated. The shared field names and accepted-feature definitions are unchanged. Review FIX_VALIDATION.md: only four held-out participants retain both classes, and raw-data coverage is limited. Do not reuse the historical 85.5% claim or assume the dashboard's separately copied model has been updated.

@@ -5,7 +5,7 @@ Pulse interval RMSSD is a proxy and is not ECG-derived HRV.
 """
 from __future__ import annotations
 import numpy as np
-from scipy.signal import butter, sosfiltfilt, find_peaks
+from scipy.signal import butter, sosfiltfilt, find_peaks, correlate
 
 FEATURE_PIPELINE = "wrist-bvp-eda-acc-60s-v1"
 SAMPLE_RATES = {"BVP": 64, "EDA": 4, "ACC": 32}
@@ -38,6 +38,18 @@ def extract_window(bvp, eda, acc):
     if valid.mean() < 0.9 or consecutive.sum() < 20:
         raise ValueError("too many implausible pulse intervals")
     hr = 60000 / np.mean(intervals[valid])
+    # Independent periodicity check catches secondary peaks counted as beats.
+    # Conservative engineering gate, not validated medical signal quality.
+    centered_pulse = filtered - filtered.mean()
+    ac = correlate(centered_pulse, centered_pulse, mode="full", method="fft")[len(filtered)-1:]
+    candidates, _ = find_peaks(ac)
+    candidates = candidates[(candidates >= 20) & (candidates <= 128)]
+    if not len(candidates) or ac[0] <= 0:
+        raise ValueError("ambiguous pulse periodicity")
+    lag = candidates[np.argmax(ac[candidates])]
+    periodic_hr = 60 * 64 / lag
+    if ac[lag] / ac[0] < 0.3 or abs(hr - periodic_hr) / periodic_hr > 0.20:
+        raise ValueError("pulse peaks disagree with waveform periodicity")
     rmssd = np.sqrt(np.mean(np.diff(intervals)[consecutive] ** 2))
     if not 20 <= hr <= 240 or not 0 <= rmssd <= 500:
         raise ValueError("derived pulse features outside engineering bounds")

@@ -12,6 +12,20 @@ CLOCK = "2026-11-14T14:30:00Z"
 
 
 class InferenceTests(unittest.TestCase):
+    def test_fifth_member_is_scored_with_own_baseline(self):
+        model = load_model(Path(__file__).with_name("model.json"))
+        result = self.score(event("AST-05"), model=model, baseline=baseline_for("AST-05"))
+        self.assertEqual(result["status"], "available")
+        self.assertEqual(result["crew_id"], "AST-05")
+        self.assertEqual(result["baseline"]["status"], "available")
+        wrong = self.score(event("AST-05"), model=model, baseline=baseline_for("AST-01"))
+        self.assertEqual(wrong["baseline"]["status"], "invalid")
+        self.assertIsNone(self.score(event("AST-05", eda_microsiemens=None), model=model)["stress_score"])
+
+    def test_unknown_crew_still_rejected(self):
+        for crew in ("AST-00", "AST-06", "AST-5", "", None):
+            self.assertEqual(self.score(event(crew))["status"], "invalid")
+
     def score(self, reading=None, **kwargs):
         return assess(event() if reading is None else reading, now=CLOCK, **kwargs)
 
@@ -149,7 +163,7 @@ class InferenceTests(unittest.TestCase):
     def test_demo_all_scenarios_and_json(self):
         cases = scenarios()
         self.assertEqual(len(cases), 5)
-        self.assertTrue(all(len(case["wearable_results"]) == 4 for case in cases))
+        self.assertTrue(all(len(case["wearable_results"]) == 5 for case in cases))
         self.assertEqual(cases[3]["wearable_results"][1]["status"], "missing")
         self.assertTrue(cases[4]["voice_mocks"])
         json.dumps(cases, allow_nan=False)
@@ -166,6 +180,30 @@ except ImportError:
 
 @unittest.skipUnless(HAS_TRAINING, "optional training dependencies unavailable")
 class TrainingTests(unittest.TestCase):
+    def test_single_class_test_participant_is_retained_and_marked(self):
+        rows = [{"subject_id": f"S{s}", "label": label,
+                 "features": dict(zip(FEATURES, [70+label*20+s, 50, 2+label, 0.1]))}
+                for s in (2, 3, 4) for label in ((0,) if s == 2 else (0, 1)) for _ in range(3)]
+        _, report = evaluate(rows)
+        self.assertEqual(report["n_subjects"], 3)
+        self.assertEqual(report["balanced_accuracy_evaluable_subjects"], 2)
+        self.assertIsNone(next(f for f in report["folds"] if f["held_out_subject"] == "S2")["balanced_accuracy"])
+        self.assertEqual(sum(map(sum, report["pooled_confusion_matrix"])), len(rows))
+
+    def test_secondary_peaks_are_rejected_instead_of_double_counted(self):
+        time = np.arange(3840) / 64
+        signal = np.sin(2*np.pi*time) + np.sin(4*np.pi*time)
+        with self.assertRaisesRegex(ValueError, "periodicity"):
+            extract_window(signal, np.ones(240)*2, np.tile([0, 0, 64], (1920, 1)))
+
+    def test_clean_rate_range_survives_quality_gate(self):
+        time = np.arange(3840) / 64
+        for bpm in (45, 60, 90, 120, 150, 180):
+            with self.subTest(bpm=bpm):
+                result = extract_window(np.sin(2*np.pi*bpm/60*time), np.ones(240)*2,
+                                        np.tile([0, 0, 64], (1920, 1)))
+                self.assertAlmostEqual(result["heart_rate_bpm"], bpm, delta=2)
+
     def test_known_pulse_train(self):
         time = np.arange(3840) / 64
         result = extract_window(np.sin(2*np.pi*time), np.ones(240)*2, np.tile([0, 0, 64], (1920, 1)))
