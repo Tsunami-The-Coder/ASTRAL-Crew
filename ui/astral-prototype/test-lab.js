@@ -1,6 +1,6 @@
 (function(){
 'use strict';var $=function(id){return document.getElementById(id);},blobURL=null;
-$('lab-voice').onchange=function(){var upload=this.value==='upload';$('lab-uploads').hidden=!upload;if(!upload)$('lab-audio').src=this.value.startsWith('artemis-')?'audio/'+this.value+'.wav':'/api/lab/audio/'+this.value;else{$('lab-audio').removeAttribute('src');$('lab-audio').load();}};
+$('lab-voice').onchange=function(){var upload=this.value==='upload';$('lab-uploads').hidden=!upload;if(!upload)$('lab-audio').src=this.value.startsWith('artemis-')?'/submission-assets/audio/'+this.value+'.wav':'/api/lab/audio/'+this.value;else{$('lab-audio').removeAttribute('src');$('lab-audio').load();}};
 $('lab-wearable').onchange=function(){$('lab-wrist-upload').hidden=this.value!=='upload';};
 $('lab-wav').onchange=function(){if(blobURL)URL.revokeObjectURL(blobURL);if(this.files[0]){$('lab-audio').src=blobURL=URL.createObjectURL(this.files[0]);}};
 function encoded(file){return new Promise(function(resolve,reject){var r=new FileReader();r.onload=function(){resolve(r.result.split(',')[1]);};r.onerror=reject;r.readAsDataURL(file);});}

@@ -9,8 +9,8 @@ function cells(target,member){target.replaceChildren();var bio=member.biometrics
 }
 function invalidate(){draft=null;$('member-draft-values').hidden=true;$('member-draft-time').textContent='';$('member-checkin-submit').disabled=true;}
 function audio(){var id=crew(),sample=$('member-voice').value;
- if(sample.startsWith('artemis-'))$('member-audio').src='audio/'+sample+'.wav';
- else if(sample.startsWith('ravdess-')){var file=sample==='ravdess-calm'?'03-01-02-01-01-01-01.wav':sample==='ravdess-neutral'?'03-01-01-01-01-01-01.wav':'03-01-06-01-01-01-01.wav';$('member-audio').src='audio/ravdess/'+file;}
+ if(sample.startsWith('artemis-'))$('member-audio').src='/submission-assets/audio/'+sample+'.wav';
+ else if(sample.startsWith('ravdess-')){var file=sample==='ravdess-calm'?'03-01-02-01-01-01-01.wav':sample==='ravdess-neutral'?'03-01-01-01-01-01-01.wav':'03-01-06-01-01-01-01.wav';$('member-audio').src='/submission-assets/audio/ravdess/'+file;}
  else if(id!=='AST-05')$('member-audio').src='/api/lab/audio/'+sample+'?crew_id='+encodeURIComponent(id);
  else {$('member-audio').removeAttribute('src');$('member-audio').load();}
  $('member-input-note').textContent=id==='AST-05'?'Models unavailable for AST-05; telemetry and entries still work.':sample.startsWith('artemis-')?'NASA recording · features only · no verified personal baseline.':sample.startsWith('ravdess-')?'RAVDESS Actor 01 · acted emotion label, not a stress label. Features only in this simulated crew entry.':'Synthetic sample · scored against this member’s generated baseline.';

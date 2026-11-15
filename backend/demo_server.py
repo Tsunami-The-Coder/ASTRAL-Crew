@@ -79,6 +79,9 @@ class DemoHandler(SimpleHTTPRequestHandler):
             return
         if path.startswith('/api/'):
             return self._json({'error': 'Unknown endpoint'}, 404)
+        if path.startswith('/submission-assets/'):
+            self.directory = str(Path(self.server.static_root).parent / 'submission' / 'astral-prototype')
+            self.path = path[len('/submission-assets'):]
         return super().do_GET()
 
     def do_POST(self):

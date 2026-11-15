@@ -48,6 +48,11 @@ class DemoServerTests(unittest.TestCase):
         self.assertIn(b'crew-dashboard.js', html)
         status, csv = self.request('/data/OSD-575_CMP_TRANSFORMED.csv')
         self.assertEqual(status, 200)
+        for path in ('/submission-assets/audio/manifest.json', '/submission-assets/audio/ravdess/manifest.json', '/submission-assets/data/wesad-model.json', '/submission-assets/audio/artemis-closest.wav'):
+            status, payload = self.request(path)
+            self.assertEqual(status, 200, path)
+            self.assertTrue(payload, path)
+        self.assertEqual(status, 200)
 
     def test_actual_models_to_api_and_persistent_review(self):
         status, data = self.request('/api/demo/run', {'scenario': 'disagreement'})
