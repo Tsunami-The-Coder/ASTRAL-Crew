@@ -146,6 +146,8 @@
     var card = node('article', 'card kpi'); card.append(node('div', 'kpi-top', title), node('div', 'kpi-value', reading), node('div', 'kpi-foot', foot)); return card;
   }
   function navigate(page) {
+    if(window.AstralNavigate){window.AstralNavigate(page);return;}
+    if(page==='crew'||page==='biology')page='overview';
     document.querySelectorAll('.page').forEach(function (p) { p.classList.toggle('active', p.id === 'page-' + page); });
     document.querySelectorAll('.nav button').forEach(function (b) { b.classList.toggle('active', b.dataset.page === page); });
     requestAnimationFrame(drawCharts);
@@ -209,10 +211,10 @@
     $('mission-crew-select').replaceChildren(); $('mission-crew-tabs').replaceChildren();
     IDS.forEach(function (id) {
       var option = node('option', '', id); option.value = id; $('mission-crew-select').append(option);
-      var button = node('button', 'crew-tab', id); button.type = 'button'; button.setAttribute('aria-pressed', id === selected ? 'true' : 'false'); button.addEventListener('click', function () { selected = id; renderCrew(); requestAnimationFrame(drawCharts); }); $('mission-crew-tabs').append(button);
+      var button = node('button', 'crew-tab', id.slice(-2)); button.setAttribute('aria-label','Select astronaut '+id); button.type = 'button'; button.setAttribute('aria-pressed', id === selected ? 'true' : 'false'); button.addEventListener('click', function () { selected = id; renderCrew(); requestAnimationFrame(drawCharts); }); $('mission-crew-tabs').append(button);
     }); $('mission-crew-select').value = selected;
     var c = member(selected), state = crewState(selected), vitals = c && c.biometrics || {};
-    var summary = node('article', 'card crew-detail-banner'), info = node('div'); info.append(node('h2', '', selected), node('p', '', c ? 'Individual synthetic readings · ' + date(snapshot().timestamp) : 'No reading for this member in the loaded snapshot'));
+    var summary = node('article', 'card crew-detail-banner'), info = node('div'); info.append(node('h2', '', selected), node('p', '', c ? 'Astronaut '+selected.slice(-2)+' · Synthetic demo readings' : 'No reading for this member in the loaded snapshot'));
     summary.append(node('div', 'crew-avatar', selected.slice(-2)), info, badge(state.indicator)); $('crew-detail-summary').replaceChildren(summary);
     $('crew-detail-vitals').replaceChildren(kpi('HEART RATE', value(vitals.heart_rate_bpm), 'bpm · synthetic'), kpi('RMSSD PROXY', value(vitals.hrv_rmssd_ms, 1), 'ms · extraction-dependent'), kpi('SKIN CONDUCTANCE', value(vitals.eda_microsiemens, 2), 'µS · synthetic'), kpi('MODEL COMPARISON', multimodal(selected) ? multimodal(selected).status : 'Unavailable', 'Not a health diagnosis'));
     $('crew-model-evidence').replaceChildren(); var m = multimodal(selected);
@@ -281,12 +283,12 @@
     var ctx = canvas.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); var w = rect.width, h = rect.height, pad = { l: 43, r: 24, t: 19, b: 28 };
     ctx.clearRect(0, 0, w, h); var values = series.flatMap(function (s) { return rows.map(s.read).filter(finite); });
     canvas.dataset.sampleCount = String(rows.length); canvas.dataset.numericValues = JSON.stringify(series.map(function (s) { return rows.map(s.read).map(function (v) { return finite(v) ? v : null; }); }));
-    if (!values.length) { ctx.fillStyle = '#9aacc0'; ctx.font = '12px system-ui'; ctx.fillText('No available readings for this chart.', 12, 35); return; }
+    if (!values.length) { ctx.fillStyle = '#9aacc0'; ctx.font = '12px Inter, system-ui'; ctx.fillText('No available readings for this chart.', 12, 35); return; }
     var min = Math.min.apply(null, values), max = Math.max.apply(null, values), spread = max - min;
     var margin = spread ? spread * 0.16 : Math.max(Math.abs(max) * 0.05, unit === 'mSv' ? 0.001 : 0.01); min -= margin; max += margin;
     var times = rows.map(function (r) { return Date.parse(r.timestamp); }), first = Math.min.apply(null, times), last = Math.max.apply(null, times);
     var x = function (i) { return first === last ? (pad.l + w - pad.r) / 2 : pad.l + (times[i] - first) / (last - first) * (w - pad.l - pad.r); }, y = function (v) { return pad.t + (max - v) / (max - min) * (h - pad.t - pad.b); };
-    ctx.font = '10px system-ui'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    ctx.font = '12px Inter, system-ui'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
     for (var t = 0; t <= 3; t++) { var v = min + (max - min) * t / 3, py = y(v); ctx.strokeStyle = 'rgba(152,176,201,.13)'; ctx.beginPath(); ctx.moveTo(pad.l, py); ctx.lineTo(w - pad.r, py); ctx.stroke(); ctx.fillStyle = '#8295a9'; ctx.fillText(v.toFixed(Math.abs(v) < 1 ? 3 : 1), pad.l - 7, py); }
     ctx.save(); ctx.beginPath(); ctx.rect(pad.l - 4, 0, (w - pad.l - pad.r + 8) * reveal, h - pad.b + 7); ctx.clip();
     series.forEach(function (s) { var connected = false; ctx.beginPath(); rows.forEach(function (row, i) { var v = s.read(row); if (!finite(v)) { connected = false; return; } if (connected) ctx.lineTo(x(i), y(v)); else ctx.moveTo(x(i), y(v)); connected = true; }); ctx.strokeStyle = s.color; ctx.lineWidth = 2; ctx.stroke(); rows.forEach(function (row, i) { var v = s.read(row); if (!finite(v)) return; ctx.beginPath(); ctx.arc(x(i), y(v), 3, 0, Math.PI * 2); ctx.fillStyle = s.color; ctx.fill(); }); });
@@ -334,10 +336,14 @@
   });
   $('mission-reset').addEventListener('click', function () { bundle = defaultBundle; sourceLabel = 'Bundled backend replay'; selected = 'AST-01'; $('mission-import-message').className = 'import-message'; $('mission-import-message').textContent = 'Bundled synthetic replay restored.'; render(); });
   window.AstralMissionView = {
+    findings: findings,
+    findingCopy: resultCopy,
+    selectCrew: function(id){if(IDS.includes(id))selectCrew(id);},
+    setModule: function(key){if(['cognitive','habitat','radiation','gravity','medical'].includes(key)){activeModule=key;renderModules();animateCharts();}},
     load: function (input, label) { var next = validate(input); bundle = next; sourceLabel = label || 'Local backend'; render(); },
     current: function () { return JSON.parse(JSON.stringify(bundle)); }
   };
-  $('page-flagged').querySelector('h1').textContent='What changed?';
+  $('page-flagged').querySelector('h1').textContent='Review the evidence.';
   var reviewTitle=document.querySelector('.review-panel .panel-title');if(reviewTitle)reviewTitle.textContent='Add a team note and decision';
   validate(bundle); render();
 })();
