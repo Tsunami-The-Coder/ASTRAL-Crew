@@ -1,13 +1,13 @@
 #!/bin/bash
 set -euo pipefail
-cd "$(dirname "$0")"
+cd "$(dirname "$0")/.."
 printf 'ASTRAL local integration preview — synthetic signals, real pipeline code.\n'
 if [ ! -x .venv/bin/python ]; then
   python3 -m venv .venv
 fi
 if ! .venv/bin/python -c 'import numpy, scipy' >/dev/null 2>&1; then
   printf 'Installing runtime packages once; this initial setup requires network access.\n'
-  .venv/bin/python -m pip install -r requirements-demo.txt
+  .venv/bin/python -m pip install -r integration/requirements-demo.txt
 fi
 if .venv/bin/python - <<'PY_CHECK'
 import json, urllib.request, sys

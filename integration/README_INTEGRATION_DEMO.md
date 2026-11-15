@@ -4,7 +4,7 @@ The tested integrated demo has been copied into this Git checkout. These working
 
 ## Open
 
-Double-click `run_demo.command`, then open http://127.0.0.1:8765/astral-prototype/ . The launcher installs NumPy/SciPy once if needed. Runtime operation uses local assets and requires no internet. The service binds to loopback only.
+Double-click `integration/run_demo.command`, then open http://127.0.0.1:8765/astral-prototype/ . The launcher installs NumPy/SciPy once if needed. Runtime operation uses local assets and requires no internet. The service binds to loopback only.
 
 ## Main workflow
 
@@ -42,7 +42,7 @@ Each member has separate entry history and Cognitive, Habitat, Radiation, Gravit
 
 All five members have telemetry and entries. Current owner models support AST-01 through AST-04 only; AST-05 is explicitly unsupported. There is no live microphone/watch/cabin hardware ingestion. Standalone upload APIs remain internal experiments; uploaded audio is not saved or silently paired with unrelated wearable data.
 
-Sources and Method pages explain the flow, sources and limits. Original/derived recording hashes and transformations are in `submission/astral-prototype/audio/manifest.json` and `audio/ravdess/manifest.json`. Full-length NASA source files remain outside this folder in `/private/tmp`. StressID and SUSAS recordings are not bundled because access/licensing requirements have not been satisfied. NASA attribution does not imply endorsement.
+Sources and Method pages explain the flow, sources and limits. Original/derived recording hashes and transformations are in `ui/astral-prototype/audio/manifest.json` and `audio/ravdess/manifest.json`. Full-length NASA source files remain outside this folder in `/private/tmp`. StressID and SUSAS recordings are not bundled because access/licensing requirements have not been satisfied. NASA attribution does not imply endorsement.
 
 ## Backend and UI interfaces
 
@@ -71,7 +71,7 @@ These checks establish software demo behavior, not clinical validity, astronaut 
 
 ## Integration handoff
 
-Task/owner: Aarika backend and integrated demo; UI review with Anuj. Branch/PR: transferred into this checkout as uncommitted working-tree changes; no PR or merge performed. Changes are in backend orchestration/entry storage/server, submission UI/audio, runtime requirements/launcher and this guide. Existing model files remain unchanged; runtime dependencies are NumPy and SciPy only.
+Task/owner: Aarika backend and integrated demo; UI review with Anuj. Branch/PR: transferred into this checkout as uncommitted working-tree changes; no PR or merge performed. Changes are in backend orchestration/entry storage/server, ui/astral-prototype UI/audio, runtime requirements/launcher and this guide. Existing model files remain unchanged; runtime dependencies are NumPy and SciPy only.
 
 This checkout was on an older local main when the files were transferred. Review the working-tree changes on an integration feature branch against current remote main, excluding `.venv`, `runtime`, caches, raw archives and generated outputs. Narrow `.gitignore` exceptions include only the attributed demo WAV assets. Backend and voice workstreams still need reconciliation with main. Then rerun checks from that actual branch and open a PR for teammate review. Remaining scope decisions: four supported model identities versus five displayed members, medical content, optional real hardware, and shared interface approval.
 

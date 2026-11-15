@@ -162,7 +162,7 @@ def main():
     engine = DemoEngine(args.database, root / 'models/wearable/model.json')
     if engine.service.store.latest() is None:
         engine.run('baseline')
-    server = DemoServer(('127.0.0.1', args.port), engine, root / 'submission')
+    server = DemoServer(('127.0.0.1', args.port), engine, root / 'ui')
     print(f'Local synthetic demo ready: http://127.0.0.1:{args.port}/astral-prototype/', flush=True)
     if args.open_browser:
         import webbrowser

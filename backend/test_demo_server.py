@@ -16,7 +16,7 @@ class DemoServerTests(unittest.TestCase):
         cls.directory = tempfile.TemporaryDirectory()
         cls.engine = DemoEngine(Path(cls.directory.name) / 'demo.sqlite3', Path(__file__).resolve().parents[1] / 'models/wearable/model.json')
         cls.engine.run('baseline')
-        cls.server = DemoServer(('127.0.0.1', 0), cls.engine, Path(__file__).resolve().parents[1] / 'submission')
+        cls.server = DemoServer(('127.0.0.1', 0), cls.engine, Path(__file__).resolve().parents[1] / 'ui')
         cls.thread = threading.Thread(target=cls.server.serve_forever, daemon=True)
         cls.thread.start()
 
