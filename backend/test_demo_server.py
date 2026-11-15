@@ -93,7 +93,34 @@ class DemoServerTests(unittest.TestCase):
                     self.assertTrue(report['input_issues'])
                 self.assertEqual(len(data['snapshot_history']), 12)
                 self.assertEqual(len(report['multimodal']), 5)
-                self.assertEqual(report['multimodal'][-1]['status'], 'unavailable')
+                fifth = report['multimodal'][-1]
+                self.assertEqual(fifth['crew_id'], 'AST-05')
+                self.assertEqual(fifth['status'], 'compared')
+                self.assertEqual(fifth['signals']['voice']['status'], 'available')
+                self.assertEqual(fifth['signals']['wearable']['status'], 'available')
+                self.assertIn('AST-05', data['demo_server']['supported_model_crew'])
+
+    def test_fifth_member_audio_and_checkin_are_supported(self):
+        status, audio = self.request('/api/lab/audio/calm?crew_id=AST-05')
+        self.assertEqual(status, 200)
+        self.assertTrue(audio.startswith(b'RIFF'))
+
+        status, draft = self.request('/api/crew/draft', {
+            'crew_id': 'AST-05', 'voice': 'aroused', 'wearable': 'elevated', 'scenario': 'baseline'})
+        self.assertEqual(status, 200)
+        self.assertEqual(draft['crew_id'], 'AST-05')
+
+        status, data = self.request('/api/crew/checkin', {
+            'crew_id': 'AST-05', 'draft_id': draft['draft_id']})
+        self.assertEqual(status, 200)
+        self.assertEqual(data['member_entries']['AST-05'][0]['member']['crew_id'], 'AST-05')
+        fifth = next(item for item in data['overview']['current_analysis']['report']['multimodal']
+                     if item['crew_id'] == 'AST-05')
+        self.assertEqual(fifth['status'], 'compared')
+        self.assertEqual(fifth['signals']['voice']['status'], 'available')
+        self.assertEqual(fifth['signals']['wearable']['status'], 'available')
+        self.assertEqual(data['demo_server']['supported_model_crew'],
+                         [f'AST-{i:02}' for i in range(1, 6)])
 
     def test_draft_submission_history_and_single_use(self):
         status, draft = self.request('/api/crew/draft', {'crew_id':'AST-01','voice':'aroused','wearable':'elevated','scenario':'baseline'})

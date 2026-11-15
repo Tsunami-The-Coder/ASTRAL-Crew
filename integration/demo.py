@@ -18,7 +18,7 @@ from integration.adapters import utc, adapt_voice, adapt_wearable
 CLOCK = '2026-11-15T12:00:00Z'
 
 
-def run_demo(database, *, model_path, crew_count=4):
+def run_demo(database, *, model_path, crew_count=5):
     import numpy as np
     from models.voice import VoiceStressEstimator
     from models.voice import synth
@@ -83,14 +83,14 @@ def run_demo(database, *, model_path, crew_count=4):
             'analysis_id': identifier, 'report': report,
             'limitations': ['Actual model code executed on generated audio and wrist arrays.',
                             'No real astronaut data, model accuracy, or causal inference established.',
-                            'Fifth crew is unsupported by current producer modules; no score is fabricated.']}
+                            'Model input gaps remain unavailable; no normal score is fabricated.']}
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--database', type=Path, required=True)
     parser.add_argument('--model-path', type=Path, required=True)
-    parser.add_argument('--crew-count', type=int, choices=(4, 5), default=4)
+    parser.add_argument('--crew-count', type=int, choices=(4, 5), default=5)
     args = parser.parse_args()
     try:
         output = run_demo(args.database, model_path=args.model_path, crew_count=args.crew_count)

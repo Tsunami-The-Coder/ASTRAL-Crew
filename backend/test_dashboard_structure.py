@@ -7,7 +7,7 @@ import re
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-PAGE = ROOT / 'submission/astral-prototype/index.html'
+PAGE = ROOT / 'ui/astral-prototype/index.html'
 
 class Elements(HTMLParser):
     def __init__(self):

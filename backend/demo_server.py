@@ -82,6 +82,9 @@ class DemoHandler(SimpleHTTPRequestHandler):
         if path.startswith('/submission-assets/'):
             self.directory = str(Path(self.server.static_root).parent / 'submission' / 'astral-prototype')
             self.path = path[len('/submission-assets'):]
+        elif path.startswith('/data/'):
+            self.directory = str(Path(self.server.static_root).parent / 'submission' / 'data')
+            self.path = path[len('/data'):]
         return super().do_GET()
 
     def do_POST(self):
